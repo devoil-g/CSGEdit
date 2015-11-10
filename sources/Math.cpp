@@ -56,7 +56,7 @@ std::vector<double>	Math::Utils::solve(double a, double b, double c, double d, d
 #ifdef _DEBUG
   // Check for invalid parameter
   if (a == 0)
-    return std::vector<double>();
+    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
 #endif
 
   // Solve equation
