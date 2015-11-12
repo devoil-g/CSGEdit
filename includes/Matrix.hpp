@@ -1,7 +1,8 @@
 #ifndef _MATRIX_HPP_
 #define _MATRIX_HPP_
 
-#include <cstring>
+#include <iostream>
+#include <Eigen/Eigen>
 
 #include "Math.hpp"
 
@@ -11,160 +12,81 @@ namespace Math
   template<unsigned int cCol, unsigned int cRow>
   class Matrix
   {
-    double				_matrix[cCol][cRow];					// Matrix value container
+  public:
+    Eigen::Matrix<double, cRow, cCol>	_matrix;
+    
+    Matrix(Eigen::Matrix<double, cRow, cCol> const & matrix) : _matrix(matrix) {};
 
   public:
-    Matrix() : _matrix{0} {};
+    Matrix() : _matrix(Eigen::Matrix<double, cRow, cCol>::Zero()) {};
     ~Matrix() {};
 
-    inline double &			operator()(unsigned int col, unsigned int row)		// Get matrix value
+    inline double &			operator()(unsigned int col, unsigned int row)
     {
 #ifdef _DEBUG
       if (col >= cCol || row >= cRow)
 	throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
 #endif
-      return _matrix[col][row];
+
+      return _matrix(row, col);
     };
     
-    inline double			operator()(unsigned int col, unsigned int row) const	// Get matrix value
+    inline double			operator()(unsigned int col, unsigned int row) const
     {
 #ifdef _DEBUG
       if (col >= cCol || row >= cRow)
 	throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
 #endif
-      return _matrix[col][row];
+
+      return _matrix(row, col);
     };
 
-    Math::Matrix<cCol, cRow> &		operator=(Math::Matrix<cCol, cRow> const & cpy)		// Copy matrix
+    template<unsigned int dCol, unsigned int dRow>
+    inline Math::Matrix<dCol, cRow>	operator*(Math::Matrix<dCol, dRow> const & right) const
     {
-      std::memcpy(this->_matrix, cpy._matrix, sizeof(this->_matrix));
-      return *this;
-    };
+      return Math::Matrix<dCol, cRow>(_matrix * right._matrix);
+    }
 
-    Math::Matrix<cCol, cRow>		inverse() const;					// Generate inverse matrix
-    Math::Matrix<cCol, cRow>		transpose() const;					// Generate transpose matrix
+    inline Math::Matrix<cCol, cRow>	inverse() const
+    {
+      return Math::Matrix<cCol, cRow>(_matrix.inverse());
+    }
 
-    static Math::Matrix<cCol, cRow>	identite();						// Generate identity matrix
-    static Math::Matrix<3, 3>		translation(double, double);				// Generate translation matrix
-    static Math::Matrix<4, 4>		translation(double, double, double);			// Generate translation matrix
-    static Math::Matrix<3, 3>		reflection(double, double);				// Generate mirror matrix
-    static Math::Matrix<4, 4>		reflection(double, double, double);			// Generate mirror matrix
-    static Math::Matrix<3, 3>		rotation(double);					// Generate rotation matrix
-    static Math::Matrix<4, 4>		rotation(double, double, double);			// Generate rotation matrix
-    static Math::Matrix<4, 4>		rotation(double, double, double, double);		// Generate rotation matrix along an axis
-    static Math::Matrix<3, 3>		scale(double, double);					// Generate scaling matrix
-    static Math::Matrix<4, 4>		scale(double, double, double);				// Generate scaling matrix
-    static Math::Matrix<4, 4>		shear(double, double, double, double, double, double);	// Generate shearing matrix
+    inline Math::Matrix<cCol, cRow>	transpose() const
+    {
+      return Math::Matrix<cCol, cRow>(_matrix.transpose());
+    }
+
+    inline static Math::Matrix<cCol, cRow>	identite()
+    {
+      return Math::Matrix<cCol, cRow>(Eigen::Matrix<double, cRow, cCol>::Identity());
+    }
+
+    inline static Math::Matrix<4, 4>	translation(double x, double y, double z)
+    {
+      return Math::Matrix<4, 4>(Eigen::Affine3d(Eigen::Translation3d(Eigen::Vector3d(x, y, z))).matrix());
+    }
+
+    inline static Math::Matrix<4, 4>	rotation(double x, double y, double z)
+    {
+      return Math::Matrix<4, 4>((Eigen::Affine3d(Eigen::AngleAxisd(Math::Utils::DegToRad(z), Eigen::Vector3d(0, 0, 1))) * Eigen::Affine3d(Eigen::AngleAxisd(Math::Utils::DegToRad(y), Eigen::Vector3d(0, 1, 0))) * Eigen::Affine3d(Eigen::AngleAxisd(Math::Utils::DegToRad(x), Eigen::Vector3d(1, 0, 0)))).matrix());
+    }
+
+    inline static Math::Matrix<4, 4>	rotation(double a, double x, double y, double z)
+    {
+      return Math::Matrix<4, 4>((Eigen::Affine3d(Eigen::AngleAxisd(Math::Utils::DegToRad(a), Eigen::Vector3d(x, y, z)))).matrix());
+    }
+
+    inline static Math::Matrix<4, 4>	scale(double x, double y, double z)
+    {
+      return Math::Matrix<4, 4>(Eigen::Affine3d(Eigen::Scaling(x, y, z)).matrix());
+    }
+
+    inline static Math::Matrix<4, 4>	scale(double s)
+    {
+      return Math::Matrix<4, 4>(Eigen::Affine3d(Eigen::Scaling(s)).matrix());
+    }
   };
 };
-
-Math::Matrix<4, 4>  operator*(Math::Matrix<4, 4> const &, Math::Matrix<4, 4> const &);
-Math::Matrix<3, 4>  operator*(Math::Matrix<4, 4> const &, Math::Matrix<3, 4> const &);
-Math::Matrix<2, 4>  operator*(Math::Matrix<4, 4> const &, Math::Matrix<2, 4> const &);
-Math::Matrix<1, 4>  operator*(Math::Matrix<4, 4> const &, Math::Matrix<1, 4> const &);
-
-Math::Matrix<4, 3>  operator*(Math::Matrix<4, 3> const &, Math::Matrix<4, 4> const &);
-Math::Matrix<3, 3>  operator*(Math::Matrix<4, 3> const &, Math::Matrix<3, 4> const &);
-Math::Matrix<2, 3>  operator*(Math::Matrix<4, 3> const &, Math::Matrix<2, 4> const &);
-Math::Matrix<1, 3>  operator*(Math::Matrix<4, 3> const &, Math::Matrix<1, 4> const &);
-
-Math::Matrix<4, 2>  operator*(Math::Matrix<4, 2> const &, Math::Matrix<4, 4> const &);
-Math::Matrix<3, 2>  operator*(Math::Matrix<4, 2> const &, Math::Matrix<3, 4> const &);
-Math::Matrix<2, 2>  operator*(Math::Matrix<4, 2> const &, Math::Matrix<2, 4> const &);
-Math::Matrix<1, 2>  operator*(Math::Matrix<4, 2> const &, Math::Matrix<1, 4> const &);
-
-Math::Matrix<4, 1>  operator*(Math::Matrix<4, 1> const &, Math::Matrix<4, 4> const &);
-Math::Matrix<3, 1>  operator*(Math::Matrix<4, 1> const &, Math::Matrix<3, 4> const &);
-Math::Matrix<2, 1>  operator*(Math::Matrix<4, 1> const &, Math::Matrix<2, 4> const &);
-Math::Matrix<1, 1>  operator*(Math::Matrix<4, 1> const &, Math::Matrix<1, 4> const &);
-
-// -----------------------------------------------------------------------------------
-
-Math::Matrix<4, 4>  operator*(Math::Matrix<3, 4> const &, Math::Matrix<4, 3> const &);
-Math::Matrix<3, 4>  operator*(Math::Matrix<3, 4> const &, Math::Matrix<3, 3> const &);
-Math::Matrix<2, 4>  operator*(Math::Matrix<3, 4> const &, Math::Matrix<2, 3> const &);
-Math::Matrix<1, 4>  operator*(Math::Matrix<3, 4> const &, Math::Matrix<1, 3> const &);
-
-Math::Matrix<4, 3>  operator*(Math::Matrix<3, 3> const &, Math::Matrix<4, 3> const &);
-Math::Matrix<3, 3>  operator*(Math::Matrix<3, 3> const &, Math::Matrix<3, 3> const &);
-Math::Matrix<2, 3>  operator*(Math::Matrix<3, 3> const &, Math::Matrix<2, 3> const &);
-Math::Matrix<1, 3>  operator*(Math::Matrix<3, 3> const &, Math::Matrix<1, 3> const &);
-
-Math::Matrix<4, 2>  operator*(Math::Matrix<3, 2> const &, Math::Matrix<4, 3> const &);
-Math::Matrix<3, 2>  operator*(Math::Matrix<3, 2> const &, Math::Matrix<3, 3> const &);
-Math::Matrix<2, 2>  operator*(Math::Matrix<3, 2> const &, Math::Matrix<2, 3> const &);
-Math::Matrix<1, 2>  operator*(Math::Matrix<3, 2> const &, Math::Matrix<1, 3> const &);
-
-Math::Matrix<4, 1>  operator*(Math::Matrix<3, 1> const &, Math::Matrix<4, 3> const &);
-Math::Matrix<3, 1>  operator*(Math::Matrix<3, 1> const &, Math::Matrix<3, 3> const &);
-Math::Matrix<2, 1>  operator*(Math::Matrix<3, 1> const &, Math::Matrix<2, 3> const &);
-Math::Matrix<1, 1>  operator*(Math::Matrix<3, 1> const &, Math::Matrix<1, 3> const &);
-
-// -----------------------------------------------------------------------------------
-
-Math::Matrix<4, 4>  operator*(Math::Matrix<2, 4> const &, Math::Matrix<4, 2> const &);
-Math::Matrix<3, 4>  operator*(Math::Matrix<2, 4> const &, Math::Matrix<3, 2> const &);
-Math::Matrix<2, 4>  operator*(Math::Matrix<2, 4> const &, Math::Matrix<2, 2> const &);
-Math::Matrix<1, 4>  operator*(Math::Matrix<2, 4> const &, Math::Matrix<1, 2> const &);
-
-Math::Matrix<4, 3>  operator*(Math::Matrix<2, 3> const &, Math::Matrix<4, 2> const &);
-Math::Matrix<3, 3>  operator*(Math::Matrix<2, 3> const &, Math::Matrix<3, 2> const &);
-Math::Matrix<2, 3>  operator*(Math::Matrix<2, 3> const &, Math::Matrix<2, 2> const &);
-Math::Matrix<1, 3>  operator*(Math::Matrix<2, 3> const &, Math::Matrix<1, 2> const &);
-
-Math::Matrix<4, 2>  operator*(Math::Matrix<2, 2> const &, Math::Matrix<4, 2> const &);
-Math::Matrix<3, 2>  operator*(Math::Matrix<2, 2> const &, Math::Matrix<3, 2> const &);
-Math::Matrix<2, 2>  operator*(Math::Matrix<2, 2> const &, Math::Matrix<2, 2> const &);
-Math::Matrix<1, 2>  operator*(Math::Matrix<2, 2> const &, Math::Matrix<1, 2> const &);
-
-Math::Matrix<4, 1>  operator*(Math::Matrix<2, 1> const &, Math::Matrix<4, 2> const &);
-Math::Matrix<3, 1>  operator*(Math::Matrix<2, 1> const &, Math::Matrix<3, 2> const &);
-Math::Matrix<2, 1>  operator*(Math::Matrix<2, 1> const &, Math::Matrix<2, 2> const &);
-Math::Matrix<1, 1>  operator*(Math::Matrix<2, 1> const &, Math::Matrix<1, 2> const &);
-
-// -----------------------------------------------------------------------------------
-
-Math::Matrix<4, 4>  operator*(Math::Matrix<1, 4> const &, Math::Matrix<4, 1> const &);
-Math::Matrix<3, 4>  operator*(Math::Matrix<1, 4> const &, Math::Matrix<3, 1> const &);
-Math::Matrix<2, 4>  operator*(Math::Matrix<1, 4> const &, Math::Matrix<2, 1> const &);
-Math::Matrix<1, 4>  operator*(Math::Matrix<1, 4> const &, Math::Matrix<1, 1> const &);
-
-Math::Matrix<4, 3>  operator*(Math::Matrix<1, 3> const &, Math::Matrix<4, 1> const &);
-Math::Matrix<3, 3>  operator*(Math::Matrix<1, 3> const &, Math::Matrix<3, 1> const &);
-Math::Matrix<2, 3>  operator*(Math::Matrix<1, 3> const &, Math::Matrix<2, 1> const &);
-Math::Matrix<1, 3>  operator*(Math::Matrix<1, 3> const &, Math::Matrix<1, 1> const &);
-
-Math::Matrix<4, 2>  operator*(Math::Matrix<1, 2> const &, Math::Matrix<4, 1> const &);
-Math::Matrix<3, 2>  operator*(Math::Matrix<1, 2> const &, Math::Matrix<3, 1> const &);
-Math::Matrix<2, 2>  operator*(Math::Matrix<1, 2> const &, Math::Matrix<2, 1> const &);
-Math::Matrix<1, 2>  operator*(Math::Matrix<1, 2> const &, Math::Matrix<1, 1> const &);
-
-Math::Matrix<4, 1>  operator*(Math::Matrix<1, 1> const &, Math::Matrix<4, 1> const &);
-Math::Matrix<3, 1>  operator*(Math::Matrix<1, 1> const &, Math::Matrix<3, 1> const &);
-Math::Matrix<2, 1>  operator*(Math::Matrix<1, 1> const &, Math::Matrix<2, 1> const &);
-Math::Matrix<1, 1>  operator*(Math::Matrix<1, 1> const &, Math::Matrix<1, 1> const &);
-
-// -----------------------------------------------------------------------------------
-
-// Old universal matrix multiplier (bad performances, loops!)
-/*
-Math::Matrix	Math::Matrix::operator*(Math::Matrix const & B) const
-{
-  Math::Matrix const &	A = *this;
-  Math::Matrix		matrix(B.col(), A.row());
-
-#ifdef _DEBUG
-  if (A.col() != B.row())
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
-#endif
-
-  for (unsigned int col = 0; col < B.col(); col++)
-    for (unsigned int row = 0; row < A.row(); row++)
-      for (unsigned int x = 0; x < A.col(); x++)
-	matrix(col, row) += A(x, row) * B(col, x);
-
-  return matrix;
-}
-*/
 
 #endif

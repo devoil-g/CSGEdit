@@ -25,7 +25,7 @@
 #include "PointLight.hpp"
 
 RT::Raytracer::Raytracer()
-  : _image(), _lock(), _tree(nullptr), _camera(Math::Matrix<4, 4>::translation(-540, 52, 436) * Math::Matrix<4, 4>::rotation(0, 39.8, -7.2)), _grid(), _thread()
+  : _image(), _lock(), _tree(nullptr), _camera(), _grid(), _thread()
 {
   // Set image to window size
   _image.create(RT::Config::WindowWidth, RT::Config::WindowHeight);
@@ -140,6 +140,8 @@ bool	RT::Raytracer::load(std::string const &)
   _light.push_back(new RT::OcclusionLight());
   _light.push_back(new RT::DirectionalLight(Math::Matrix<4, 4>::rotation(0, 60, 30), RT::Color(1.f), 4.2f));
   //_light.push_back(new RT::PointLight(Math::Matrix<4, 4>::translation(0,0,+128), RT::Color(1.f), 21.42f, 0.f));
+
+  _camera = Math::Matrix<4, 4>::translation(-540, 52, 436) * Math::Matrix<4, 4>::rotation(0, 39.8, -7.2);
 
   _lock.unlock();
   return true;
