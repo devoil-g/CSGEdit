@@ -52,7 +52,7 @@ bool  RT::PreviewState::update(sf::Time elapsed)
   // If timer over, update display
   if (_wait <= 0)
   {
-    unsigned int  remaining = _elapsed.asSeconds() / progress * (1.f - progress);
+    unsigned int  remaining = (unsigned int)(_elapsed.asSeconds() / progress * (1.f - progress));
     std::cout << "[Preview] " << (int)(progress * 100.f) << "." << ((int)(progress * 1000.f)) % 10 << " % (" << remaining / 3600 << "h " << remaining % 3600 / 60 << "m " << remaining % 60 << "s remaining).    \r" << std::flush;
     _texture.loadFromImage(_raytracer->image());
     _sprite.setTexture(_texture);

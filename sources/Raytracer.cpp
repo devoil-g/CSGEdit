@@ -273,8 +273,8 @@ void  RT::Raytracer::routine()
 
   while (true)
   {
-    unsigned int  r = Math::Random::rand(_grid.size());
-    unsigned int  z = _grid.size();
+    unsigned int  r = (unsigned int)Math::Random::rand((double)_grid.size());
+    unsigned int  z = (unsigned int)_grid.size();
 
     // Find a zone to render
     for (unsigned int a = 0; a < _grid.size() && z == _grid.size(); a++)
@@ -434,7 +434,7 @@ RT::Color RT::Raytracer::renderDephOfField(Math::Ray const & ray) const
   for (double a = Math::Random::rand(RT::Config::DephOfField::Aperture / RT::Config::DephOfField::Quality); a < RT::Config::DephOfField::Aperture; a += RT::Config::DephOfField::Aperture / RT::Config::DephOfField::Quality)
     for (double b = Math::Random::rand(Math::Pi / (RT::Config::DephOfField::Quality * 2)) - Math::Pi / 2.f; b < Math::Pi / 2.f; b += Math::Pi / RT::Config::DephOfField::Quality)
     {
-      int	nb = cos(b) * RT::Config::DephOfField::Quality * 2.f * (a / RT::Config::DephOfField::Aperture);
+      int	nb = (int)(cos(b) * RT::Config::DephOfField::Quality * 2.f * (a / RT::Config::DephOfField::Aperture));
       if (nb > 0)
 	for (double c = Math::Random::rand(Math::Pi * 2.f / nb); c < Math::Pi * 2.f; c += Math::Pi * 2.f / nb)
 	{
@@ -511,7 +511,7 @@ RT::Color RT::Raytracer::renderReflection(Math::Ray const & ray, RT::Intersectio
   // Reverse normal if necessary
   normal = intersection.normal;
   if (Math::Ray::cos(ray, intersection.normal) > 0)
-    normal.d() = Math::Matrix<4, 4>::scale(-1.f, -1.f, -1.f) * intersection.normal.d();
+    normal.d() = Math::Matrix<4, 4>::scale(-1.f) * intersection.normal.d();
 
   k = -(normal.dx() * (normal.px() - ray.px()) + normal.dy() * (normal.py() - ray.py()) + normal.dz() * (normal.pz() - ray.pz())) / (normal.dx() * normal.dx() + normal.dy() * normal.dy() + normal.dz() * normal.dz());
 
@@ -539,7 +539,7 @@ RT::Color RT::Raytracer::renderTransparency(Math::Ray const & ray, RT::Intersect
   refraction = intersection.material.refraction;
   if (Math::Ray::cos(ray, intersection.normal) > 0)
   {
-    normal.d() = Math::Matrix<4, 4>::scale(-1.f, -1.f, -1.f) * intersection.normal.d();
+    normal.d() = Math::Matrix<4, 4>::scale(-1.f) * intersection.normal.d();
     refraction = 1.f / refraction;
   }
 

@@ -30,7 +30,7 @@ std::list<RT::Intersection>	RT::CsgNode::renderTree(Math::Ray const & ray) const
 
       // Reverse normal (for refraction)
       if (_type == RT::CsgNode::Difference && it != _children.begin())
-	it_node->normal.d() = Math::Matrix<4, 4>::scale(-1.f, -1.f, -1.f) * it_node->normal.d();
+	it_node->normal.d() = Math::Matrix<4, 4>::scale(-1.f) * it_node->normal.d();
     }
 
     // Acceleration tweak

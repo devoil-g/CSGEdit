@@ -5,11 +5,13 @@ RT::PointLight::PointLight(Math::Matrix<4, 4> const & transformation, RT::Color 
   : _color(color), _radius(radius), _intensity(intensity), _angle1(angle1), _angle2(angle2), _quality(quality)
 {
   // Check values
-  _radius = std::fmax(_radius, 0.f);
-  _intensity = std::fmax(_intensity, 0.f);
-  _angle1 = std::fmin(std::fmax(_angle1, 0.f), 180.f);
-  _angle2 = std::fmin(std::fmax(_angle1, _angle2), 180.f);
-  _quality = std::fmax(_quality, 1);
+  _radius = _radius > 0.f ? _radius : 0.f;
+  _intensity = _intensity > 0.f ? _intensity : 0.f;
+  _angle1 = _angle1 > 0.f ? _angle1 : 0.f;
+  _angle1 = _angle1 < 180.f ? _angle1 : 180.f;
+  _angle2 = _angle2 > _angle1 ? _angle2 : _angle1;
+  _angle2 = _angle2 < 180.f ? _angle2 : 180.f;
+  _quality = _quality > 1 ? _quality : 1;
 
   // Calculate position from tranformation matrix
   _position.px() = 0.f;
@@ -36,7 +38,7 @@ RT::Color RT::PointLight::preview(RT::AbstractTree const * tree, Math::Ray const
   // Inverse normal if necessary
   n = normal;
   if (Math::Ray::cos(ray, normal) > 0)
-    n.d() = Math::Matrix<4, 4>::scale(-1.f, -1.f, -1.f) * normal.d();
+    n.d() = Math::Matrix<4, 4>::scale(-1.f) * normal.d();
 
   // Calculate intensity level
   if (_intensity == 0.f)
@@ -79,7 +81,7 @@ RT::Color RT::PointLight::render(RT::AbstractTree const * tree, Math::Ray const 
   // Inverse normal if necessary
   n = normal;
   if (Math::Ray::cos(ray, normal) > 0)
-    n.d() = Math::Matrix<4, 4>::scale(-1.f, -1.f, -1.f) * normal.d();
+    n.d() = Math::Matrix<4, 4>::scale(-1.f) * normal.d();
 
   std::list<Math::Ray>	rays;
   Math::Ray		r;
@@ -167,6 +169,6 @@ RT::Color RT::PointLight::render(RT::AbstractTree const * tree, Math::Ray const 
     specular += light * pow((cos_s > 0.f ? cos_s : 0.f), material.shine) * angle * intensity;
   }
 
-  return diffuse / rays.size() * RT::Config::Light::Diffuse * material.color * material.diffuse * (1.f - material.transparency) * (1.f - material.reflection)
-    + specular / rays.size() * RT::Config::Light::Specular * material.specular * (1.f - material.transparency) * (1.f - material.reflection);
+  return diffuse / (double)rays.size() * RT::Config::Light::Diffuse * material.color * material.diffuse * (1.f - material.transparency) * (1.f - material.reflection)
+    + specular / (double)rays.size() * RT::Config::Light::Specular * material.specular * (1.f - material.transparency) * (1.f - material.reflection);
 }

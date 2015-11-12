@@ -3,8 +3,8 @@
 RT::OcclusionLight::OcclusionLight(RT::Color const & color, double radius, unsigned int quality)
   : _color(color), _radius(radius), _quality(quality)
 {
-  _radius = fmax(_radius, 0.f);
-  _quality = fmax(_quality, 1);
+  _radius = _radius > 0.f ? _radius : 0.f;
+  _quality = _quality > 1 ? _quality : 1;
 }
 
 RT::OcclusionLight::~OcclusionLight()
@@ -31,7 +31,7 @@ RT::Color RT::OcclusionLight::render(RT::AbstractTree const * tree, Math::Ray co
   // Inverse normal if necessary
   n = normal;
   if (Math::Ray::cos(ray, normal) > 0)
-    n.d() = Math::Matrix<4, 4>::scale(-1.f, -1.f, -1.f) * normal.d();
+    n.d() = Math::Matrix<4, 4>::scale(-1.f) * normal.d();
 
   // Calculate rotation angles of normal
   ry = -asin(n.dz());

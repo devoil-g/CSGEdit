@@ -198,7 +198,7 @@ unsigned int		Math::Random::_cursor = 0;
 void	Math::Random::initialize()
 {
   // Set random generator to timestamp
-  std::srand(std::time(nullptr));
+  std::srand((unsigned int)std::time(nullptr));
 
   // Fill random table
   while (_table.size() < Math::RandomTableSize)

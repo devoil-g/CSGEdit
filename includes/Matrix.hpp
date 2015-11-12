@@ -11,6 +11,7 @@ namespace Math
   template<unsigned int cCol, unsigned int cRow>
   class Matrix
   {
+  private:
     double				_matrix[cCol][cRow];					// Matrix value container
 
   public:
@@ -41,20 +42,37 @@ namespace Math
       return *this;
     };
 
+    template<unsigned int dCol, unsigned int dRow>
+    Math::Matrix<dCol, cRow>		operator*(Math::Matrix<dCol, dRow> const & m) const	// General matrix multiplication method, specialization for performance below
+    {
+      Math::Matrix<dCol, cRow>		matrix;
+
+      // Compilation time error if invalid matrix
+      static_assert(cCol == dRow, "Invalid matrix multiplication.");
+
+      for (unsigned int col = 0; col < dCol; col++)
+	for (unsigned int row = 0; row < cRow; row++)
+	  for (unsigned int x = 0; x < cCol; x++)
+	    matrix(col, row) += (*this)(x, row) * m(col, x);
+
+      return matrix;
+    }
+
     Math::Matrix<cCol, cRow>		inverse() const;					// Generate inverse matrix
     Math::Matrix<cCol, cRow>		transpose() const;					// Generate transpose matrix
 
     static Math::Matrix<cCol, cRow>	identite();						// Generate identity matrix
-    static Math::Matrix<3, 3>		translation(double, double);				// Generate translation matrix
-    static Math::Matrix<4, 4>		translation(double, double, double);			// Generate translation matrix
-    static Math::Matrix<3, 3>		reflection(double, double);				// Generate mirror matrix
-    static Math::Matrix<4, 4>		reflection(double, double, double);			// Generate mirror matrix
-    static Math::Matrix<3, 3>		rotation(double);					// Generate rotation matrix
-    static Math::Matrix<4, 4>		rotation(double, double, double);			// Generate rotation matrix
-    static Math::Matrix<4, 4>		rotation(double, double, double, double);		// Generate rotation matrix along an axis
-    static Math::Matrix<3, 3>		scale(double, double);					// Generate scaling matrix
-    static Math::Matrix<4, 4>		scale(double, double, double);				// Generate scaling matrix
-    static Math::Matrix<4, 4>		shear(double, double, double, double, double, double);	// Generate shearing matrix
+    static Math::Matrix<cCol, cRow>	translation(double, double);				// Generate translation matrix
+    static Math::Matrix<cCol, cRow>	translation(double, double, double);			// Generate translation matrix
+    static Math::Matrix<cCol, cRow>	reflection(double, double);				// Generate mirror matrix
+    static Math::Matrix<cCol, cRow>	reflection(double, double, double);			// Generate mirror matrix
+    static Math::Matrix<cCol, cRow>	rotation(double);					// Generate rotation matrix
+    static Math::Matrix<cCol, cRow>	rotation(double, double, double);			// Generate rotation matrix
+    static Math::Matrix<cCol, cRow>	rotation(double, double, double, double);		// Generate rotation matrix
+    static Math::Matrix<cCol, cRow>	scale(double);						// Generate scaling matrix
+    static Math::Matrix<cCol, cRow>	scale(double, double);					// Generate scaling matrix
+    static Math::Matrix<cCol, cRow>	scale(double, double, double);				// Generate scaling matrix
+    static Math::Matrix<cCol, cRow>	shear(double, double, double, double, double, double);	// Generate shearing matrix
   };
 };
 

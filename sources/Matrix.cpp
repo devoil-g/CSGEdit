@@ -283,6 +283,12 @@ Math::Matrix<4, 4>    Math::Matrix<4, 4>::rotation(double a, double x, double y,
 }
 
 template<>
+Math::Matrix<3, 3>    Math::Matrix<3, 3>::scale(double s)
+{
+  return Math::Matrix<3, 3>::scale(s, s);
+}
+
+template<>
 Math::Matrix<3, 3>    Math::Matrix<3, 3>::scale(double x, double y)
 {
   Math::Matrix<3, 3>	matrix;
@@ -293,6 +299,12 @@ Math::Matrix<3, 3>    Math::Matrix<3, 3>::scale(double x, double y)
   matrix._matrix[2][2] = 1.f;
 
   return matrix;
+}
+
+template<>
+Math::Matrix<4, 4>    Math::Matrix<4, 4>::scale(double s)
+{
+  return Math::Matrix<4, 4>::scale(s, s, s);
 }
 
 template<>

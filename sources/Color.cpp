@@ -26,7 +26,7 @@ sf::Color	RT::Color::sfml() const
   n = normalize();
 
   // Return sfml color object
-  return sf::Color(n.r * 255.f, n.g * 255.f, n.b * 255.f);
+  return sf::Color((sf::Uint8)(n.r * 255.f + 0.5f), (sf::Uint8)(n.g * 255.f + 0.5f), (sf::Uint8)(n.b * 255.f + 0.5f));
 };
 
 RT::Color	RT::Color::normalize() const

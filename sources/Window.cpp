@@ -130,7 +130,7 @@ void  RT::Window::setTaskbar(RT::Window::WindowFlag flag, double progress)
     progress = 1.f;
 
 #ifdef _WIN32
-  _taskbar->SetProgressValue(_window.getSystemHandle(), progress * 1000, 1000);
+  _taskbar->SetProgressValue(_window.getSystemHandle(), (ULONGLONG)(progress * 1000), 1000);
 #endif
 }
 

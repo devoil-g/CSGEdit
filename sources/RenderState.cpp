@@ -63,7 +63,7 @@ bool  RT::RenderState::update(sf::Time elapsed)
   // If timer over, update display
   if (_wait <= 0)
   {
-    unsigned int  remaining = _elapsed.asSeconds() / progress * (1.f - progress);
+    unsigned int  remaining = (unsigned int)(_elapsed.asSeconds() / progress * (1.f - progress));
     std::cout << "[Render] " << (int)(progress * 100.f) << "." << ((int)(progress * 1000.f)) % 10 << " % (" << remaining / 3600 << "h " << remaining % 3600 / 60 << "m " << remaining % 60 << "s remaining).    \r" << std::flush;
     RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Normal, progress);
     _texture.loadFromImage(_raytracer->image());
