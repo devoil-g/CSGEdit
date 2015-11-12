@@ -59,7 +59,7 @@ RT::Color RT::DirectionalLight::render(RT::AbstractTree const * tree, Math::Ray 
   // Inverse normal if necessary
   n = normal;
   if (Math::Ray::cos(ray, normal) > 0)
-    n.d() = Math::Matrix<4, 4>::scale(-1.f) * normal.d();
+    n.d() = Math::Matrix<4, 4>::scale(-1.f, -1.f, -1.f) * normal.d();
   
   std::list<Math::Ray>	rays;
   Math::Ray		r;

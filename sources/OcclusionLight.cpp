@@ -31,8 +31,8 @@ RT::Color RT::OcclusionLight::render(RT::AbstractTree const * tree, Math::Ray co
   // Inverse normal if necessary
   n = normal;
   if (Math::Ray::cos(ray, normal) > 0)
-    n.d() = Math::Matrix<4, 4>::scale(-1.f) * normal.d();
-  
+    n.d() = Math::Matrix<4, 4>::scale(-1.f, -1.f, -1.f) * normal.d();
+
   // Calculate rotation angles of normal
   ry = -asin(n.dz());
   if (n.dx() != 0 || n.dy() != 0)
@@ -91,7 +91,7 @@ RT::Color RT::OcclusionLight::render(RT::AbstractTree const * tree, Math::Ray co
 	
 	while (it != intersect.rend() && -it->distance < 0.f)
 	  it++;
-	while (it != intersect.rend() && -it->distance < _radius && light != RT::Color(0.f))
+	while (it != intersect.rend() && light != RT::Color(0.f))
 	{
 	  // NOTE: occlusion ray is not reflected
 	  ambient += RT::Color(-it->distance / _radius) * light * it->material.color * (1.f - it->material.transparency) * (material.transparency);
