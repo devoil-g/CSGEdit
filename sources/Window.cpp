@@ -18,12 +18,6 @@ RT::Window::Window()
   else
     throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
 
-  // Hide cursor if mouse enabled
-  if (RT::Config::MouseEnabled)
-    _window.setMouseCursorVisible(false);
-  else
-    _window.setMouseCursorVisible(true);
-
 #ifdef _WIN32
   CoInitialize(nullptr);
   CoCreateInstance(CLSID_TaskbarList, nullptr, CLSCTX_INPROC_SERVER, IID_ITaskbarList3, (void **)&_taskbar);
@@ -64,17 +58,9 @@ bool  RT::Window::update()
 
     // Show/hide cursor if gained/lost focus
     if (event.type == sf::Event::GainedFocus)
-    {
-      if (RT::Config::MouseEnabled)
-	_window.setMouseCursorVisible(false);
       _focus = true;
-    }
     if (event.type == sf::Event::LostFocus)
-    {
-      if (RT::Config::MouseEnabled)
-	_window.setMouseCursorVisible(true);
       _focus = false;
-    }
 
     // Set pressed/released key
     if (event.type == sf::Event::KeyPressed)
@@ -84,15 +70,13 @@ bool  RT::Window::update()
   }
 
   // If mouse enabled, get mouse position/buttons status, and recenter cursor
-  if (RT::Config::MouseEnabled && _focus)
+  if (_focus)
   {
-    _mouse.x = sf::Mouse::getPosition(_window).x - _window.getSize().x / 2;
-    _mouse.y = sf::Mouse::getPosition(_window).y - _window.getSize().y / 2;
+    _mouse.x = sf::Mouse::getPosition(_window).x;
+    _mouse.y = sf::Mouse::getPosition(_window).y;
     _mouse.left = sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
     _mouse.right = sf::Mouse::isButtonPressed(sf::Mouse::Button::Right);
     _mouse.middle = sf::Mouse::isButtonPressed(sf::Mouse::Button::Middle);
-
-    sf::Mouse::setPosition(sf::Vector2i(_window.getSize().x / 2, _window.getSize().y / 2), _window);
   }
   else
   {

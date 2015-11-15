@@ -21,11 +21,8 @@ namespace RT
     unsigned int const	ThreadNumber(3);
     double const	ThreadSleep(0.5f);
 
-    bool const		MouseEnabled(false);
-
     unsigned int const	AntiAliasing(2);
     unsigned int const	MaxRecursivite(3);
-
 
     namespace Light
     {

@@ -18,6 +18,7 @@ SET(SAMPLE_SRCS
 	./sources/TorusLeaf.cpp
 	./sources/TriangleLeaf.cpp
 
+	./sources/BoundingNode.cpp
 	./sources/CsgNode.cpp
 	./sources/MaterialNode.cpp
 	./sources/MeshNode.cpp
@@ -61,6 +62,7 @@ SET(SAMPLE_HDRS
 	./includes/TorusLeaf.hpp
 	./includes/TriangleLeaf.hpp
 
+	./includes/BoundingNode.hpp
 	./includes/CsgNode.hpp
 	./includes/MaterialNode.hpp
 	./includes/MeshNode.hpp

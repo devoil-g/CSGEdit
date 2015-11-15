@@ -14,18 +14,6 @@ void	Math::initialize()
   Math::Random::initialize();
 }
 
-double	Math::Utils::RadToDeg(double r)
-{
-  // Convert radian to degree
-  return (r * 180.f) / Math::Pi;
-}
-
-double	Math::Utils::DegToRad(double r)
-{
-  // Convert degree to radian
-  return (r * Math::Pi) / 180.f;
-}
-
 std::vector<double>	Math::Utils::solve(double a, double b, double c)
 {
   std::vector<double>   result;
@@ -192,8 +180,8 @@ RT::AbstractTree const *  Math::Utils::BoundingSphere(std::vector<std::tuple<dou
   return new RT::SphereLeaf(Math::Matrix<4, 4>::translation(std::get<0>(center), std::get<1>(center), std::get<2>(center)), radius);
 }
 
-std::vector<double>	Math::Random::_table;
-unsigned int		Math::Random::_cursor = 0;
+double		Math::Random::_table[Math::RandomTableSize];
+unsigned int	Math::Random::_cursor = 0;
 
 void	Math::Random::initialize()
 {
@@ -201,15 +189,6 @@ void	Math::Random::initialize()
   std::srand((unsigned int)std::time(nullptr));
 
   // Fill random table
-  while (_table.size() < Math::RandomTableSize)
-    _table.push_back((double)std::rand() / (double)RAND_MAX);
-}
-
-double	Math::Random::rand(double r)
-{
-  // Increment cursor
-  _cursor = (_cursor + 1) % Math::RandomTableSize;
-
-  // Return rand value according to cursor
-  return _table[_cursor % Math::RandomTableSize] * r;
+  for (unsigned int i = 0; i < Math::RandomTableSize; i++)
+    _table[i] = (double)std::rand() / (double)RAND_MAX;
 }

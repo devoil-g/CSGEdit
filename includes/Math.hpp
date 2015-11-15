@@ -30,8 +30,15 @@ namespace Math
   
   namespace Utils
   {
-    double		RadToDeg(double); // Convert radian to degree
-    double		DegToRad(double); // Convert degree to radian
+    inline double	RadToDeg(double r)	// Convert radian to degree
+    {
+      return (r * 180.f) / Math::Pi;
+    }
+
+    inline double	DegToRad(double r)	// Convert degree to radian
+    {
+      return (r * Math::Pi) / 180.f;
+    }
 
     std::vector<double>	solve(double, double, double);			// Solve a 2nd degree equation
     std::vector<double>	solve(double, double, double, double, double);	// Solve a 4th degree equation
@@ -42,12 +49,16 @@ namespace Math
   class Random
   {
   private:
-    static std::vector<double>	_table;	  // Table containing random number between 0 and 1
-    static unsigned int		_cursor;  // Current position in table
+    static double		_table[Math::RandomTableSize];	// Table containing random number between 0 and 1
+    static unsigned int		_cursor;			// Current position in table
 
   public:
-    static void		initialize();	  // Initialize random table
-    static double	rand(double = 1); // Return a random number between 0 and parameter
+    static void			initialize();			// Initialize random table
+
+    static inline double	rand(double r = 1)		// Return a random number between 0 and parameter
+    {
+      return _table[(_cursor = (_cursor + 1) % Math::RandomTableSize) % Math::RandomTableSize] * r;
+    }
   };
 };
 

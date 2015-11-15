@@ -47,8 +47,6 @@ std::list<RT::Intersection>	RT::CsgNode::renderTree(Math::Ray const & ray) const
     return renderIntersection(intersect_list);
   else
     return renderDifference(intersect_list);
-  
-  return std::list<RT::Intersection>();
 }
 
 std::list<RT::Intersection>	RT::CsgNode::renderUnion(std::list<std::list<RT::Intersection> > & intersect_list) const
