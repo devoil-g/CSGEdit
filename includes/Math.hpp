@@ -27,8 +27,7 @@ namespace Math
   double const		Shift(0.000001f);	// Constant used to move points to avoid undesired intersection
   double const		Pi(M_PI);		// Use this instead of M_PI
   unsigned int const	RandomTableSize(4096);	// Size of random table
-  unsigned int const	MaxMatrixSize(4);	// Maximum size for a matrix
-
+  
   namespace Utils
   {
     double		RadToDeg(double); // Convert radian to degree
