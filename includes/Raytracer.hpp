@@ -36,6 +36,7 @@ namespace RT
     Math::Matrix<4, 4>			  _camera;	    // Transformation matrix of camera
     std::vector<ProgressState>		  _grid;	    // Grid of rendered zone (for multi-threaded rendering)
     std::vector<sf::Thread *>		  _thread;	    // List of active thread
+    bool				  _continue;	    // Thread continue working while true, stop at false
 
     void (RT::Raytracer::*_method)(unsigned int);	    // Rendering method called by threads
 

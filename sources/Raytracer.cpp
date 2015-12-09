@@ -25,7 +25,7 @@
 #include "PointLight.hpp"
 
 RT::Raytracer::Raytracer()
-  : _image(), _lock(), _tree(nullptr), _camera(Math::Matrix<4, 4>::translation(-540, 52, 436) * Math::Matrix<4, 4>::rotation(0, 39.8, -7.2)), _grid(), _thread()
+  : _image(), _lock(), _tree(nullptr), _camera(Math::Matrix<4, 4>::translation(-540, 52, 436) * Math::Matrix<4, 4>::rotation(0, 39.8, -7.2)), _grid(), _thread(), _continue(false)
 {
   // Set image to window size
   _image.create(RT::Config::WindowWidth, RT::Config::WindowHeight);
@@ -200,6 +200,7 @@ void  RT::Raytracer::start()
 
   // Stop working threads
   stop();
+  _continue = true;
 
   // Create and launch rendering threads
   for (unsigned int i = 0; i < RT::Config::ThreadNumber; i++)
@@ -215,10 +216,12 @@ void  RT::Raytracer::stop()
 {
   _lock.lock();
 
+  _continue = false;
+
   // Stop and delete threads
   while (!_thread.empty())
   {
-    _thread.back()->terminate();
+    _thread.back()->wait();
     delete _thread.back();
     _thread.pop_back();
   }
@@ -271,7 +274,7 @@ void  RT::Raytracer::routine()
   if (_grid.size() == 0 || _method == nullptr)
     return;
 
-  while (true)
+  while (_continue)
   {
     unsigned int  r = (unsigned int)Math::Random::rand((double)_grid.size());
     unsigned int  z = (unsigned int)_grid.size();
@@ -305,8 +308,8 @@ void  RT::Raytracer::preview(unsigned int zone)
   y = zone / ((RT::Config::WindowWidth / 2) / RT::Config::ThreadSize + ((RT::Config::WindowWidth / 2) % RT::Config::ThreadSize ? 1 : 0)) * RT::Config::ThreadSize;
 
   // Render zone
-  for (unsigned int a = 0; a < RT::Config::ThreadSize; a++)
-    for (unsigned int b = 0; b < RT::Config::ThreadSize; b++)
+  for (unsigned int a = 0; a < RT::Config::ThreadSize && _continue; a++)
+    for (unsigned int b = 0; b < RT::Config::ThreadSize && _continue; b++)
       if (x + a < RT::Config::WindowWidth / 2 && y + b < RT::Config::WindowHeight / 2)
 	_image.setPixel(RT::Config::WindowWidth / 4 + x + a, RT::Config::WindowHeight / 4 + y + b, preview(x + a, y + b).sfml());
 }
@@ -356,8 +359,8 @@ void  RT::Raytracer::render(unsigned int zone)
   y = zone / (RT::Config::WindowWidth / RT::Config::ThreadSize + (RT::Config::WindowWidth % RT::Config::ThreadSize ? 1 : 0)) * RT::Config::ThreadSize;
 
   // Render zone
-  for (unsigned int a = 0; a < RT::Config::ThreadSize; a++)
-    for (unsigned int b = 0; b < RT::Config::ThreadSize; b++)
+  for (unsigned int a = 0; a < RT::Config::ThreadSize && _continue; a++)
+    for (unsigned int b = 0; b < RT::Config::ThreadSize && _continue; b++)
       if (x + a < RT::Config::WindowWidth && y + b < RT::Config::WindowHeight)
 	_image.setPixel(x + a, y + b, render(x + a, y + b).sfml());
 }
