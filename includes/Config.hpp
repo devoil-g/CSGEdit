@@ -12,13 +12,13 @@ namespace RT
     void		initialize(int, char **);
 
     extern std::string	ExecutablePath;
+    extern unsigned int	ThreadNumber;
 
     std::string	const	WindowTitle("WorldEdit");
     std::string	const	WindowIcon("C:/project/CSG-Raytracer/assets/icons/icon16.png");
     unsigned int const	WindowWidth(640);
     unsigned int const	WindowHeight(360);
     unsigned int const	ThreadSize(8);
-    unsigned int const	ThreadNumber(3);
     double const	ThreadSleep(0.5f);
 
     unsigned int const	AntiAliasing(2);
