@@ -66,3 +66,12 @@ Math::Ray	RT::TriangleLeaf::normal(Math::Ray const &) const
 
   return normal;
 }
+
+std::string	RT::TriangleLeaf::dump() const
+{
+  std::stringstream stream;
+
+  stream << "triangle(t = " << transformation().dump() << ", p0 = [" << std::get<0>(_p0) << ", " << std::get<1>(_p0) << ", " << std::get<2>(_p0) << "], p1 = [" << std::get<0>(_p1) << ", " << std::get<1>(_p1) << ", " << std::get<2>(_p1) << "], p2 = [" << std::get<0>(_p2) << ", " << std::get<1>(_p2) << ", " << std::get<2>(_p2) << "])";
+
+  return stream.str();
+}

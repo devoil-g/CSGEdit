@@ -1,3 +1,5 @@
+#include <sstream>
+
 #ifdef _DEBUG
 #include "Exception.hpp"
 #endif
@@ -136,4 +138,13 @@ bool  RT::Color::operator==(RT::Color const & clr) const
 bool  RT::Color::operator!=(RT::Color const & clr) const
 {
   return r != clr.r || g != clr.g || b != clr.b;
+}
+
+std::string RT::Color::dump() const
+{
+  std::stringstream   stream;
+
+  stream << "color(r = " << r << ", g = " << g << ", b = " << b << ")";
+
+  return stream.str();
 }

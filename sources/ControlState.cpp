@@ -1,5 +1,4 @@
 #include "ControlState.hpp"
-#include "PreviewState.hpp"
 #include "RenderState.hpp"
 #include "StateMachine.hpp"
 #include "Exception.hpp"
@@ -72,7 +71,8 @@ bool  RT::ControlState::update(sf::Time)
   // Update file time, preview if change detected
   if (updateTime())
   {
-    RT::StateMachine::Instance().push(new RT::PreviewState(_raytracer));
+    _raytracer->preview();
+    _raytracer->start();
     return false;
   }
 
@@ -114,7 +114,8 @@ bool  RT::ControlState::update(sf::Time)
   // Launch preview state
   if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::P))
   {
-    RT::StateMachine::Instance().push(new RT::PreviewState(_raytracer));
+    _raytracer->preview();
+    _raytracer->start();
     return false;
   }
 

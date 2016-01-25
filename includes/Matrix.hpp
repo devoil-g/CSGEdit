@@ -2,114 +2,142 @@
 #define _MATRIX_HPP_
 
 #include <cstring>
+#include <sstream>
+#include <string>
 
+#include "Exception.hpp"
 #include "Math.hpp"
 
 namespace Math
 {
   unsigned int const	MaxMatrixSize(4);
 
-  template<unsigned int cCol, unsigned int cRow>
+  template<unsigned int cRow, unsigned int cCol>
   class Matrix
   {
   private:
-    double				_matrix[cCol][cRow];					// Matrix value container
+    double				_matrix[cRow][cCol];					// Matrix value container
 
   public:
     Matrix()
       : _matrix{ 0 }
     {
       // Compilation time error if invalid matrix
-      static_assert(cCol > 0 && cCol <= Math::MaxMatrixSize && cRow > 0 && cRow <= Math::MaxMatrixSize, "Invalid matrix size.");
+      static_assert(cRow > 0 && cRow <= Math::MaxMatrixSize && cCol > 0 && cCol <= Math::MaxMatrixSize, "Invalid matrix size.");
     }
 
-    Matrix(Math::Matrix<cCol, cRow> const & cpy)
+    Matrix(Math::Matrix<cRow, cCol> const & cpy)
     {
       std::memcpy(this->_matrix, cpy._matrix, sizeof(this->_matrix));
     }
 
     ~Matrix() {};
 
-    Math::Matrix<cCol, cRow> &		operator=(Math::Matrix<cCol, cRow> const & cpy)		// Copy matrix
+    Math::Matrix<cRow, cCol> &		operator=(Math::Matrix<cRow, cCol> const & cpy)		// Copy matrix
     {
       std::memcpy(this->_matrix, cpy._matrix, sizeof(this->_matrix));
       return *this;
     }
     
-    inline double &			operator()(unsigned int col, unsigned int row)		// Get matrix value
+    inline double &			operator()(unsigned int row, unsigned int col)		// Get matrix value
     {
 #ifdef _DEBUG
-      if (col >= cCol || row >= cRow)
+      if (row >= cRow || col >= cCol)
 	throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
 #endif
-      return _matrix[col][row];
+      return _matrix[row][col];
     };
     
-    inline double			operator()(unsigned int col, unsigned int row) const	// Get matrix value
+    inline double			operator()(unsigned int row, unsigned int col) const	// Get matrix value
     {
 #ifdef _DEBUG
-      if (col >= cCol || row >= cRow)
+      if (row >= cRow || col >= cCol)
 	throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
 #endif
-      return _matrix[col][row];
+      return _matrix[row][col];
     };
     
-    template<unsigned int dCol, unsigned int dRow>
-    Math::Matrix<dCol, cRow>		operator*(Math::Matrix<dCol, dRow> const & m) const	// Matrix multiplication
+    template<unsigned int dRow, unsigned int dCol>
+    Math::Matrix<cRow, dCol>		operator*(Math::Matrix<dRow, dCol> const & m) const	// Matrix multiplication
     {
-      Math::Matrix<dCol, cRow>		matrix;
+      Math::Matrix<cRow, dCol>		matrix;
 
       // Compilation time error if invalid matrix
-      static_assert(cCol == dRow, "Invalid matrix multiplication.");
+      static_assert(dRow == cCol, "Invalid matrix multiplication.");
 
-      for (unsigned int col = 0; col < dCol; col++)
-	for (unsigned int row = 0; row < cRow; row++)
+      for (unsigned int row = 0; row < cRow; row++)
+	for (unsigned int col = 0; col < dCol; col++)
 	  for (unsigned int x = 0; x < cCol; x++)
-	    matrix(col, row) += (*this)(x, row) * m(col, x);
+	    matrix(row, col) += (*this)(row, x) * m(x, col);
 
       return matrix;
     }
 
-    Math::Matrix<cCol, cRow>		transpose() const					// Generate transpose matrix
+    Math::Matrix<cRow, cCol>		transpose() const					// Generate transpose matrix
     {
-      Math::Matrix<cCol, cRow>		matrix;
+      Math::Matrix<cRow, cCol>		matrix;
 
       // Compilation time error if invalid matrix
-      static_assert(cCol == cRow, "Invalid matrix transpose.");
+      static_assert(cRow == cCol, "Invalid matrix transpose.");
 
-      for (unsigned int col = 0; col < cCol; col++)
-	for (unsigned int row = 0; row < cRow; row++)
+      for (unsigned int row = 0; row < cRow; row++)
+	for (unsigned int col = 0; col < cCol; col++)
 	  matrix(row, col) = (*this)(col, row);
 
       return matrix;
     }
 
-    static Math::Matrix<cCol, cRow>	identite()						// Generate identity matrix
+    static Math::Matrix<cRow, cCol>	identite()						// Generate identity matrix
     {
-      Math::Matrix<cCol, cRow>  matrix;
+      Math::Matrix<cRow, cCol>  matrix;
 
       // Compilation time error if invalid matrix
-      static_assert(cCol == cRow, "Invalid matrix.");
+      static_assert(cRow == cCol, "Invalid matrix.");
 
-      for (unsigned int i = 0; i < cCol; i++)
+      for (unsigned int i = 0; i < cRow; i++)
 	matrix(i, i) = 1.f;
 
       return matrix;
     }
 
+    std::string				dump() const
+    {
+      std::stringstream			stream;
+
+      stream << "[";
+      for (unsigned int row = 0; row < cRow; row++)
+      {
+	if (row != 0)
+	  stream << ", ";
+	stream << "[";
+
+	for (unsigned int col = 0; col < cCol; col++)
+	{
+	  if (col != 0)
+	    stream << ", ";
+	  stream << _matrix[row][col];
+	}
+	
+	stream << "]";
+      }
+      stream << "]";
+
+      return stream.str();
+    }
+
     // Methods specialized in Matrix.cpp
-    Math::Matrix<cCol, cRow>		inverse() const;					// Generate inverse matrix
-    static Math::Matrix<cCol, cRow>	translation(double, double);				// Generate translation matrix
-    static Math::Matrix<cCol, cRow>	translation(double, double, double);			// Generate translation matrix
-    static Math::Matrix<cCol, cRow>	reflection(double, double);				// Generate mirror matrix
-    static Math::Matrix<cCol, cRow>	reflection(double, double, double);			// Generate mirror matrix
-    static Math::Matrix<cCol, cRow>	rotation(double);					// Generate rotation matrix
-    static Math::Matrix<cCol, cRow>	rotation(double, double, double);			// Generate rotation matrix
-    static Math::Matrix<cCol, cRow>	rotation(double, double, double, double);		// Generate rotation matrix
-    static Math::Matrix<cCol, cRow>	scale(double);						// Generate scaling matrix
-    static Math::Matrix<cCol, cRow>	scale(double, double);					// Generate scaling matrix
-    static Math::Matrix<cCol, cRow>	scale(double, double, double);				// Generate scaling matrix
-    static Math::Matrix<cCol, cRow>	shear(double, double, double, double, double, double);	// Generate shearing matrix
+    Math::Matrix<cRow, cCol>		inverse() const;					// Generate inverse matrix
+    static Math::Matrix<cRow, cCol>	translation(double, double);				// Generate translation matrix
+    static Math::Matrix<cRow, cCol>	translation(double, double, double);			// Generate translation matrix
+    static Math::Matrix<cRow, cCol>	reflection(double, double);				// Generate mirror matrix
+    static Math::Matrix<cRow, cCol>	reflection(double, double, double);			// Generate mirror matrix
+    static Math::Matrix<cRow, cCol>	rotation(double);					// Generate rotation matrix
+    static Math::Matrix<cRow, cCol>	rotation(double, double, double);			// Generate rotation matrix
+    static Math::Matrix<cRow, cCol>	rotation(double, double, double, double);		// Generate rotation matrix
+    static Math::Matrix<cRow, cCol>	scale(double);						// Generate scaling matrix
+    static Math::Matrix<cRow, cCol>	scale(double, double);					// Generate scaling matrix
+    static Math::Matrix<cRow, cCol>	scale(double, double, double);				// Generate scaling matrix
+    static Math::Matrix<cRow, cCol>	shear(double, double, double, double, double, double);	// Generate shearing matrix
   };
 };
 

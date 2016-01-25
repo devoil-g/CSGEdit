@@ -10,9 +10,11 @@
 #include "Exception.hpp"
 #include "Config.hpp"
 
-#include "CsgNode.hpp"
+#include "DifferenceNode.hpp"
+#include "IntersectionNode.hpp"
 #include "MaterialNode.hpp"
 #include "MeshNode.hpp"
+#include "UnionNode.hpp"
 
 #include "BoxLeaf.hpp"
 #include "ConeLeaf.hpp"
@@ -25,7 +27,7 @@
 #include "PointLight.hpp"
 
 RT::Raytracer::Raytracer()
-  : _image(), _lock(), _tree(nullptr), _camera(Math::Matrix<4, 4>::translation(-540, 52, 436) * Math::Matrix<4, 4>::rotation(0, 39.8, -7.2)), _grid(), _thread(), _continue(false)
+  : _image(), _lock(), _tree(nullptr), _camera(Math::Matrix<4, 4>::translation(-540, 52, 436) * Math::Matrix<4, 4>::rotation(0, 39.8, -7.2)), _grid(), _thread(), _continue(false), _method(nullptr), _progress(0)
 {
   // Set image to window size
   _image.create(RT::Config::WindowWidth, RT::Config::WindowHeight);
@@ -33,6 +35,7 @@ RT::Raytracer::Raytracer()
 
 RT::Raytracer::~Raytracer()
 {
+  stop();
   delete _tree;
 
   while (!_light.empty())
@@ -59,7 +62,7 @@ bool	RT::Raytracer::load(std::string const &)
   _grid.resize(0);
   _method = nullptr;
 
-  RT::AbstractNode *  node = new RT::CsgNode(RT::CsgNode::Union);
+  RT::AbstractNode *  node = new RT::UnionNode();
   RT::AbstractNode *  material_node;
   RT::AbstractNode *  material_node2;
   RT::Material	      material;
@@ -141,11 +144,25 @@ bool	RT::Raytracer::load(std::string const &)
   _light.push_back(new RT::DirectionalLight(Math::Matrix<4, 4>::rotation(0, 60, 30), RT::Color(1.f), 4.2f));
   //_light.push_back(new RT::PointLight(Math::Matrix<4, 4>::translation(0,0,+128), RT::Color(1.f), 21.42f, 0.f));
 
+  // Dump tree
+  if (_tree)
+    std::cout << "[Raytracer] Dumping CSG tree:" << std::endl << (_tree != nullptr ? _tree->dump() : "empty") << std::endl;
+
   _lock.unlock();
   return true;
 }
 
 void  RT::Raytracer::preview()
+{
+  prepare(&RT::Raytracer::preview);
+}
+
+void  RT::Raytracer::render()
+{
+  prepare(&RT::Raytracer::render);
+}
+
+void  RT::Raytracer::prepare(RT::Raytracer::Method method)
 {
   _lock.lock();
 
@@ -158,38 +175,13 @@ void  RT::Raytracer::preview()
       _image.setPixel(x, y, RT::Color(0.084f, 0.084f, 0.084f).sfml());
 
   // Reset zone grid
-  _grid.resize(((RT::Config::WindowWidth / 2) / RT::Config::ThreadSize + ((RT::Config::WindowWidth / 2) % RT::Config::ThreadSize ? 1 : 0)) * ((RT::Config::WindowHeight / 2) / RT::Config::ThreadSize + ((RT::Config::WindowHeight / 2) % RT::Config::ThreadSize ? 1 : 0)));
+  _grid.resize((RT::Config::WindowWidth / RT::Config::BlockSize + (RT::Config::WindowWidth % RT::Config::BlockSize ? 1 : 0)) * (RT::Config::WindowHeight / RT::Config::BlockSize + (RT::Config::WindowHeight % RT::Config::BlockSize ? 1 : 0)));
   for (unsigned int i = 0; i < _grid.size(); i++)
-    _grid[i] = Wait;
-
-  // Set method pointer to preview
-  _method = &RT::Raytracer::preview;
-
-  _lock.unlock();
-}
-
-void  RT::Raytracer::render()
-{
-  _lock.lock();
-
-  // Stop working threads
-  stop();
-
-  // Reset image pixels
-  for (unsigned int y = 0; y < RT::Config::WindowHeight; y++)
-    for (unsigned int x = 0; x < RT::Config::WindowWidth; x++)
-      if (x % RT::Config::ThreadSize == 0 || y % RT::Config::ThreadSize == 0)
-	_image.setPixel(x, y, RT::Color(0.1f, 0.1f, 0.1f).sfml());
-      else
-	_image.setPixel(x, y, RT::Color(0.084f, 0.084f, 0.084f).sfml());
-
-  // Reset zone grid
-  _grid.resize((RT::Config::WindowWidth / RT::Config::ThreadSize + (RT::Config::WindowWidth % RT::Config::ThreadSize ? 1 : 0)) * (RT::Config::WindowHeight / RT::Config::ThreadSize + (RT::Config::WindowHeight % RT::Config::ThreadSize ? 1 : 0)));
-  for (unsigned int i = 0; i < _grid.size(); i++)
-    _grid[i] = Wait;
+    _grid[i] = RT::Config::BlockSize;
 
   // Set method pointer to render
-  _method = &RT::Raytracer::render;
+  _method = method;
+  _progress = 0;
 
   _lock.unlock();
 }
@@ -226,36 +218,18 @@ void  RT::Raytracer::stop()
     _thread.pop_back();
   }
 
-  // Set all zone not fully rendered to "Wait" status
-  for (unsigned int i = 0; i < _grid.size(); i++)
-    if (_grid[i] == Progress)
-      _grid[i] = Wait;
-
   _lock.unlock();
 }
 
 double	RT::Raytracer::progress()
 {
-  _lock.lock();
+  // Return approximation if render not completed
+  for (unsigned int a = 0; a < _grid.size(); a++)
+    if (_grid[a] != 0)
+      return (double)_progress / (double)(RT::Config::WindowWidth * RT::Config::WindowHeight);
 
-  // Stop if no rendering commissionned
-  if (_grid.empty())
-  {
-    _lock.unlock();
-    return 0;
-  }
-
-  // Count grid zone completed
-  unsigned int	count = 0;
-  for (unsigned int i = 0; i < _grid.size(); i++)
-    if (_grid[i] == Done)
-      count++;
-
-  // Calcul result
-  double result = (double)count / (double)_grid.size();
-
-  _lock.unlock();
-  return result;
+  // Return 1.f if completed
+  return 1.f;
 }
 
 Math::Matrix<4, 4> const &  RT::Raytracer::camera() const
@@ -278,40 +252,48 @@ void  RT::Raytracer::routine()
   {
     unsigned int  r = (unsigned int)Math::Random::rand((double)_grid.size());
     unsigned int  z = (unsigned int)_grid.size();
-
+    
     // Find a zone to render
-    for (unsigned int a = 0; a < _grid.size() && z == _grid.size(); a++)
-      if (_grid[(r + a) % _grid.size()] == Wait)
-	z = (r + a) % _grid.size();
-    for (unsigned int a = 0; a < _grid.size() && z == _grid.size(); a++)
-      if (_grid[(r + a) % _grid.size()] == Progress)
-	z = (r + a) % _grid.size();
-
+    for (unsigned int a = RT::Config::BlockSize; a > 0 && z == _grid.size(); a /= 2)
+      for (unsigned int b = 0; b < _grid.size() && z == _grid.size(); b++)
+	if (_grid[(r + b) % _grid.size()] == a)
+	  z = (r + b) % _grid.size();
+    
     // Return if no zone to render
     if (z == _grid.size())
       return;
     else
-    {
-      _grid[z] = Progress;
-      (this->*_method)(z);
-      _grid[z] = Done;
-    }
+      routine(z);
   }
 }
 
-void  RT::Raytracer::preview(unsigned int zone)
+void  RT::Raytracer::routine(unsigned int zone)
 {
+  unsigned int	size = _grid[zone];
   unsigned int	x, y;
+  
+  _grid[zone] = RT::Config::BlockSize + 1;
 
   // Calcul zone coordinates (x, y)
-  x = zone % ((RT::Config::WindowWidth / 2) / RT::Config::ThreadSize + ((RT::Config::WindowWidth / 2) % RT::Config::ThreadSize ? 1 : 0)) * RT::Config::ThreadSize;
-  y = zone / ((RT::Config::WindowWidth / 2) / RT::Config::ThreadSize + ((RT::Config::WindowWidth / 2) % RT::Config::ThreadSize ? 1 : 0)) * RT::Config::ThreadSize;
+  x = zone % (RT::Config::WindowWidth / RT::Config::BlockSize + (RT::Config::WindowWidth % RT::Config::BlockSize ? 1 : 0)) * RT::Config::BlockSize;
+  y = zone / (RT::Config::WindowWidth / RT::Config::BlockSize + (RT::Config::WindowWidth % RT::Config::BlockSize ? 1 : 0)) * RT::Config::BlockSize;
 
   // Render zone
-  for (unsigned int a = 0; a < RT::Config::ThreadSize && _continue; a++)
-    for (unsigned int b = 0; b < RT::Config::ThreadSize && _continue; b++)
-      if (x + a < RT::Config::WindowWidth / 2 && y + b < RT::Config::WindowHeight / 2)
-	_image.setPixel(RT::Config::WindowWidth / 4 + x + a, RT::Config::WindowHeight / 4 + y + b, preview(x + a, y + b).sfml());
+  for (unsigned int a = 0; a < RT::Config::BlockSize; a += size)
+    for (unsigned int b = 0; b < RT::Config::BlockSize; b += size)
+      if ((size == RT::Config::BlockSize || a % (size * 2) != 0 || b % (size * 2) != 0) && x + a < RT::Config::WindowWidth && y + b < RT::Config::WindowHeight)
+      {
+	RT::Color clr = (this->*_method)(x + a, y + b);
+
+	for (unsigned int c = 0; c < size; c++)
+	  for (unsigned int d = 0; d < size; d++)
+	    if (x + a + c < RT::Config::WindowWidth && y + b + d < RT::Config::WindowHeight)
+	      _image.setPixel(x + a + c, y + b + d, clr.sfml());
+
+	_progress++;
+      }
+
+  _grid[zone] = size / 2;
 }
 
 RT::Color	RT::Raytracer::preview(unsigned int x, unsigned int y) const
@@ -324,8 +306,8 @@ RT::Color	RT::Raytracer::preview(unsigned int x, unsigned int y) const
   ray.py() = 0;
   ray.pz() = 0;
   ray.dx() = (double)RT::Config::WindowWidth;
-  ray.dy() = (double)RT::Config::WindowWidth / 2 - x * 2 + 0.5f;
-  ray.dz() = (double)RT::Config::WindowHeight / 2 - y * 2 + 0.5f;
+  ray.dy() = (double)RT::Config::WindowWidth / 2 - x + 0.5f;
+  ray.dz() = (double)RT::Config::WindowHeight / 2 - y + 0.5f;
   ray = (_camera * ray).normalize();
 
   // Render intersections using ray
@@ -348,21 +330,6 @@ RT::Color	RT::Raytracer::preview(unsigned int x, unsigned int y) const
   }
   else
     return RT::Color(0.f);
-}
-
-void  RT::Raytracer::render(unsigned int zone)
-{
-  unsigned int	x, y;
-
-  // Calcul zone coordinates (x, y)
-  x = zone % (RT::Config::WindowWidth / RT::Config::ThreadSize + (RT::Config::WindowWidth % RT::Config::ThreadSize ? 1 : 0)) * RT::Config::ThreadSize;
-  y = zone / (RT::Config::WindowWidth / RT::Config::ThreadSize + (RT::Config::WindowWidth % RT::Config::ThreadSize ? 1 : 0)) * RT::Config::ThreadSize;
-
-  // Render zone
-  for (unsigned int a = 0; a < RT::Config::ThreadSize && _continue; a++)
-    for (unsigned int b = 0; b < RT::Config::ThreadSize && _continue; b++)
-      if (x + a < RT::Config::WindowWidth && y + b < RT::Config::WindowHeight)
-	_image.setPixel(x + a, y + b, render(x + a, y + b).sfml());
 }
 
 RT::Color RT::Raytracer::render(unsigned int x, unsigned int y) const

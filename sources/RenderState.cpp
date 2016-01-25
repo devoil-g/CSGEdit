@@ -7,7 +7,7 @@
 #include "Config.hpp"
 
 RT::RenderState::RenderState(RT::Raytracer * raytracer)
-  : _raytracer(raytracer), _wait(RT::Config::ThreadSleep)
+  : _raytracer(raytracer), _wait(RT::Config::WindowSleep)
 {
   // Initialize and start final rendering
   _raytracer->render();
@@ -57,7 +57,7 @@ bool  RT::RenderState::update(sf::Time elapsed)
 
   // Process wait timer
   if (_wait <= 0)
-    _wait = RT::Config::ThreadSleep;
+    _wait = RT::Config::WindowSleep;
   _wait -= elapsed.asSeconds();
 
   // If timer over, update display

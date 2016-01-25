@@ -16,12 +16,14 @@ namespace RT
   private:
     AbstractTree const *  _bound;
 
+    std::list<RT::Intersection>	renderTree(Math::Ray const &) const override;
+
   public:
     BoundingNode(AbstractTree const *);
     BoundingNode(Math::Matrix<4, 4> const &, AbstractTree const *);
     ~BoundingNode();
 
-    std::list<RT::Intersection>	renderTree(Math::Ray const &) const override;
+    std::string		dump() const override;
   };
 };
 

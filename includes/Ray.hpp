@@ -8,7 +8,7 @@ namespace Math
   class Ray
   {
   private:
-    Math::Matrix<1, 4>		_p, _d;		// Coordonnées de l'origine et de vecteur direction
+    Math::Matrix<4, 1>		_p, _d;		// Coordonnées de l'origine et de vecteur direction
 
   public:
     Ray();
@@ -21,24 +21,24 @@ namespace Math
 
     Math::Ray			normalize() const;				  // Return a normalized ray
 
-    inline Math::Matrix<1, 4> &	p() { return _p; };			// Return point of origin matrix
-    inline Math::Matrix<1, 4> &	d() { return _d; };			// Return direction vector matrix
-    inline Math::Matrix<1, 4>	p() const { return _p; };		// Return point of origin matrix
-    inline Math::Matrix<1, 4>	d() const { return _d; };		// Return direction vector matrix
+    inline Math::Matrix<4, 1> &	p() { return _p; };			// Return point of origin matrix
+    inline Math::Matrix<4, 1> &	d() { return _d; };			// Return direction vector matrix
+    inline Math::Matrix<4, 1>	p() const { return _p; };		// Return point of origin matrix
+    inline Math::Matrix<4, 1>	d() const { return _d; };		// Return direction vector matrix
 
     inline double &		px() { return _p(0, 0); };		// Return X component of point of origin
-    inline double &		py() { return _p(0, 1); };		// Return Y component of point of origin
-    inline double &		pz() { return _p(0, 2); };		// Return Z component of point of origin
+    inline double &		py() { return _p(1, 0); };		// Return Y component of point of origin
+    inline double &		pz() { return _p(2, 0); };		// Return Z component of point of origin
     inline double		px() const { return _p(0, 0); };	// Return X component of point of origin
-    inline double		py() const { return _p(0, 1); };	// Return Y component of point of origin
-    inline double		pz() const { return _p(0, 2); };	// Return Z component of point of origin
+    inline double		py() const { return _p(1, 0); };	// Return Y component of point of origin
+    inline double		pz() const { return _p(2, 0); };	// Return Z component of point of origin
 
     inline double &		dx() { return _d(0, 0); };		// Return X component of direction vector
-    inline double &		dy() { return _d(0, 1); };		// Return Y component of direction vector
-    inline double &		dz() { return _d(0, 2); };		// Return Z component of direction vector
+    inline double &		dy() { return _d(1, 0); };		// Return Y component of direction vector
+    inline double &		dz() { return _d(2, 0); };		// Return Z component of direction vector
     inline double		dx() const { return _d(0, 0); };	// Return X component of direction vector
-    inline double		dy() const { return _d(0, 1); };	// Return Y component of direction vector
-    inline double		dz() const { return _d(0, 2); };	// Return Z component of direction vector
+    inline double		dy() const { return _d(1, 0); };	// Return Y component of direction vector
+    inline double		dz() const { return _d(2, 0); };	// Return Z component of direction vector
   };
 };
 

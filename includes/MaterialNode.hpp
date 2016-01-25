@@ -22,6 +22,8 @@ namespace RT
     MaterialNode(RT::Material const &);
     MaterialNode(Math::Matrix<4, 4> const &, RT::Material const &);
     ~MaterialNode();
+
+    std::string		dump() const override;
   };
 };
 

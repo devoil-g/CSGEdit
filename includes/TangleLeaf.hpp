@@ -21,6 +21,8 @@ namespace RT
     TangleLeaf(double);
     TangleLeaf(Math::Matrix<4, 4> const &, double);
     ~TangleLeaf();
+
+    std::string		dump() const override;
   };
 };
 

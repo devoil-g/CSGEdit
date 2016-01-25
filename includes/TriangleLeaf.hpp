@@ -22,6 +22,8 @@ namespace RT
     TriangleLeaf(std::tuple<double, double, double> const &, std::tuple<double, double, double> const &, std::tuple<double, double, double> const &);
     TriangleLeaf(Math::Matrix<4, 4> const &, std::tuple<double, double, double> const &, std::tuple<double, double, double> const &, std::tuple<double, double, double> const &);
     ~TriangleLeaf();
+
+    std::string		dump() const override;
   };
 };
 

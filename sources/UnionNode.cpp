@@ -1,27 +1,20 @@
 #include <map>
 
-#include "BoundingNode.hpp"
+#include "UnionNode.hpp"
 
-RT::BoundingNode::BoundingNode(RT::AbstractTree const * bound)
-  : _bound(bound)
+RT::UnionNode::UnionNode()
 {}
 
-RT::BoundingNode::BoundingNode(Math::Matrix<4, 4> const & transformation, RT::AbstractTree const * bound)
-  : AbstractNode(transformation), _bound(bound)
+RT::UnionNode::UnionNode(Math::Matrix<4, 4> const & transformation)
+  : AbstractNode(transformation)
 {}
 
-RT::BoundingNode::~BoundingNode()
+RT::UnionNode::~UnionNode()
 {}
 
-std::list<RT::Intersection>	RT::BoundingNode::renderTree(Math::Ray const & ray) const
+std::list<RT::Intersection>	RT::UnionNode::renderTree(Math::Ray const & ray) const
 {
-  std::map<RT::AbstractTree const *, bool>  inside;
-  std::list<RT::Intersection>		    intersect, result;
-  unsigned int				    state = 0;
-
-  // Stop if no intersection with bounding tree
-  if (_bound->render(ray).empty())
-    return std::list<RT::Intersection>();
+  std::list<std::list<RT::Intersection> > intersect_list;
 
   // Iterate through sub-tree to get intersections
   for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
@@ -32,8 +25,16 @@ std::list<RT::Intersection>	RT::BoundingNode::renderTree(Math::Ray const & ray) 
     for (std::list<RT::Intersection>::iterator it_node = node.begin(); it_node != node.end(); it_node++)
       it_node->node = *it;
 
-    intersect.merge(node);
+    intersect_list.push_back(node);
   }
+
+  std::map<RT::AbstractTree const *, bool>  inside;
+  std::list<RT::Intersection>		    intersect, result;
+  unsigned int				    state = 0;
+
+  // Merge all intersections
+  for (std::list<std::list<RT::Intersection> >::iterator iter = intersect_list.begin(); iter != intersect_list.end(); iter++)
+    intersect.merge(*iter);
 
   // Set all positions to 'outside' (false)
   for (std::list<RT::Intersection>::iterator iter = intersect.begin(); iter != intersect.end(); iter++)
@@ -61,11 +62,22 @@ std::list<RT::Intersection>	RT::BoundingNode::renderTree(Math::Ray const & ray) 
   return result;
 }
 
-std::string	RT::BoundingNode::dump() const
+RT::AbstractTree const *  RT::createUnion(RT::AbstractTree const * A, RT::AbstractTree const * B)
+{
+  RT::UnionNode *	tree = new RT::UnionNode();
+
+  // Push CSG trees in newly created CSG union
+  tree->push(A);
+  tree->push(B);
+
+  return tree;
+}
+
+std::string	RT::UnionNode::dump() const
 {
   std::stringstream stream;
 
-  stream << "bounding(t = " << transformation().dump() << ", bound = " << _bound->dump() << "){";
+  stream << "union(t = " << transformation().dump() << "){";
 
   for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
   {

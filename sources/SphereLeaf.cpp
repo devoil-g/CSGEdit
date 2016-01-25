@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "SphereLeaf.hpp"
 
 RT::SphereLeaf::SphereLeaf(double r)
@@ -33,4 +35,13 @@ Math::Ray	RT::SphereLeaf::normal(Math::Ray const & ray) const
   normal.dz() = 2 * ray.pz();
 
   return normal;
+}
+
+std::string	RT::SphereLeaf::dump() const
+{
+  std::stringstream stream;
+
+  stream << "sphere(t = " << transformation().dump() << ", r = " << _r << ")";
+
+  return stream.str();
 }

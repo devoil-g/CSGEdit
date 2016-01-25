@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "TorusLeaf.hpp"
 
 RT::TorusLeaf::TorusLeaf(double r, double h)
@@ -87,4 +89,13 @@ Math::Ray	RT::TorusLeaf::normal(Math::Ray const & ray) const
   }
 
   return normal;
+}
+
+std::string	RT::TorusLeaf::dump() const
+{
+  std::stringstream stream;
+
+  stream << "torus(t = " << transformation().dump() << ", r = " << _r << ", h = " << _h << ")";
+
+  return stream.str();
 }

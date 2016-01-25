@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "ConeLeaf.hpp"
 
 RT::ConeLeaf::ConeLeaf(double r, double h, bool center)
@@ -109,4 +111,13 @@ Math::Ray	RT::ConeLeaf::normal(Math::Ray const & ray) const
   }
 
   return normal;
+}
+
+std::string	RT::ConeLeaf::dump() const
+{
+  std::stringstream stream;
+
+  stream << "cone(t = " << transformation().dump() << ", r1 = " << _r1 << ", r2 = " << _r2 << ", h = " << _h << ", center = " << (_center ? "true" : "false") << ")";
+
+  return stream.str();
 }

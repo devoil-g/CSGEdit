@@ -21,6 +21,8 @@ namespace RT
     SphereLeaf(double);
     SphereLeaf(Math::Matrix<4, 4> const &, double);
     ~SphereLeaf();
+
+    std::string		dump() const override;
   };
 };
 

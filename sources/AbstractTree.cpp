@@ -1,5 +1,4 @@
 #include "AbstractTree.hpp"
-#include "CsgNode.hpp"
 
 RT::AbstractTree::AbstractTree()
   : _transformation(Math::Matrix<4, 4>::identite())
@@ -31,4 +30,9 @@ std::list<RT::Intersection>	RT::AbstractTree::render(Math::Ray const & ray) cons
   }
 
   return result;
+}
+
+Math::Matrix<4, 4> const &	RT::AbstractTree::transformation() const
+{
+  return _transformation;
 }

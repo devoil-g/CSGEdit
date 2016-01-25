@@ -23,6 +23,8 @@ namespace RT
     MeshNode(std::string const &);
     MeshNode(Math::Matrix<4, 4> const &, std::string const &);
     ~MeshNode();
+
+    std::string		dump() const override;
   };
 };
 

@@ -87,3 +87,21 @@ void	RT::MeshNode::loadStl(std::string const & path)
   // Get bounding sphere from points
   _bound = Math::Utils::BoundingSphere(pts);
 }
+
+std::string	RT::MeshNode::dump() const
+{
+  std::stringstream stream;
+
+  stream << "mesh(t = " << transformation().dump() << "){";
+
+  for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
+  {
+    if (it != _children.begin())
+      stream << ", ";
+    stream << (*it)->dump();
+  }
+
+  stream << "}";
+
+  return stream.str();
+}

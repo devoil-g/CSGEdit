@@ -2,8 +2,8 @@
 
 Math::Ray::Ray()
 {
-  _p(0, 3) = 1.f;
-  _d(0, 3) = 1.f;
+  _p(3, 0) = 1.f;
+  _d(3, 0) = 1.f;
 }
 
 Math::Ray::~Ray()
@@ -74,9 +74,7 @@ Math::Ray	Math::Ray::normalize() const
   double	l;
 
   // Get lenght of ray
-  l = sqrt(+this->dx() * this->dx()
-    + this->dy() * this->dy()
-    + this->dz() * this->dz());
+  l = sqrt(+this->dx() * this->dx() + this->dy() * this->dy() + this->dz() * this->dz());
 
 #ifdef _DEBUG
   // Should not happen
@@ -103,9 +101,9 @@ Math::Ray	operator*(Math::Matrix<4, 4> const & mat, Math::Ray const & ray)
   r.p() = matrix * ray.p();
 
   // Ignore translation for direction vector
-  matrix(3, 0) = 0;
-  matrix(3, 1) = 0;
-  matrix(3, 2) = 0;
+  matrix(0, 3) = 0;
+  matrix(1, 3) = 0;
+  matrix(2, 3) = 0;
   r.d() = matrix * ray.d();
 
   return r;

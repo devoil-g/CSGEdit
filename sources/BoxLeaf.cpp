@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "BoxLeaf.hpp"
 
 RT::BoxLeaf::BoxLeaf(double x, double y, double z, bool center)
@@ -102,8 +104,6 @@ std::vector<double>	RT::BoxLeaf::intersection(Math::Ray const & ray) const
   return result;
 }
 
-#include <iostream>
-
 Math::Ray	RT::BoxLeaf::normal(Math::Ray const & ray) const
 {
   Math::Ray	normal;
@@ -138,3 +138,11 @@ Math::Ray	RT::BoxLeaf::normal(Math::Ray const & ray) const
   return normal;
 }
 
+std::string	RT::BoxLeaf::dump() const
+{
+  std::stringstream stream;
+
+  stream << "box(t = " << transformation().dump() << ", x = " << _x << ", y = " << _y << ", z = " << _z << ", center = " << (_center ? "true" : "false") << ")";
+
+  return stream.str();
+}

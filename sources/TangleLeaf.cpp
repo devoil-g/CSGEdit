@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "TangleLeaf.hpp"
 
 RT::TangleLeaf::TangleLeaf(double c)
@@ -35,4 +37,13 @@ Math::Ray	RT::TangleLeaf::normal(Math::Ray const & ray) const
   normal.dz() = 4.f * pow(ray.pz(), 3.f) - 10.f * ray.pz();
 
   return normal;
+}
+
+std::string	RT::TangleLeaf::dump() const
+{
+  std::stringstream stream;
+
+  stream << "tangle(t = " << transformation().dump() << ", c = " << _c << ")";
+
+  return stream.str();
 }

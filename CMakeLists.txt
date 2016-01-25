@@ -19,10 +19,12 @@ SET(SAMPLE_SRCS
 	./sources/TriangleLeaf.cpp
 
 	./sources/BoundingNode.cpp
-	./sources/CsgNode.cpp
+	./sources/DifferenceNode.cpp
+	./sources/IntersectionNode.cpp
 	./sources/MaterialNode.cpp
 	./sources/MeshNode.cpp
-
+	./sources/UnionNode.cpp
+	
 	./sources/AbstractLight.cpp
 	./sources/DirectionalLight.cpp
 	./sources/OcclusionLight.cpp
@@ -43,7 +45,6 @@ SET(SAMPLE_SRCS
 	./sources/StateMachine.cpp
 	./sources/AbstractState.cpp
 	./sources/ControlState.cpp
-	./sources/PreviewState.cpp
 	./sources/RenderState.cpp
 	./sources/RenderPauseState.cpp
 
@@ -63,9 +64,11 @@ SET(SAMPLE_HDRS
 	./includes/TriangleLeaf.hpp
 
 	./includes/BoundingNode.hpp
-	./includes/CsgNode.hpp
+	./includes/DifferenceNode.hpp
+	./includes/IntersectionNode.hpp
 	./includes/MaterialNode.hpp
 	./includes/MeshNode.hpp
+	./includes/UnionNode.hpp
 	
 	./includes/AbstractLight.hpp
 	./includes/DirectionalLight.hpp
@@ -87,7 +90,6 @@ SET(SAMPLE_HDRS
 	./includes/StateMachine.hpp
 	./includes/AbstractState.hpp
 	./includes/ControlState.hpp
-	./includes/PreviewState.hpp
 	./includes/RenderState.hpp
 	./includes/RenderPauseState.hpp
 )

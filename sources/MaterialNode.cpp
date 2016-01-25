@@ -59,3 +59,21 @@ std::list<RT::Intersection> RT::MaterialNode::renderTree(Math::Ray const & ray) 
 
   return result;
 }
+
+std::string	RT::MaterialNode::dump() const
+{
+  std::stringstream stream;
+
+  stream << "material(t = " << transformation().dump() << ", color = " << _material.color.dump() << ", ambient = " << _material.ambient.dump() << ", diffuse = " << _material.diffuse.dump() << ", specular = " << _material.specular.dump() << ", shine = " << _material.shine << ", reflection = " << _material.reflection << ", refraction = " << _material.refraction << ", transparency = " << _material.transparency << "){";
+
+  for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
+  {
+    if (it != _children.begin())
+      stream << ", ";
+    stream << (*it)->dump();
+  }
+
+  stream << "}";
+
+  return stream.str();
+}

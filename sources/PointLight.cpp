@@ -107,18 +107,18 @@ RT::Color RT::PointLight::render(RT::AbstractTree const * tree, Math::Ray const 
       for (double b = Math::Random::rand(Math::Pi / (int)(a / _radius * _quality + 1)); b < Math::Pi; b += Math::Pi / (int)(a / _radius * _quality + 1))
 	for (double c = Math::Random::rand(2.f * Math::Pi / (sin(b) * a / _radius * _quality + 1)); c < 2.f * Math::Pi; c += 2.f * Math::Pi / (sin(b) * a / _radius * _quality + 1))
 	{
-	  Math::Matrix<1, 4>	sphere;
+	  Math::Matrix<4, 1>	sphere;
 
 	  sphere(0, 0) = cos(b) * a;
-	  sphere(0, 1) = cos(c) * sin(b) * a;
-	  sphere(0, 2) = sin(c) * sin(b) * a;
-	  sphere(0, 3) = 1.f;
+	  sphere(1, 0) = cos(c) * sin(b) * a;
+	  sphere(2, 0) = sin(c) * sin(b) * a;
+	  sphere(3, 0) = 1.f;
 
 	  sphere = matrix * sphere;
 
 	  r.dx() = _position.px() + sphere(0, 0) - r.px();
-	  r.dy() = _position.py() + sphere(0, 1) - r.py();
-	  r.dz() = _position.pz() + sphere(0, 2) - r.pz();
+	  r.dy() = _position.py() + sphere(1, 0) - r.py();
+	  r.dz() = _position.pz() + sphere(2, 0) - r.pz();
 	  rays.push_back(r);
 	}
   }
