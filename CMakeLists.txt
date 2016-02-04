@@ -23,6 +23,7 @@ SET(SAMPLE_SRCS
 	./sources/IntersectionNode.cpp
 	./sources/MaterialNode.cpp
 	./sources/MeshNode.cpp
+	./sources/TransformationNode.cpp
 	./sources/UnionNode.cpp
 	
 	./sources/AbstractLight.cpp
@@ -33,6 +34,7 @@ SET(SAMPLE_SRCS
 	./sources/Color.cpp
 	./sources/Intersection.cpp
 	./sources/Material.cpp
+	./sources/Parser.cpp
 	./sources/Raytracer.cpp
 
 	./sources/Config.cpp
@@ -68,6 +70,7 @@ SET(SAMPLE_HDRS
 	./includes/IntersectionNode.hpp
 	./includes/MaterialNode.hpp
 	./includes/MeshNode.hpp
+	./includes/TransformationNode.hpp
 	./includes/UnionNode.hpp
 	
 	./includes/AbstractLight.hpp
@@ -78,6 +81,7 @@ SET(SAMPLE_HDRS
 	./includes/Color.hpp
 	./includes/Intersection.hpp
 	./includes/Material.hpp
+	./includes/Parser.hpp
 	./includes/Raytracer.hpp
 
 	./includes/Config.hpp
@@ -97,12 +101,14 @@ SET(SAMPLE_HDRS
 SET(SFML_STATIC_LIBRARIES TRUE)
 FIND_PACKAGE(SFML 2 COMPONENTS graphics window system REQUIRED)
 
-INCLUDE_DIRECTORIES(${SFML_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/includes/)
+FIND_PATH(CHAISCRIPT_INCLUDE_DIR chaiscript/chaiscript.hpp)
+
+INCLUDE_DIRECTORIES(${SFML_INCLUDE_DIR} ${CHAISCRIPT_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/includes/)
 ADD_EXECUTABLE(WorldEdit ${SAMPLE_SRCS} ${SAMPLE_HDRS})
 TARGET_LINK_LIBRARIES(WorldEdit ${SFML_LIBRARIES} ${SFML_DEPENDENCIES})
 
 IF (UNIX)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Ofast -Wall -Wextra")
 ELSE (UNIX)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc /bigobj")
 ENDIF(UNIX)

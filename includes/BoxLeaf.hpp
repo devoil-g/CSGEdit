@@ -21,8 +21,6 @@ namespace RT
   public:
     BoxLeaf(double, double, double, bool);
     BoxLeaf(double, bool);
-    BoxLeaf(Math::Matrix<4, 4> const &, double, double, double, bool);
-    BoxLeaf(Math::Matrix<4, 4> const &, double, bool);
     ~BoxLeaf();
 
     std::string		dump() const override;

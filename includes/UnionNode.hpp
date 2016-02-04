@@ -12,17 +12,16 @@ namespace RT
   class UnionNode : public RT::AbstractNode
   {
   private:
-    std::list<RT::Intersection>	renderTree(Math::Ray const &) const override;  // Render sub-tree
+    std::list<RT::Intersection>	renderChildren(Math::Ray const &) const override;  // Render sub-tree
 
   public:
     UnionNode();
-    UnionNode(Math::Matrix<4, 4> const &);
     ~UnionNode();
 
-    std::string		dump() const override;
+    std::string			dump() const override;
   };
 
-  RT::AbstractTree const *  createUnion(RT::AbstractTree const *, RT::AbstractTree const *);
+  RT::AbstractTree *		createUnion(RT::AbstractTree const *, RT::AbstractTree const *);
 };
 
 #endif

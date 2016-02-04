@@ -6,10 +6,6 @@ RT::SphereLeaf::SphereLeaf(double r)
   : _r(r)
 {}
 
-RT::SphereLeaf::SphereLeaf(Math::Matrix<4, 4> const & transformation, double r)
-  : AbstractLeaf(transformation), _r(r)
-{}
-
 RT::SphereLeaf::~SphereLeaf()
 {}
 
@@ -41,7 +37,7 @@ std::string	RT::SphereLeaf::dump() const
 {
   std::stringstream stream;
 
-  stream << "sphere(t = " << transformation().dump() << ", r = " << _r << ")";
+  stream << "sphere(r = " << _r << ")";
 
   return stream.str();
 }

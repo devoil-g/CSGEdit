@@ -10,14 +10,6 @@ RT::ConeLeaf::ConeLeaf(double r1, double r2, double h, bool center)
   : _r1(r1), _r2(r2), _h(h), _center(center)
 {}
 
-RT::ConeLeaf::ConeLeaf(Math::Matrix<4, 4> const & transformation, double r, double h, bool center)
-  : AbstractLeaf(transformation), _r1(r), _r2(r), _h(h), _center(center)
-{}
-
-RT::ConeLeaf::ConeLeaf(Math::Matrix<4, 4> const & transformation, double r1, double r2, double h, bool center)
-  : AbstractLeaf(transformation), _r1(r1), _r2(r2), _h(h), _center(center)
-{}
-
 RT::ConeLeaf::~ConeLeaf()
 {}
 
@@ -117,7 +109,7 @@ std::string	RT::ConeLeaf::dump() const
 {
   std::stringstream stream;
 
-  stream << "cone(t = " << transformation().dump() << ", r1 = " << _r1 << ", r2 = " << _r2 << ", h = " << _h << ", center = " << (_center ? "true" : "false") << ")";
+  stream << "cone(r1 = " << _r1 << ", r2 = " << _r2 << ", h = " << _h << ", center = " << (_center ? "true" : "false") << ")";
 
   return stream.str();
 }

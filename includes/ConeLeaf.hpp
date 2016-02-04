@@ -21,8 +21,6 @@ namespace RT
   public:
     ConeLeaf(double, double, bool);
     ConeLeaf(double, double, double, bool);
-    ConeLeaf(Math::Matrix<4, 4> const &, double, double, bool);
-    ConeLeaf(Math::Matrix<4, 4> const &, double, double, double, bool);
     ~ConeLeaf();
 
     std::string		dump() const override;

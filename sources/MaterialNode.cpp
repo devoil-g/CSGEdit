@@ -4,14 +4,10 @@ RT::MaterialNode::MaterialNode(RT::Material const & material)
   : _material(material)
 {}
 
-RT::MaterialNode::MaterialNode(Math::Matrix<4, 4> const & transformation, RT::Material const & material)
-  : AbstractNode(transformation), _material(material)
-{}
-
 RT::MaterialNode::~MaterialNode()
 {}
 
-std::list<RT::Intersection> RT::MaterialNode::renderTree(Math::Ray const & ray) const
+std::list<RT::Intersection> RT::MaterialNode::renderChildren(Math::Ray const & ray) const
 {
   std::list<RT::Intersection> intersect;
 
@@ -64,7 +60,7 @@ std::string	RT::MaterialNode::dump() const
 {
   std::stringstream stream;
 
-  stream << "material(t = " << transformation().dump() << ", color = " << _material.color.dump() << ", ambient = " << _material.ambient.dump() << ", diffuse = " << _material.diffuse.dump() << ", specular = " << _material.specular.dump() << ", shine = " << _material.shine << ", reflection = " << _material.reflection << ", refraction = " << _material.refraction << ", transparency = " << _material.transparency << "){";
+  stream << "material(color = " << _material.color.dump() << ", ambient = " << _material.ambient.dump() << ", diffuse = " << _material.diffuse.dump() << ", specular = " << _material.specular.dump() << ", shine = " << _material.shine << ", reflection = " << _material.reflection << ", refraction = " << _material.refraction << ", transparency = " << _material.transparency << "){";
 
   for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
   {

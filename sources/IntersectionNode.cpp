@@ -5,14 +5,10 @@
 RT::IntersectionNode::IntersectionNode()
 {}
 
-RT::IntersectionNode::IntersectionNode(Math::Matrix<4, 4> const & transformation)
-  : AbstractNode(transformation)
-{}
-
 RT::IntersectionNode::~IntersectionNode()
 {}
 
-std::list<RT::Intersection>	RT::IntersectionNode::renderTree(Math::Ray const & ray) const
+std::list<RT::Intersection>	RT::IntersectionNode::renderChildren(Math::Ray const & ray) const
 {
   std::list<std::list<RT::Intersection> > intersect_list;
 
@@ -66,22 +62,11 @@ std::list<RT::Intersection>	RT::IntersectionNode::renderTree(Math::Ray const & r
   return result;
 }
 
-RT::AbstractTree const *  RT::createIntersection(RT::AbstractTree const * A, RT::AbstractTree const * B)
-{
-  RT::IntersectionNode *  tree = new RT::IntersectionNode();
-
-  // Push CSG trees in newly created CSG union
-  tree->push(A);
-  tree->push(B);
-
-  return tree;
-}
-
 std::string	RT::IntersectionNode::dump() const
 {
   std::stringstream stream;
 
-  stream << "intersection(t = " << transformation().dump() << "){";
+  stream << "intersection(){";
 
   for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
   {

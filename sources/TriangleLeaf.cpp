@@ -4,10 +4,6 @@ RT::TriangleLeaf::TriangleLeaf(std::tuple<double, double, double> const & p0, st
   : _p0(p0), _p1(p1), _p2(p2)
 {}
 
-RT::TriangleLeaf::TriangleLeaf(Math::Matrix<4, 4> const & transformation, std::tuple<double, double, double> const & p0, std::tuple<double, double, double> const & p1, std::tuple<double, double, double> const & p2)
-  : AbstractLeaf(transformation), _p0(p0), _p1(p1), _p2(p2)
-{}
-
 RT::TriangleLeaf::~TriangleLeaf()
 {}
 
@@ -71,7 +67,7 @@ std::string	RT::TriangleLeaf::dump() const
 {
   std::stringstream stream;
 
-  stream << "triangle(t = " << transformation().dump() << ", p0 = [" << std::get<0>(_p0) << ", " << std::get<1>(_p0) << ", " << std::get<2>(_p0) << "], p1 = [" << std::get<0>(_p1) << ", " << std::get<1>(_p1) << ", " << std::get<2>(_p1) << "], p2 = [" << std::get<0>(_p2) << ", " << std::get<1>(_p2) << ", " << std::get<2>(_p2) << "])";
+  stream << "triangle(p0 = [" << std::get<0>(_p0) << ", " << std::get<1>(_p0) << ", " << std::get<2>(_p0) << "], p1 = [" << std::get<0>(_p1) << ", " << std::get<1>(_p1) << ", " << std::get<2>(_p1) << "], p2 = [" << std::get<0>(_p2) << ", " << std::get<1>(_p2) << ", " << std::get<2>(_p2) << "])";
 
   return stream.str();
 }

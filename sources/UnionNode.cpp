@@ -5,14 +5,10 @@
 RT::UnionNode::UnionNode()
 {}
 
-RT::UnionNode::UnionNode(Math::Matrix<4, 4> const & transformation)
-  : AbstractNode(transformation)
-{}
-
 RT::UnionNode::~UnionNode()
 {}
 
-std::list<RT::Intersection>	RT::UnionNode::renderTree(Math::Ray const & ray) const
+std::list<RT::Intersection>	RT::UnionNode::renderChildren(Math::Ray const & ray) const
 {
   std::list<std::list<RT::Intersection> > intersect_list;
 
@@ -62,22 +58,11 @@ std::list<RT::Intersection>	RT::UnionNode::renderTree(Math::Ray const & ray) con
   return result;
 }
 
-RT::AbstractTree const *  RT::createUnion(RT::AbstractTree const * A, RT::AbstractTree const * B)
-{
-  RT::UnionNode *	tree = new RT::UnionNode();
-
-  // Push CSG trees in newly created CSG union
-  tree->push(A);
-  tree->push(B);
-
-  return tree;
-}
-
 std::string	RT::UnionNode::dump() const
 {
   std::stringstream stream;
 
-  stream << "union(t = " << transformation().dump() << "){";
+  stream << "union(){";
 
   for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
   {

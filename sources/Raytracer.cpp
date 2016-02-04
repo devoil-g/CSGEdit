@@ -14,6 +14,7 @@
 #include "IntersectionNode.hpp"
 #include "MaterialNode.hpp"
 #include "MeshNode.hpp"
+#include "TransformationNode.hpp"
 #include "UnionNode.hpp"
 
 #include "BoxLeaf.hpp"
@@ -27,7 +28,7 @@
 #include "PointLight.hpp"
 
 RT::Raytracer::Raytracer()
-  : _image(), _lock(), _tree(nullptr), _camera(Math::Matrix<4, 4>::translation(-540, 52, 436) * Math::Matrix<4, 4>::rotation(0, 39.8, -7.2)), _grid(), _thread(), _continue(false), _method(nullptr), _progress(0)
+  : _image(), _lock(), _tree(nullptr), _camera(Math::Matrix<4, 4>::translation(-540, 52, 436) * Math::Matrix<4, 4>::rotation(0, 39.8, -7.2)), _grid(), _thread(), _continue(false), _method(nullptr), _parser(), _progress(0)
 {
   // Set image to window size
   _image.create(RT::Config::WindowWidth, RT::Config::WindowHeight);
@@ -45,7 +46,7 @@ RT::Raytracer::~Raytracer()
   }
 }
 
-bool	RT::Raytracer::load(std::string const &)
+bool	RT::Raytracer::load(std::string const & path)
 {
   // NOTE: Implement a parser here
 
@@ -59,94 +60,29 @@ bool	RT::Raytracer::load(std::string const &)
     for (unsigned int x = 0; x < RT::Config::WindowWidth; x++)
       _image.setPixel(x, y, RT::Color(0.084f, 0.084f, 0.084f).sfml());
 
+  // Reset image grid
   _grid.resize(0);
   _method = nullptr;
 
-  RT::AbstractNode *  node = new RT::UnionNode();
-  RT::AbstractNode *  material_node;
-  RT::AbstractNode *  material_node2;
-  RT::Material	      material;
+  // Clean previous scene
+  delete _tree;
+  _tree = nullptr;
 
-  material.color = RT::Color(255.f / 255.f, 255.f / 255.f, 225.f / 255.f);
-  material.shine = 8.4f;
-  material_node = new RT::MaterialNode(material);
-  material_node->push(new RT::BoxLeaf(Math::Matrix<4, 4>::translation(0, 0, -230), 420, true));
-  for (int x = 0; x < 4; x++)
-    for (int y = 0; y < 4; y++)
-      material_node->push(new RT::BoxLeaf(Math::Matrix<4, 4>::translation(x * 100 - 150, y * 100 - 150, x * 20 - 40), 80, true));
-  node->push(material_node);
-
-  material.color = RT::Color(225.f / 255.f, 225.f / 255.f, 225.f / 255.f);
-  material_node = new RT::MaterialNode(material);
-
-  // Line 1
-  material_node->push(new RT::SphereLeaf(Math::Matrix<4, 4>::translation(-150, +150, 28 + 1), 28));
-  material_node->push(new RT::ConeLeaf(Math::Matrix<4, 4>::translation(-150, +50, 28 + 1), 24, 56, true));
-  material_node->push(new RT::ConeLeaf(Math::Matrix<4, 4>::translation(-150, -50, 28 + 1), 32, -28, 56, true));
-  material_node->push(new RT::BoxLeaf(Math::Matrix<4, 4>::translation(-150, -150, 22 + 1) * Math::Matrix<4, 4>::rotation(0, 0, -10), 44, true));
-  
-  // Line 2
-  material_node->push(new RT::MeshNode(Math::Matrix<4, 4>::translation(-72, +150, 19 + 1) * Math::Matrix<4, 4>::scale(0.64f, 0.64f, 0.64f) * Math::Matrix<4, 4>::rotation(0, 0, -30), "C:/project/CSG-Raytracer/assets/models/bunny.stl"));
-  material_node->push(new RT::TangleLeaf(Math::Matrix<4, 4>::translation(-50, +50, 39 + 1) * Math::Matrix<4, 4>::scale(10.f, 10.f, 10.f) * Math::Matrix<4, 4>::rotation(0, 0, +30), 11.8f));
-  material_node->push(new RT::TorusLeaf(Math::Matrix<4, 4>::translation(-50, -50, 43 + 1) * Math::Matrix<4, 4>::rotation(45, 0, -45), 22, 8));
-
-  // Line 3
-  material.color = RT::Color(255.f / 255.f, 255.f / 255.f, 255.f / 255.f);
-  material.refraction = 1.f;
-  material.reflection = 0.72f;
-  material.transparency = 0.f;
-  material_node2 = new RT::MaterialNode(material);
-  material_node2->push(new RT::SphereLeaf(Math::Matrix<4, 4>::translation(+50, +150, 68 + 1), 28));
-  material_node->push(material_node2);
-
-  material.color = RT::Color(255.f / 225.f);
-  material.reflection = 0.f;
-  material.refraction = 1.21f;
-  material.transparency = 0.92f;
-  material_node2 = new RT::MaterialNode(material);
-  material_node2->push(new RT::SphereLeaf(Math::Matrix<4, 4>::translation(+50, +50, 68 + 1), 28));
-  material_node->push(material_node2);
-
-  material.transparency = 0.72f;
-  material.refraction = 1.f;
-  material_node2 = new RT::MaterialNode(material);
-  material_node2->push(new RT::BoxLeaf(Math::Matrix<4, 4>::translation(+50, -50, 64 + 1), 48, true));
-  material_node->push(material_node2);
-
-  material.color = RT::Color(255.f / 255.f, 105.f / 255.f, 105.f / 255.f);
-  material.transparency = 0.f;
-  material_node2 = new RT::MaterialNode(material);
-  material_node2->push(new RT::BoxLeaf(Math::Matrix<4, 4>::translation(+50, -130, 66 + 1), 52, 12, 52, true));
-  material_node->push(material_node2);
-
-  material.color = RT::Color(105.f / 255.f, 255.f / 255.f, 105.f / 255.f);
-  material_node2 = new RT::MaterialNode(material);
-  material_node2->push(new RT::BoxLeaf(Math::Matrix<4, 4>::translation(+50, -150, 66 + 1), 52, 12, 52, true));
-  material_node->push(material_node2);
-
-  material.color = RT::Color(105.f / 255.f, 105.f / 255.f, 255.f / 255.f);
-  material_node2 = new RT::MaterialNode(material);
-  material_node2->push(new RT::BoxLeaf(Math::Matrix<4, 4>::translation(+50, -170, 66 + 1), 52, 12, 52, true));
-  material_node->push(material_node2);
-
-  // Line 4
-  material_node->push(RT::createUnion(new RT::BoxLeaf(Math::Matrix<4, 4>::translation(+150, +150, 84 + 1), 48, true), new RT::SphereLeaf(Math::Matrix<4, 4>::translation(+150, +150, 84 + 1), 30)));
-  material_node->push(RT::createDifference(new RT::SphereLeaf(Math::Matrix<4, 4>::translation(+150, +50, 84 + 1), 30), new RT::BoxLeaf(Math::Matrix<4, 4>::translation(+150, +50, 84 + 1), 48, true)));
-  material_node->push(RT::createDifference(new RT::BoxLeaf(Math::Matrix<4, 4>::translation(+150, -50, 84 + 1), 48, true), new RT::SphereLeaf(Math::Matrix<4, 4>::translation(+150, -50, 84 + 1), 30)));
-  material_node->push(RT::createIntersection(new RT::BoxLeaf(Math::Matrix<4, 4>::translation(+150, -150, 84 + 1), 48, true), new RT::SphereLeaf(Math::Matrix<4, 4>::translation(+150, -150, 84 + 1), 30)));
-
-  node->push(material_node);
-  
-  // Set _tree to CSG tree
-  _tree = node;
+  while (!_light.empty())
+  {
+    delete _light.front();
+    _light.pop_front();
+  }
 
   _light.push_back(new RT::OcclusionLight());
   _light.push_back(new RT::DirectionalLight(Math::Matrix<4, 4>::rotation(0, 60, 30), RT::Color(1.f), 4.2f));
-  //_light.push_back(new RT::PointLight(Math::Matrix<4, 4>::translation(0,0,+128), RT::Color(1.f), 21.42f, 0.f));
+  
+  _tree = _parser.load(path);
 
-  // Dump tree
+#ifdef _DEBUG
   if (_tree)
-    std::cout << "[Raytracer] Dumping CSG tree:" << std::endl << (_tree != nullptr ? _tree->dump() : "empty") << std::endl;
+    std::cout << "[Raytracer] Dumping CSG tree:" << std::endl << _tree->dump() << std::endl;
+#endif
 
   _lock.unlock();
   return true;

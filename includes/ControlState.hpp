@@ -26,9 +26,9 @@ namespace RT
     typedef time_t   t_FileTime;
 #endif
 
-    RT::Raytracer * const _raytracer; // Pointer to raytracer
-    std::string const	  _file;
-    t_FileTime		  _time;
+    RT::Raytracer * const	_raytracer; // Pointer to raytracer
+    std::string			_file;
+    t_FileTime			_time;
 
   private:
     bool  updateTime();

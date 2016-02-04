@@ -19,7 +19,6 @@ namespace RT
 
   public:
     TorusLeaf(double, double);
-    TorusLeaf(Math::Matrix<4, 4> const &, double, double);
     ~TorusLeaf();
 
     std::string		dump() const override;

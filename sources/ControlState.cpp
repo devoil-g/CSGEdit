@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "ControlState.hpp"
 #include "RenderState.hpp"
 #include "StateMachine.hpp"
@@ -71,6 +73,7 @@ bool  RT::ControlState::update(sf::Time)
   // Update file time, preview if change detected
   if (updateTime())
   {
+    _raytracer->load(_file);
     _raytracer->preview();
     _raytracer->start();
     return false;
@@ -101,6 +104,41 @@ bool  RT::ControlState::update(sf::Time)
 
     if (GetSaveFileName(&fileinfo))
       _raytracer->image().saveToFile(std::string(path));
+#endif
+  }
+
+  // Open file
+  if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::O))
+  {
+#ifdef _WIN32
+    // See MSDN of GetOpenFileName
+    OPENFILENAME	fileinfo;
+    CHAR		path[MAX_PATH];
+
+    memset(path, 0, sizeof(path));
+    fileinfo.lStructSize = sizeof(OPENFILENAME);
+    fileinfo.hwndOwner = nullptr;
+    fileinfo.lpstrFilter = "All supported format (.scn)\0*.scn\0Scene description (.scn)\0*.scn\0All files\0*\0\0";
+    fileinfo.lpstrCustomFilter = nullptr;
+    fileinfo.nFilterIndex = 3;
+    fileinfo.lpstrFile = path;
+    fileinfo.nMaxFile = MAX_PATH;
+    fileinfo.lpstrFileTitle = nullptr;
+    fileinfo.lpstrInitialDir = nullptr;
+    fileinfo.lpstrTitle = nullptr;
+    fileinfo.Flags = OFN_FILEMUSTEXIST;
+    fileinfo.lpstrDefExt = nullptr;
+    fileinfo.FlagsEx = 0;
+
+    // Remove false to enable OpenFileDialogWindow
+    if (GetOpenFileName(&fileinfo))
+    {
+      _file = std::string(path);
+      _time.dwLowDateTime = 0;
+      _time.dwHighDateTime = 0;
+    }
+    else
+      std::cerr << "[WorldEdit] Failed opening file." << std::endl;
 #endif
   }
 

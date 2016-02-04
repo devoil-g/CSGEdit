@@ -6,10 +6,6 @@ RT::TangleLeaf::TangleLeaf(double c)
   : _c(c)
 {}
 
-RT::TangleLeaf::TangleLeaf(Math::Matrix<4, 4> const & transformation, double c)
-  : AbstractLeaf(transformation), _c(c)
-{}
-
 RT::TangleLeaf::~TangleLeaf()
 {}
 
@@ -43,7 +39,7 @@ std::string	RT::TangleLeaf::dump() const
 {
   std::stringstream stream;
 
-  stream << "tangle(t = " << transformation().dump() << ", c = " << _c << ")";
+  stream << "tangle(c = " << _c << ")";
 
   return stream.str();
 }

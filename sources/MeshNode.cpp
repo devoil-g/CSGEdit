@@ -10,11 +10,7 @@
 #include <iostream>
 
 RT::MeshNode::MeshNode(std::string const & path)
-  : MeshNode(Math::Matrix<4, 4>::identite(), path)
-{}
-
-RT::MeshNode::MeshNode(Math::Matrix<4, 4> const & transformation, std::string const & path)
-  : AbstractNode(transformation), _bound(nullptr)
+  : _bound(nullptr)
 {
   std::string	ext = path.substr(path.rfind('.'));
 
@@ -28,7 +24,7 @@ RT::MeshNode::MeshNode(Math::Matrix<4, 4> const & transformation, std::string co
 RT::MeshNode::~MeshNode()
 {}
 
-std::list<RT::Intersection>	RT::MeshNode::renderTree(Math::Ray const & ray) const
+std::list<RT::Intersection>	RT::MeshNode::renderChildren(Math::Ray const & ray) const
 {
   std::list<RT::Intersection>		  intersect;
 
@@ -41,8 +37,8 @@ std::list<RT::Intersection>	RT::MeshNode::renderTree(Math::Ray const & ray) cons
   {
     std::list<RT::Intersection> node = (*it)->render(ray);
 
-    for (std::list<RT::Intersection>::iterator it_node = node.begin(); it_node != node.end(); it_node++)
-      it_node->node = *it;
+//    for (std::list<RT::Intersection>::iterator it_node = node.begin(); it_node != node.end(); it_node++)
+//      it_node->node = *it;
 
     intersect.merge(node);
   }
@@ -92,7 +88,7 @@ std::string	RT::MeshNode::dump() const
 {
   std::stringstream stream;
 
-  stream << "mesh(t = " << transformation().dump() << "){";
+  stream << "mesh(){";
 
   for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
   {

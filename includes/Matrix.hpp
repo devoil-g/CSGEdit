@@ -10,8 +10,6 @@
 
 namespace Math
 {
-  unsigned int const	MaxMatrixSize(4);
-
   template<unsigned int cRow, unsigned int cCol>
   class Matrix
   {
@@ -23,7 +21,7 @@ namespace Math
       : _matrix{ 0 }
     {
       // Compilation time error if invalid matrix
-      static_assert(cRow > 0 && cRow <= Math::MaxMatrixSize && cCol > 0 && cCol <= Math::MaxMatrixSize, "Invalid matrix size.");
+      static_assert(cRow > 0 && cCol > 0, "Invalid matrix size.");
     }
 
     Matrix(Math::Matrix<cRow, cCol> const & cpy)
@@ -71,6 +69,19 @@ namespace Math
 	    matrix(row, col) += (*this)(row, x) * m(x, col);
 
       return matrix;
+
+      /*
+      for (unsigned int i = 0; i < cRow; i++) {
+	_mm_store_ps((float *)&result._matrix[i],
+	  _mm_add_ps(
+	    _mm_add_ps(
+	      _mm_mul_ps(_mm_set1_ps(((const float *)&_matrix[i])[0]), m._matrix[0]),
+	      _mm_mul_ps(_mm_set1_ps(((const float *)&_matrix[i])[1]), m._matrix[1])),
+	    _mm_add_ps(
+	      _mm_mul_ps(_mm_set1_ps(((const float *)&_matrix[i])[2]), m._matrix[2]),
+	      _mm_mul_ps(_mm_set1_ps(((const float *)&_matrix[i])[3]), m._matrix[3]))));
+      }
+      */
     }
 
     Math::Matrix<cRow, cCol>		transpose() const					// Generate transpose matrix
@@ -92,7 +103,7 @@ namespace Math
       Math::Matrix<cRow, cCol>  matrix;
 
       // Compilation time error if invalid matrix
-      static_assert(cRow == cCol, "Invalid matrix.");
+      static_assert(cRow == cCol, "Invalid matrix identite.");
 
       for (unsigned int i = 0; i < cRow; i++)
 	matrix(i, i) = 1.f;

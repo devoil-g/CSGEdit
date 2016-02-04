@@ -22,7 +22,7 @@ namespace RT
     };
 
     std::stack<RT::AbstractState *> _states;  // Stack of states
-    sf::Mutex			    _lock;	// Lock for multi-threading
+    sf::Mutex			    _lock;    // Lock for multi-threading
 
     StateMachine();
     ~StateMachine();

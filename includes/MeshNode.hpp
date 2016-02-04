@@ -15,16 +15,14 @@ namespace RT
   private:
     RT::AbstractTree const *  _bound;	// Bounding sphere containing mesh faces (for acceleration purpose)
 
+    std::list<RT::Intersection>	renderChildren(Math::Ray const &) const override;  // Render sub-tree
     void  loadStl(std::string const &); // Load a .stl file
-
-    std::list<RT::Intersection>	renderTree(Math::Ray const &) const;  // Render intersection with mesh faces
 
   public:
     MeshNode(std::string const &);
-    MeshNode(Math::Matrix<4, 4> const &, std::string const &);
     ~MeshNode();
 
-    std::string		dump() const override;
+    std::string			dump() const override;
   };
 };
 

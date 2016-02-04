@@ -5,14 +5,10 @@
 RT::DifferenceNode::DifferenceNode()
 {}
 
-RT::DifferenceNode::DifferenceNode(Math::Matrix<4, 4> const & transformation)
-  : AbstractNode(transformation)
-{}
-
 RT::DifferenceNode::~DifferenceNode()
 {}
 
-std::list<RT::Intersection>	RT::DifferenceNode::renderTree(Math::Ray const & ray) const
+std::list<RT::Intersection>	RT::DifferenceNode::renderChildren(Math::Ray const & ray) const
 {
   std::list<std::list<RT::Intersection> > intersect_list;
 
@@ -100,22 +96,11 @@ std::list<RT::Intersection>	RT::DifferenceNode::renderTree(Math::Ray const & ray
   return result;
 }
 
-RT::AbstractTree const *  RT::createDifference(RT::AbstractTree const * A, RT::AbstractTree const * B)
-{
-  RT::DifferenceNode *	  tree = new RT::DifferenceNode();
-
-  // Push CSG trees in newly created CSG union
-  tree->push(A);
-  tree->push(B);
-
-  return tree;
-}
-
 std::string	RT::DifferenceNode::dump() const
 {
   std::stringstream stream;
 
-  stream << "difference(t = " << transformation().dump() << "){";
+  stream << "difference(){";
 
   for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
   {

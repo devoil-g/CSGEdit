@@ -12,16 +12,16 @@ namespace RT
   class AbstractNode : public RT::AbstractTree
   {
   private:
-    virtual std::list<RT::Intersection>	renderTree(Math::Ray const &) const = 0;  // Render intersections list according to ray
+    virtual std::list<RT::Intersection>	renderChildren(Math::Ray const &) const = 0;
 
   protected:
-    std::list<RT::AbstractTree const *>	_children; // List of sub-trees
+    std::list<RT::AbstractTree const *>	_children;
 
   public:
     AbstractNode();
-    AbstractNode(Math::Matrix<4, 4> const &);
     virtual ~AbstractNode();
 
+    std::list<RT::Intersection>	render(Math::Ray const &) const;		// Render a list of intersection from the sub-tree according to ray
     void  push(RT::AbstractTree const *); // Add a CSG tree to sub-trees list
   };
 };

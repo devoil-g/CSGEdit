@@ -3,14 +3,10 @@
 RT::AbstractLeaf::AbstractLeaf()
 {}
 
-RT::AbstractLeaf::AbstractLeaf(Math::Matrix<4, 4> const & transformation)
-  : AbstractTree(transformation)
-{}
-
 RT::AbstractLeaf::~AbstractLeaf()
 {}
 
-std::list<RT::Intersection>	RT::AbstractLeaf::renderTree(Math::Ray const & ray) const
+std::list<RT::Intersection>	RT::AbstractLeaf::render(Math::Ray const & ray) const
 {
   std::list<RT::Intersection>   result;
   std::vector<double>		dist;

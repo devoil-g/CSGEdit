@@ -10,14 +10,6 @@ RT::BoxLeaf::BoxLeaf(double l, bool center)
   : _x(l), _y(l), _z(l), _center(center)
 {}
 
-RT::BoxLeaf::BoxLeaf(Math::Matrix<4, 4> const & transformation, double x, double y, double z, bool center)
-  : AbstractLeaf(transformation), _x(x), _y(y), _z(z), _center(center)
-{}
-
-RT::BoxLeaf::BoxLeaf(Math::Matrix<4, 4> const & transformation, double l, bool center)
-  : AbstractLeaf(transformation), _x(l), _y(l), _z(l), _center(center)
-{}
-
 RT::BoxLeaf::~BoxLeaf()
 {}
 
@@ -142,7 +134,7 @@ std::string	RT::BoxLeaf::dump() const
 {
   std::stringstream stream;
 
-  stream << "box(t = " << transformation().dump() << ", x = " << _x << ", y = " << _y << ", z = " << _z << ", center = " << (_center ? "true" : "false") << ")";
+  stream << "box(x = " << _x << ", y = " << _y << ", z = " << _z << ", center = " << (_center ? "true" : "false") << ")";
 
   return stream.str();
 }

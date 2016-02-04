@@ -7,6 +7,7 @@
 #include "Math.hpp"
 #include "Matrix.hpp"
 #include "SphereLeaf.hpp"
+#include "TransformationNode.hpp"
 
 void	Math::initialize()
 {
@@ -177,7 +178,10 @@ RT::AbstractTree const *  Math::Utils::BoundingSphere(std::vector<std::tuple<dou
     }
   }
 
-  return new RT::SphereLeaf(Math::Matrix<4, 4>::translation(std::get<0>(center), std::get<1>(center), std::get<2>(center)), radius);
+  RT::AbstractNode *  node = new RT::TransformationNode(Math::Matrix<4, 4>::translation(std::get<0>(center), std::get<1>(center), std::get<2>(center)));
+  node->push(new RT::SphereLeaf(radius));
+
+  return node;
 }
 
 double		Math::Random::_table[Math::RandomTableSize];

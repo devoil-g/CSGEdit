@@ -4,10 +4,6 @@
 RT::AbstractNode::AbstractNode()
 {}
 
-RT::AbstractNode::AbstractNode(Math::Matrix<4, 4> const & transformation)
-  : AbstractTree(transformation)
-{}
-
 RT::AbstractNode::~AbstractNode()
 {
   while (!_children.empty())
@@ -15,6 +11,17 @@ RT::AbstractNode::~AbstractNode()
     delete _children.front();
     _children.pop_front();
   }
+}
+
+std::list<RT::Intersection>	RT::AbstractNode::render(Math::Ray const & ray) const
+{
+  std::list<RT::Intersection>	result = renderChildren(ray);
+
+  // Attribute top node
+  for (std::list<RT::Intersection>::iterator it = result.begin(); it != result.end(); it++)
+    (*it).node = this;
+
+  return result;
 }
 
 void	RT::AbstractNode::push(RT::AbstractTree const * node)

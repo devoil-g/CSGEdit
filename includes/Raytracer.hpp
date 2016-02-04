@@ -16,6 +16,7 @@
 #include "AbstractTree.hpp"
 #include "Color.hpp"
 #include "Matrix.hpp"
+#include "Parser.hpp"
 
 namespace RT
 {
@@ -33,6 +34,7 @@ namespace RT
     std::vector<sf::Thread *>			_thread;	// List of active thread
     bool					_continue;	// Thread continue working while true, stop at false
     RT::Raytracer::Method			_method;	// Rendering method called by threads
+    RT::Parser					_parser;
     unsigned int				_progress;	// Number of pixel rendered (approximation)
 
     void	prepare(RT::Raytracer::Method);			// Set configuration for preview/render

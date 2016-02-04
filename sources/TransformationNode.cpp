@@ -1,35 +1,38 @@
 #include <map>
 
-#include "BoundingNode.hpp"
+#include "TransformationNode.hpp"
 
-RT::BoundingNode::BoundingNode(RT::AbstractTree const * bound)
-  : _bound(bound)
+RT::TransformationNode::TransformationNode(Math::Matrix<4, 4> const & transformation)
+  : _transformation(transformation)
 {}
 
-RT::BoundingNode::~BoundingNode()
+RT::TransformationNode::~TransformationNode()
 {}
 
-std::list<RT::Intersection>	RT::BoundingNode::renderChildren(Math::Ray const & ray) const
+std::list<RT::Intersection>	RT::TransformationNode::renderChildren(Math::Ray const & ray) const
 {
-  std::map<RT::AbstractTree const *, bool>  inside;
-  std::list<RT::Intersection>		    intersect, result;
-  unsigned int				    state = 0;
-
-  // Stop if no intersection with bounding tree
-  if (_bound->render(ray).empty())
-    return std::list<RT::Intersection>();
+  std::list<std::list<RT::Intersection> > intersect_list;
+  Math::Ray const &			  r = _transformation.inverse() * ray;
 
   // Iterate through sub-tree to get intersections
   for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
   {
-    std::list<RT::Intersection> node = (*it)->render(ray);
+    std::list<RT::Intersection> node = (*it)->render(r);
 
     // Atribute intersections to children
     for (std::list<RT::Intersection>::iterator it_node = node.begin(); it_node != node.end(); it_node++)
       it_node->node = *it;
 
-    intersect.merge(node);
+    intersect_list.push_back(node);
   }
+
+  std::map<RT::AbstractTree const *, bool>  inside;
+  std::list<RT::Intersection>		    intersect, result;
+  unsigned int				    state = 0;
+
+  // Merge all intersections
+  for (std::list<std::list<RT::Intersection> >::iterator iter = intersect_list.begin(); iter != intersect_list.end(); iter++)
+    intersect.merge(*iter);
 
   // Set all positions to 'outside' (false)
   for (std::list<RT::Intersection>::iterator iter = intersect.begin(); iter != intersect.end(); iter++)
@@ -54,14 +57,22 @@ std::list<RT::Intersection>	RT::BoundingNode::renderChildren(Math::Ray const & r
       result.push_back(*iter);
   }
 
+  for (std::list<RT::Intersection>::iterator it = result.begin(); it != result.end(); it++)
+  {
+    // Inverse transformation
+    (*it).normal.p() = _transformation * (*it).normal.p();
+    (*it).normal.d() = _transformation.inverse().transpose() * (*it).normal.d();
+    (*it).normal = (*it).normal.normalize();
+  }
+
   return result;
 }
 
-std::string	RT::BoundingNode::dump() const
+std::string	RT::TransformationNode::dump() const
 {
   std::stringstream stream;
 
-  stream << "bounding(bound = " << _bound->dump() << "){";
+  stream << "transformation(t = " << _transformation.dump() << "){";
 
   for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
   {

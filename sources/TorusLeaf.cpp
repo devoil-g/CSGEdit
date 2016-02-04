@@ -6,10 +6,6 @@ RT::TorusLeaf::TorusLeaf(double r, double h)
   : _r(r), _h(h)
 {}
 
-RT::TorusLeaf::TorusLeaf(Math::Matrix<4, 4> const & transformation, double r, double h)
-  : AbstractLeaf(transformation), _r(r), _h(h)
-{}
-
 RT::TorusLeaf::~TorusLeaf()
 {}
 
@@ -95,7 +91,7 @@ std::string	RT::TorusLeaf::dump() const
 {
   std::stringstream stream;
 
-  stream << "torus(t = " << transformation().dump() << ", r = " << _r << ", h = " << _h << ")";
+  stream << "torus(r = " << _r << ", h = " << _h << ")";
 
   return stream.str();
 }

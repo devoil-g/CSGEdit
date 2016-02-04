@@ -12,17 +12,14 @@ namespace RT
   class IntersectionNode : public RT::AbstractNode
   {
   private:
-    std::list<RT::Intersection>	renderTree(Math::Ray const &) const override;  // Render sub-tree
+    std::list<RT::Intersection>	renderChildren(Math::Ray const &) const override;  // Render sub-tree
 
   public:
     IntersectionNode();
-    IntersectionNode(Math::Matrix<4, 4> const &);
     ~IntersectionNode();
 
-    std::string		dump() const override;
+    std::string			dump() const override;
   };
-
-  RT::AbstractTree const *  createIntersection(RT::AbstractTree const *, RT::AbstractTree const *);
 };
 
 #endif
