@@ -7,9 +7,7 @@ How to build (Windows):
 4. Clone repository in directory \<sources\>
 5. Create a directory \<build\>
 6. CMake-GUI :
-
   a. Set source code directory to \<sources\>
-
   b. Set build directory to \<build\>
 
   c. Configure (it will fail)
