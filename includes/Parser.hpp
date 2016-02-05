@@ -23,9 +23,9 @@ namespace RT
     void  scopeMirror(double, double, double);				// Push a mirror in scope
     void  scopeRotation(double, double, double);			// Push a rotation in scope
     void  scopeScale(double, double, double);				// Push a scale in scope
-    void  scopeScale(double);						// Push a scale in scope
     void  scopeShear(double, double, double, double, double, double);	// Push a shear in scope
     // Scope materials
+    void  scopeMaterial(std::string const &);			// Push a material in scope
     void  scopeColor(double, double, double);			// Push a color material in scope
     void  scopeAmbient(double, double, double);			// Push a ambient color material in scope
     void  scopeDiffuse(double, double, double);			// Push a diffuse color material in scope
@@ -37,22 +37,22 @@ namespace RT
     void  scopeEnd();				// Pop last scope in stack
 
     // Primitives
-    void  primitiveBox(double = 1, double = 1, double = 1, bool = false);	// Push a box in top scope
-    void  primitiveBox(double = 1, bool = true);				// Push a box in top scope
-    void  primitiveCone(double = 1, double = 1, double = 0.5f, bool = false);	// Push a cone in top scope
-    void  primitiveCylinder(double = 1, double = 0.5f, bool = false);		// Push a cylinder in top scope
-    void  primitiveSphere(double = 0.5f);					// Push a sphere in top scope
-    void  primitiveTangle(double = 11.8f);					// Push a tangle in top scope
-    void  primitiveTorus(double = 1.f, double = 0.25f);				// Push a torus in top scope
-    void  primitiveMesh(std::string const &);					// Push a primitive in top scope
+    void  primitiveBox(double, double, double, bool);	// Push a box in top scope
+    void  primitiveCone(double, double, double, bool);	// Push a cone in top scope
+    void  primitiveSphere(double);			// Push a sphere in top scope
+    void  primitiveTangle(double);			// Push a tangle in top scope
+    void  primitiveTorus(double, double);		// Push a torus in top scope
+    void  primitiveMesh(std::string const &);		// Push a primitive in top scope
     // Primitives utilities
-    void  primitivePush(RT::AbstractTree *);	// Push a box in top scope
+    void  primitivePush(RT::AbstractTree *);	// Push a primitive in top scope
+
+    RT::AbstractTree *	import(std::string const &);	// Import file in current scope
 
   public:
     Parser();
     ~Parser();
     
-    RT::AbstractTree *	load(std::string const &);  // Generate CSG tree from script path
+    RT::AbstractTree *	load(std::string const &);	// Generate CSG tree from script path
   };
 };
 
