@@ -2,8 +2,7 @@
 
 #include "BoundingNode.hpp"
 
-RT::BoundingNode::BoundingNode(RT::AbstractTree const * bound)
-  : _bound(bound)
+RT::BoundingNode::BoundingNode()
 {}
 
 RT::BoundingNode::~BoundingNode()
@@ -16,11 +15,11 @@ std::list<RT::Intersection>	RT::BoundingNode::renderChildren(Math::Ray const & r
   unsigned int				    state = 0;
 
   // Stop if no intersection with bounding tree
-  if (_bound->render(ray).empty())
+  if (_children.empty() || _children.front()->render(ray).empty())
     return std::list<RT::Intersection>();
 
   // Iterate through sub-tree to get intersections
-  for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
+  for (std::list<RT::AbstractTree const *>::const_iterator it = std::next(_children.begin()); it != _children.end(); it++)
   {
     std::list<RT::Intersection> node = (*it)->render(ray);
 
@@ -61,7 +60,7 @@ std::string	RT::BoundingNode::dump() const
 {
   std::stringstream stream;
 
-  stream << "bounding(bound = " << _bound->dump() << "){";
+  stream << "bounding(){";
 
   for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
   {

@@ -3,7 +3,7 @@
 
 #include "AbstractTree.hpp"
 #include "Material.hpp"
-#include "Math.hpp"
+#include "Ray.hpp"
 
 namespace RT
 {
@@ -13,8 +13,8 @@ namespace RT
     AbstractLight();
     virtual ~AbstractLight();
 
-    virtual RT::Color preview(AbstractTree const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const = 0; // Return preview lighting for given location/material
-    virtual RT::Color render(AbstractTree const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const = 0;  // Return rendered lighting for given location/material
+    virtual RT::Color preview(AbstractTree const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const = 0;	// Return preview lighting for given location/material
+    virtual RT::Color render(AbstractTree const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const = 0;	// Return rendered lighting for given location/material
   };
 };
 

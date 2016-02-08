@@ -38,7 +38,7 @@ void  RT::StateMachine::run()
       return;
 
     // Draw image
-    RT::Window::Instance().window().clear(RT::Color(0.f, 0.f, 0.f).sfml());
+    RT::Window::Instance().window().clear(RT::Color(0.084f).sfml());
     _states.top()->draw();
 
     // Display image

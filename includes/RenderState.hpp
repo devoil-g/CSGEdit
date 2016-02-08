@@ -4,25 +4,25 @@
 #include <SFML/System/Time.hpp>
 
 #include "AbstractState.hpp"
-#include "Raytracer.hpp"
+#include "RenderRaytracer.hpp"
+#include "Scene.hpp"
 
 namespace RT
 {
   class RenderState : public AbstractState
   {
   private:
-    sf::Time		  _elapsed;   // Elapsed time to calculate remaining time
-    sf::Texture		  _texture;   // Texture generated from raytracer image
-    sf::Sprite		  _sprite;    // Sprite generated from texture
-    RT::Raytracer * const _raytracer; // Pointer to raytracer
-    double		  _wait;      // Time before progress update
+    sf::Time		_elapsed;	// Elapsed time to calculate remaining time
+    RT::RenderRaytracer	_render;	// Pointer to raytracer
+    RT::Scene *		_scene;		// Current scene
+    double		_wait;		// Time before progress update
 
   public:
-    RenderState(RT::Raytracer *);
+    RenderState(RT::Scene *);
     ~RenderState();
 
-    bool  update(sf::Time) override;  // Update progress in rendering
-    void  draw() override;	      // Display image
+    bool  		update(sf::Time) override;	// Update progress in rendering
+    void  		draw() override;		// Display image
   };
 };
 

@@ -1,6 +1,7 @@
 #include <sstream>
 
 #include "ConeLeaf.hpp"
+#include "Math.hpp"
 
 RT::ConeLeaf::ConeLeaf(double r, double h, bool center)
   : _r1(r), _r2(r), _h(h), _center(center)

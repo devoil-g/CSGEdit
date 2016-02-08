@@ -31,11 +31,15 @@ SET(SAMPLE_SRCS
 	./sources/OcclusionLight.cpp
 	./sources/PointLight.cpp
 	
+	./sources/AbstractRaytracer.cpp
+	./sources/PreviewRaytracer.cpp
+	./sources/RenderRaytracer.cpp
+	
 	./sources/Color.cpp
 	./sources/Intersection.cpp
 	./sources/Material.cpp
 	./sources/Parser.cpp
-	./sources/Raytracer.cpp
+	./sources/Scene.cpp
 
 	./sources/Config.cpp
 	./sources/Exception.cpp
@@ -78,11 +82,15 @@ SET(SAMPLE_HDRS
 	./includes/OcclusionLight.hpp
 	./includes/PointLight.hpp
 	
+	./includes/AbstractRaytracer.hpp
+	./includes/PreviewRaytracer.hpp
+	./includes/RenderRaytracer.hpp
+	
 	./includes/Color.hpp
 	./includes/Intersection.hpp
 	./includes/Material.hpp
 	./includes/Parser.hpp
-	./includes/Raytracer.hpp
+	./includes/Scene.hpp
 
 	./includes/Config.hpp
 	./includes/Exception.hpp

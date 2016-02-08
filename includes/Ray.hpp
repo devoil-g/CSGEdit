@@ -8,18 +8,18 @@ namespace Math
   class Ray
   {
   private:
-    Math::Matrix<4, 1>		_p, _d;		// Coordonnées de l'origine et de vecteur direction
+    Math::Matrix<4, 1>		_p, _d;	// Coordonnées de l'origine et de vecteur direction
 
   public:
     Ray();
     ~Ray();
 
-    static double		cos(Math::Ray const &, Math::Ray const &);	  // Calculate cosinus between two rays
-    static double		angle(Math::Ray const &, Math::Ray const &);	  // Calculate angle (radian) between two rays
-    static double		scalaire(Math::Ray const &, Math::Ray const &);	  // Apply scalaire to rays
-    static Math::Ray		vectoriel(Math::Ray const &, Math::Ray const &);  // Apply vectoriel to rays
+    static double		cos(Math::Ray const &, Math::Ray const &);		// Calculate cosinus between two rays
+    static double		angle(Math::Ray const &, Math::Ray const &);		// Calculate angle (radian) between two rays
+    static double		scalaire(Math::Ray const &, Math::Ray const &);		// Apply scalaire to rays
+    static Math::Ray		vectoriel(Math::Ray const &, Math::Ray const &);	// Apply vectoriel to rays
 
-    Math::Ray			normalize() const;				  // Return a normalized ray
+    Math::Ray			normalize() const;					// Return a normalized ray
 
     inline Math::Matrix<4, 1> &	p() { return _p; };			// Return point of origin matrix
     inline Math::Matrix<4, 1> &	d() { return _d; };			// Return direction vector matrix

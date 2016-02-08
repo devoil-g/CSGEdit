@@ -1,13 +1,18 @@
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/Sprite.hpp>
 #include <iostream>
 
 #include "ControlState.hpp"
 #include "RenderState.hpp"
 #include "StateMachine.hpp"
 #include "Exception.hpp"
+#include "Parser.hpp"
+#include "PreviewRaytracer.hpp"
+#include "RenderRaytracer.hpp"
 #include "Window.hpp"
 
 RT::ControlState::ControlState(std::string const & file)
-  : _raytracer(new RT::Raytracer()), _file(file)
+  : _preview(), _scene(nullptr), _file(file), _time()
 {
   // Initialize file time
 #ifdef WIN32
@@ -16,15 +21,12 @@ RT::ControlState::ControlState(std::string const & file)
 #else
   _time = 0;
 #endif
-  updateTime();
-
-  // Load file
-  _raytracer->load(file);
 }
 
 RT::ControlState::~ControlState()
 {
-  delete _raytracer;
+  _preview.stop();
+  delete _scene;
 }
 
 bool  RT::ControlState::updateTime()
@@ -73,14 +75,21 @@ bool  RT::ControlState::update(sf::Time)
   // Update file time, preview if change detected
   if (updateTime())
   {
-    _raytracer->load(_file);
-    _raytracer->preview();
-    _raytracer->start();
+    RT::Parser	parser;
+
+    // Reload scene
+    _preview.stop();
+    delete _scene;
+    _scene = parser.load(_file);
+    _preview.load(_scene);
+    if (_scene)
+      _preview.start();
+    
     return false;
   }
 
   // Save image
-  if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::S))
+  if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::S) && _scene)
   {
 #ifdef _WIN32
     // See MSDN of GetOpenFileName
@@ -103,7 +112,7 @@ bool  RT::ControlState::update(sf::Time)
     fileinfo.FlagsEx = 0;
 
     if (GetSaveFileName(&fileinfo))
-      _raytracer->image().saveToFile(std::string(path));
+      _scene->image.saveToFile(std::string(path));
 #endif
   }
 
@@ -143,17 +152,18 @@ bool  RT::ControlState::update(sf::Time)
   }
 
   // Launch render state
-  if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::Return))
+  if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::Return) && _scene)
   {
-    RT::StateMachine::Instance().push(new RT::RenderState(_raytracer));
+    _preview.stop();
+    RT::StateMachine::Instance().push(new RT::RenderState(_scene));
     return false;
   }
 
   // Launch preview state
   if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::P))
   {
-    _raytracer->preview();
-    _raytracer->start();
+    _preview.load(_scene);
+    _preview.start();
     return false;
   }
 
@@ -162,11 +172,6 @@ bool  RT::ControlState::update(sf::Time)
 
 void  RT::ControlState::draw()
 {
-  sf::Texture texture;
-  sf::Sprite  sprite;
-
-  // Get and display image from raytracer
-  texture.loadFromImage(_raytracer->image());
-  sprite.setTexture(texture);
-  RT::Window::Instance().window().draw(sprite);
+  if (_scene)
+    RT::Window::Instance().draw(_scene->image);
 }

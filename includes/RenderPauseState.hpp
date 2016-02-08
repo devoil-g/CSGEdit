@@ -1,25 +1,27 @@
 #ifndef _RENDER_PAUSE_STATE_HPP_
 #define _RENDER_PAUSE_STATE_HPP_
 
+#include <SFML/Graphics/Image.hpp>
+#include <SFML/System/Time.hpp>
+
 #include "AbstractState.hpp"
-#include "Raytracer.hpp"
+#include "RenderRaytracer.hpp"
+#include "Scene.hpp"
 
 namespace RT
 {
   class RenderPauseState : public AbstractState
   {
   private:
-    sf::Image	    _image;	// Copy of raytracer image
-    sf::Sprite	    _sprite;	// Sprite generated from raytracer image
-    sf::Texture	    _texture;	// Texture generated from sprite
-    RT::Raytracer * _raytracer;	// Pointer to raytracer
-
+    sf::Image			_image;		// Copy of raytracer image
+    RT::RenderRaytracer &	_render;	// Current render raytracer
+    
   public:
-    RenderPauseState(RT::Raytracer *);
+    RenderPauseState(RT::RenderRaytracer &, RT::Scene *);
     ~RenderPauseState();
 
-    bool  update(sf::Time) override;  // Check for P or ESC
-    void  draw() override;	      // Display sprite
+    bool			update(sf::Time) override;	// Check for P or ESC
+    void			draw() override;		// Display sprite
   };
 };
 

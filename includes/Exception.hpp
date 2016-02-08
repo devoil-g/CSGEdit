@@ -9,13 +9,13 @@ namespace RT
   class Exception : public std::exception
   {
   private:
-    std::string const	_msg;
+    std::string const	_msg;			// Exception description
 
   public:
     Exception(std::string const &);
     ~Exception();
 
-    const char *	what() const throw(); // Get execption message
+    const char *	what() const throw();	// Get execption message
   };
 };
 

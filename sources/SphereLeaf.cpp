@@ -1,5 +1,6 @@
 #include <sstream>
 
+#include "Math.hpp"
 #include "SphereLeaf.hpp"
 
 RT::SphereLeaf::SphereLeaf(double r)

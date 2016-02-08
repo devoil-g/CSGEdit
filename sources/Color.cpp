@@ -18,6 +18,10 @@ RT::Color::Color(double r, double g, double b)
   : r(r), g(g), b(b)
 {}
 
+RT::Color::Color(sf::Color clr)
+  : r((double)clr.r / 255.f), g((double)clr.g / 255.f), b((double)clr.b / 255.f)
+{}
+
 RT::Color::~Color()
 {}
 

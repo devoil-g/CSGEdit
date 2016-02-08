@@ -1,3 +1,4 @@
+#include "Math.hpp"
 #include "OcclusionLight.hpp"
 
 RT::OcclusionLight::OcclusionLight(RT::Color const & color, double radius, unsigned int quality)
@@ -22,7 +23,7 @@ RT::Color RT::OcclusionLight::render(RT::AbstractTree const * tree, Math::Ray co
     return RT::Color(0.f);
 
   // If quality to basic
-  if (_quality <= 1)
+  if (_quality <= 1 || _radius == 0.f)
     return material.color * RT::Config::Light::Ambient * material.ambient * (1.f - material.transparency) * (1.f - material.reflection);
 
   Math::Ray	n, occ;

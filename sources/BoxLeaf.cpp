@@ -1,6 +1,7 @@
 #include <sstream>
 
 #include "BoxLeaf.hpp"
+#include "Math.hpp"
 
 RT::BoxLeaf::BoxLeaf(double x, double y, double z, bool center)
   : _x(x), _y(y), _z(z), _center(center)

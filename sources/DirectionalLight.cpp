@@ -1,6 +1,7 @@
 #include <list>
 
 #include "DirectionalLight.hpp"
+#include "Math.hpp"
 
 RT::DirectionalLight::DirectionalLight(Math::Matrix<4, 4> const & transformation, RT::Color const & color, double angle, unsigned int quality)
   : _color(color), _angle(angle), _quality(quality)

@@ -4,24 +4,23 @@
 #include <list>
 
 #include "AbstractNode.hpp"
+#include "AbstractTree.hpp"
 #include "Intersection.hpp"
-#include "Matrix.hpp"
+#include "Ray.hpp"
 
 namespace RT
 {
   class UnionNode : public RT::AbstractNode
   {
   private:
-    std::list<RT::Intersection>	renderChildren(Math::Ray const &) const override;  // Render sub-tree
+    std::list<RT::Intersection>	renderChildren(Math::Ray const &) const override;	// Render sub-tree
 
   public:
     UnionNode();
     ~UnionNode();
 
-    std::string			dump() const override;
+    std::string			dump() const override;					// Dump CSG tree
   };
-
-  RT::AbstractTree *		createUnion(RT::AbstractTree const *, RT::AbstractTree const *);
 };
 
 #endif

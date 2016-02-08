@@ -1,9 +1,12 @@
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+
 #include "Window.hpp"
 #include "Exception.hpp"
 #include "Config.hpp"
 
 RT::Window::Window()
-  : _window(sf::VideoMode(RT::Config::WindowWidth, RT::Config::WindowHeight), std::string(RT::Config::WindowTitle), sf::Style::Titlebar | sf::Style::Close), _focus(true)
+  : _window(sf::VideoMode(RT::Config::WindowWidth, RT::Config::WindowHeight), std::string(RT::Config::WindowTitle), sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close), _focus(true)
 {
   // Activate V-sync (limit fps)
   _window.setVerticalSyncEnabled(true);
@@ -93,6 +96,38 @@ bool  RT::Window::update()
 void  RT::Window::display()
 {
   _window.display();
+}
+
+void  RT::Window::draw(sf::Image const & image)
+{
+  sf::Texture texture;
+  sf::Sprite  sprite;
+  float	      scale, scale_x, scale_y;
+  float	      pos_x, pos_y;
+
+  texture.loadFromImage(image);
+  sprite.setTexture(texture);
+
+  scale_x = (float)RT::Config::WindowWidth / (float)_window.getSize().x;
+  scale_y = (float)RT::Config::WindowHeight / (float)_window.getSize().y;
+
+  sprite.scale(sf::Vector2f(scale_x, scale_y));
+
+  scale_x = (float)_window.getSize().x / (float)image.getSize().x;
+  scale_y = (float)_window.getSize().y / (float)image.getSize().y;
+
+  scale = scale_x < scale_y ? scale_x : scale_y;
+  if (scale > 1.f)
+    scale = 1.f;
+
+  sprite.scale(sf::Vector2f(scale, scale));
+  
+  pos_x = (((float)_window.getSize().x - ((float)image.getSize().x * scale)) / ((float)_window.getSize().x * 2.f)) * RT::Config::WindowWidth;
+  pos_y = (((float)_window.getSize().y - ((float)image.getSize().y * scale)) / ((float)_window.getSize().y * 2.f)) * RT::Config::WindowHeight;
+
+  sprite.setPosition(sf::Vector2f(pos_x, pos_y));
+
+  _window.draw(sprite);
 }
 
 void  RT::Window::setTaskbar(RT::Window::WindowFlag flag)

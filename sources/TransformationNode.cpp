@@ -85,3 +85,8 @@ std::string	RT::TransformationNode::dump() const
 
   return stream.str();
 }
+
+Math::Matrix<4, 4>  RT::TransformationNode::transformation() const
+{
+  return _transformation;
+}

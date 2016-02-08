@@ -6,7 +6,6 @@
 
 #include "AbstractTree.hpp"
 #include "Intersection.hpp"
-#include "Matrix.hpp"
 #include "Ray.hpp"
 
 namespace RT

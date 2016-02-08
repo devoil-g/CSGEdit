@@ -1,3 +1,4 @@
+#include <ctime>
 #include <limits>
 
 #ifdef _DEBUG

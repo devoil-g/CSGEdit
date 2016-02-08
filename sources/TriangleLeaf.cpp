@@ -39,9 +39,9 @@ std::vector<double>	RT::TriangleLeaf::intersection(Math::Ray const & ray) const
   b = -(v.dx() * ray.dx() + v.dy() * ray.dy() + v.dz() * ray.dz()) / d;
 
   // Push intersection if inside the triangle
-  if (a > 0 && b > 0 && c > 0 && a + b < 1)
-    result.push_back(sqrt(pow(std::get<0>(_p0) + a * v0.dx() + b * v1.dx() - ray.px(), 2.f) + pow(std::get<1>(_p0) + a * v0.dy() + b * v1.dy() - ray.py(), 2.f) + pow(std::get<2>(_p0) + a * v0.dz() + b * v1.dz() - ray.pz(), 2.f)) / l);
-
+  if (a > 0 && b > 0 && a + b < 1)
+    result.push_back(c);
+  
   return result;
 }
 

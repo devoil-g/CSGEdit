@@ -3,11 +3,10 @@
 #include <vector>
 #include <fstream>
 
-#include "MeshNode.hpp"
 #include "Exception.hpp"
+#include "Math.hpp"
+#include "MeshNode.hpp"
 #include "TriangleLeaf.hpp"
-
-#include <iostream>
 
 RT::MeshNode::MeshNode(std::string const & path)
   : _bound(nullptr)

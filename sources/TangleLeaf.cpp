@@ -1,5 +1,6 @@
 #include <sstream>
 
+#include "Math.hpp"
 #include "TangleLeaf.hpp"
 
 RT::TangleLeaf::TangleLeaf(double c)

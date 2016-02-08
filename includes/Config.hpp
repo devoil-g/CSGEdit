@@ -21,7 +21,8 @@ namespace RT
     double const	WindowSleep(0.2f);
 
     unsigned int const	BlockSize(16);
-    unsigned int const	AntiAliasing(2);
+    unsigned int const	AntiAliasing(1);
+    unsigned int const	PostAntiAliasing(2);
     unsigned int const	MaxRecursivite(3);
 
     namespace Light

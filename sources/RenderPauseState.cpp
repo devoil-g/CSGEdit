@@ -5,29 +5,27 @@
 #include "Window.hpp"
 #include "Config.hpp"
 
-RT::RenderPauseState::RenderPauseState(RT::Raytracer * raytracer)
-  : _raytracer(raytracer)
+RT::RenderPauseState::RenderPauseState(RT::RenderRaytracer & render, RT::Scene * scene)
+  : _image(), _render(render)
 {
-  _raytracer->stop();
-  RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Paused, _raytracer->progress());
+  _render.stop();
+  RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Paused, _render.progress());
 
   // Apply a dark filter to image
-  _image = _raytracer->image();
+  _image.create(scene->image.getSize().x, scene->image.getSize().y);
   for (unsigned int x = 0; x < _image.getSize().x; x++)
     for (unsigned int y = 0; y < _image.getSize().y; y++)
     {
-      sf::Color	clr = _image.getPixel(x, y);
+      RT::Color	clr = RT::Color(scene->image.getPixel(x, y));
 
-      clr.r /= 2;
-      clr.g /= 2;
-      clr.b /= 2;
-      _image.setPixel(x, y, clr);
+      clr.r /= 2.f;
+      clr.g /= 2.f;
+      clr.b /= 2.f;
+      _image.setPixel(x, y, clr.sfml());
     }
-  _texture.loadFromImage(_image);
-  _sprite.setTexture(_texture);
-
+  
   // Prompt progress
-  std::cout << "[Render] Paused at " << (int)(_raytracer->progress() * 100.f) << "." << ((int)(_raytracer->progress() * 1000.f)) % 10 << " %.                \r" << std::flush;
+  std::cout << "[Render] Paused at " << (int)(_render.progress() * 100.f) << "." << ((int)(_render.progress() * 1000.f)) % 10 << " %.                \r" << std::flush;
 }
 
 RT::RenderPauseState::~RenderPauseState()
@@ -38,7 +36,7 @@ bool  RT::RenderPauseState::update(sf::Time)
   // Stop rendering, getting back to control state
   if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::Escape))
   {
-    RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Error, _raytracer->progress());
+    RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Error, _render.progress());
     RT::StateMachine::Instance().pop();
     RT::StateMachine::Instance().pop();
     return false;
@@ -47,8 +45,8 @@ bool  RT::RenderPauseState::update(sf::Time)
   // Resume rendering, getting back to render state
   if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::P))
   {
-    _raytracer->start();
-    RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Normal, _raytracer->progress());
+    _render.start();
+    RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Normal, _render.progress());
     RT::StateMachine::Instance().pop();
     return false;
   }
@@ -58,5 +56,5 @@ bool  RT::RenderPauseState::update(sf::Time)
 
 void  RT::RenderPauseState::draw()
 {
-  RT::Window::Instance().window().draw(_sprite);
+  RT::Window::Instance().draw(_image);
 }

@@ -5,11 +5,8 @@
 
 #include <vector>
 #include <tuple>
-#include <ctime>
 #include <cmath>
 #include <ctgmath>
-#include <cstdlib>
-#include <memory>
 
 #ifndef M_PI
 # define M_PI	3.14159265358979323846
@@ -43,7 +40,7 @@ namespace Math
     std::vector<double>	solve(double, double, double);			// Solve a 2nd degree equation
     std::vector<double>	solve(double, double, double, double, double);	// Solve a 4th degree equation
 
-    RT::AbstractTree const *	BoundingSphere(std::vector<std::tuple<double, double, double> > const &); // Generate a bounding sphere from points
+    RT::AbstractTree const *	BoundingSphere(std::vector<std::tuple<double, double, double> > const &);	// Generate a bounding sphere from points
   };
 
   class Random

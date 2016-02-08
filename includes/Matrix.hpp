@@ -5,8 +5,9 @@
 #include <sstream>
 #include <string>
 
+#ifdef _DEBUG
 #include "Exception.hpp"
-#include "Math.hpp"
+#endif
 
 namespace Math
 {

@@ -1,5 +1,6 @@
-#include "PointLight.hpp"
 #include "Exception.hpp"
+#include "Math.hpp"
+#include "PointLight.hpp"
 
 RT::PointLight::PointLight(Math::Matrix<4, 4> const & transformation, RT::Color const & color, double radius, double intensity, double angle1, double angle2, unsigned int quality)
   : _color(color), _radius(radius), _intensity(intensity), _angle1(angle1), _angle2(angle2), _quality(quality)

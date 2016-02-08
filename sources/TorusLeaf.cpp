@@ -1,5 +1,6 @@
 #include <sstream>
 
+#include "Math.hpp"
 #include "TorusLeaf.hpp"
 
 RT::TorusLeaf::TorusLeaf(double r, double h)
