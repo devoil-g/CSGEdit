@@ -272,8 +272,8 @@ RT::Color RT::RenderRaytracer::renderAnaglyph3D(Math::Ray const & ray) const
   angle = Math::Pi / 2.f - atan(RT::Config::Anaglyph3D::Focal / ((RT::Config::Anaglyph3D::Offset == 0 ? 1 : RT::Config::Anaglyph3D::Offset) / 2.f));
 
   // Calculate left/right eye ray accoding offset and focus angle
-  cam_left = cam_left * Math::Matrix<4, 4>::translation(0, +RT::Config::Anaglyph3D::Offset / 2.f, 0) * Math::Matrix<4, 4>::rotation(0, 0, -Math::Utils::RadToDeg(angle));
-  cam_right = cam_right * Math::Matrix<4, 4>::translation(0, -RT::Config::Anaglyph3D::Offset / 2.f, 0) * Math::Matrix<4, 4>::rotation(0, 0, +Math::Utils::RadToDeg(angle));
+  cam_left = cam_left * Math::Matrix<4, 4>::translation(0.f, +RT::Config::Anaglyph3D::Offset / 2.f, 0.f) * Math::Matrix<4, 4>::rotation(0, 0, -Math::Utils::RadToDeg(angle));
+  cam_right = cam_right * Math::Matrix<4, 4>::translation(0.f, -RT::Config::Anaglyph3D::Offset / 2.f, 0.f) * Math::Matrix<4, 4>::rotation(0, 0, +Math::Utils::RadToDeg(angle));
 
   // Render left/right colors
   clr_left = renderDephOfField((cam_left * ray).normalize());

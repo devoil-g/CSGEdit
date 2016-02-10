@@ -137,18 +137,47 @@ namespace Math
       return stream.str();
     }
 
+    template<typename ... Doubles>
+    static Math::Matrix<cRow, cCol>	translation(Doubles... args)				// Generate translation matrix
+    {
+      Math::Matrix<cRow, cCol>	matrix = Math::Matrix<cRow, cCol>::identite();
+      double			transformation[]{ args... };
+
+      static_assert(cRow == cCol && cRow > 1, "Invalid translation matrix.");
+      static_assert(sizeof(transformation) / sizeof(double) == cRow - 1, "Invalid translation matrix parameters.");
+
+      for (unsigned int i = 0; i < cRow - 1; i++)
+	matrix(i, cCol - 1) = transformation[i];
+
+      return matrix;
+    }
+
+    template<typename ... Doubles>
+    static Math::Matrix<cRow, cCol>	scale(Doubles... args)					// Generate scaling matrix
+    {
+      Math::Matrix<cRow, cCol>	matrix = Math::Matrix<cRow, cCol>::identite();
+      double			transformation[]{ args... };
+
+      static_assert(cRow == cCol && cRow > 1, "Invalid scale matrix.");
+      static_assert((sizeof(transformation) / sizeof(double) == cRow - 1) || (sizeof(transformation) / sizeof(double) == 1), "Invalid scale matrix parameters.");
+
+      if (sizeof(transformation) / sizeof(double) == cRow - 1)
+	for (unsigned int i = 0; i < cRow - 1; i++)
+	  matrix(i, i) = transformation[i];
+      else
+	for (unsigned int i = 0; i < cRow - 1; i++)
+	  matrix(i, i) = transformation[0];
+
+      return matrix;
+    }
+
     // Methods specialized in Matrix.cpp
     Math::Matrix<cRow, cCol>		inverse() const;					// Generate inverse matrix
-    static Math::Matrix<cRow, cCol>	translation(double, double);				// Generate translation matrix
-    static Math::Matrix<cRow, cCol>	translation(double, double, double);			// Generate translation matrix
     static Math::Matrix<cRow, cCol>	reflection(double, double);				// Generate mirror matrix
     static Math::Matrix<cRow, cCol>	reflection(double, double, double);			// Generate mirror matrix
     static Math::Matrix<cRow, cCol>	rotation(double);					// Generate rotation matrix
     static Math::Matrix<cRow, cCol>	rotation(double, double, double);			// Generate rotation matrix
     static Math::Matrix<cRow, cCol>	rotation(double, double, double, double);		// Generate rotation matrix
-    static Math::Matrix<cRow, cCol>	scale(double);						// Generate scaling matrix
-    static Math::Matrix<cRow, cCol>	scale(double, double);					// Generate scaling matrix
-    static Math::Matrix<cRow, cCol>	scale(double, double, double);				// Generate scaling matrix
     static Math::Matrix<cRow, cCol>	shear(double, double, double, double, double, double);	// Generate shearing matrix
   };
 };

@@ -3,6 +3,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 # Microsoft Windows build:
 #   Set CMAKE_MODULE_PATH value to path to
 #   FindSFML.cmake (SFML-2.3.2\cmake\Modules)
+#   Set CHAISCRIPT_INCLUDE_DIR value to path
+#   to 'path_to_chaiscript/chaiscript 5.7.1/include'
 
 PROJECT(WorldEdit)
 

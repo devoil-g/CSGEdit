@@ -55,31 +55,6 @@ Math::Matrix<4, 4>    Math::Matrix<4, 4>::inverse() const
 }
 
 template<>
-Math::Matrix<3, 3>    Math::Matrix<3, 3>::translation(double x, double y)
-{
-  Math::Matrix<3, 3>	matrix = Math::Matrix<3, 3>::identite();
-
-  // Generate a translation matrix
-  matrix(0, 2) = x;
-  matrix(1, 2) = y;
-
-  return matrix;
-}
-
-template<>
-Math::Matrix<4, 4>    Math::Matrix<4, 4>::translation(double x, double y, double z)
-{
-  Math::Matrix<4, 4>	matrix = Math::Matrix<4, 4>::identite();
-
-  // Generate a translation matrix
-  matrix(0, 3) = x;
-  matrix(1, 3) = y;
-  matrix(2, 3) = z;
-
-  return matrix;
-}
-
-template<>
 Math::Matrix<3, 3>    Math::Matrix<3, 3>::reflection(double x, double y)
 {
   Math::Matrix<3, 3>  matrix = Math::Matrix<3, 3>::identite();
@@ -192,45 +167,6 @@ Math::Matrix<4, 4>    Math::Matrix<4, 4>::rotation(double a, double x, double y,
   matrix(2, 2) = z * z * (1 - std::cos(a)) + std::cos(a);
 
   return matrix;
-}
-
-template<>
-Math::Matrix<3, 3>    Math::Matrix<3, 3>::scale(double x, double y)
-{
-  Math::Matrix<3, 3>	matrix;
-
-  // Generate a scale matrix
-  matrix(0, 0) = x;
-  matrix(1, 1) = y;
-  matrix(2, 2) = 1.f;
-
-  return matrix;
-}
-
-template<>
-Math::Matrix<3, 3>    Math::Matrix<3, 3>::scale(double s)
-{
-  return Math::Matrix<3, 3>::scale(s, s);
-}
-
-template<>
-Math::Matrix<4, 4>    Math::Matrix<4, 4>::scale(double x, double y, double z)
-{
-  Math::Matrix<4, 4>	matrix;
-
-  // Generate a scale matrix
-  matrix(0, 0) = x;
-  matrix(1, 1) = y;
-  matrix(2, 2) = z;
-  matrix(3, 3) = 1.f;
-
-  return matrix;
-}
-
-template<>
-Math::Matrix<4, 4>    Math::Matrix<4, 4>::scale(double s)
-{
-  return Math::Matrix<4, 4>::scale(s, s, s);
 }
 
 template<>
