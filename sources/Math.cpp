@@ -40,8 +40,8 @@ std::vector<double>	Math::Utils::solve(double a, double b, double c)
 std::vector<double>	Math::Utils::solve(double a, double b, double c, double d, double e)
 {
   std::vector<double>   result;
-  double		delta, x1, x2;
-  double		tmp1[5], tmp2[4];
+  long double		delta, x1, x2;
+  long double		tmp1[5], tmp2[4];
 
 #ifdef _DEBUG
   // Check for invalid parameter

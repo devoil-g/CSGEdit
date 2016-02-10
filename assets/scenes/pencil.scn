@@ -1,0 +1,71 @@
+// Lights
+//rotation([0, 60, 30]); directional_light([255], 4.2); end();
+//occlusion_light([255], 32);
+
+var rayon = 5.0;
+var h_mine = 20.0;
+var h_corps = 130.0;
+var h_gomme = 7.5;
+var h_metal = 15.0
+var n_cote = 6.0;
+
+// Camera set-up
+translation([-1.41 * (h_mine + h_corps + h_metal + h_gomme), 0, (h_mine + h_corps + h_metal + h_gomme) / 2]); scale([10 , 1, 1]); camera(); end(); end();
+resolution(128,960);
+
+bounding();
+	cylinder(rayon, h_mine + h_corps + h_metal + h_gomme);
+
+	// Corps + mine
+	intersection();
+		union();
+			color([42, 42, 42]); cone(0, rayon / 3, h_mine / 3); end();
+			translation([0, 0, h_mine / 3]); color([231, 185, 163]); cone(rayon / 3, rayon, h_mine * 2 / 3); end(); end();
+			color([8, 139, 107]); translation([0,0,h_mine]); cylinder(rayon, h_corps); end(); end();
+		end();
+		
+		for (var i = 0; i < n_cote; ++i)
+		{
+			translation([0, 0, (h_mine + h_corps) / 2]);
+				rotation([0, 0, i * 360.0 / n_cote]);
+					color([8, 139, 107]);
+						box(rayon * 2, rayon * 2 * 0.87, h_mine + h_corps, true);
+					end();
+				end();
+			end();
+		}
+		
+	end();
+	
+	// Metal
+	translation([0, 0, h_mine + h_corps]);
+		bounding();
+			cylinder(rayon, h_metal);
+		
+			difference();
+				cylinder(rayon, h_metal);
+				
+				for (var i = 0; i < n_cote * 4; ++i)
+				{
+					rotation([0, 0, i * 360.0 / (n_cote * 4)]);
+						translation([rayon, 0, 2]);
+							cylinder(0.25, h_metal - 4);
+						end();
+					end();
+				}
+			end();
+		end();
+	end();
+	
+	// Gomme
+	color([220, 116, 163]);
+		translation([0, 0, h_mine + h_corps + h_metal]);
+			cylinder(rayon - 0.5, h_gomme - 1);
+			
+			translation([0, 0, h_gomme - 1]);
+				torus(rayon - 1.5, 1);
+				cylinder(rayon - 1.5, 1);
+			end();
+		end();
+	end();
+end();

@@ -77,6 +77,7 @@ RT::Scene *		RT::Parser::load(std::string const & path)
   }
 
   _transformation.pop();
+
   return _scene;
 }
 
@@ -148,13 +149,15 @@ RT::AbstractTree *		RT::Parser::import(std::string const & path)
   script.add(chaiscript::fun(&RT::Parser::settingCamera, this), "camera");
   script.add(chaiscript::fun(&RT::Parser::settingResolution, this), "resolution");
   // Others
-  script.add(chaiscript::fun(&RT::Parser::load, this), "import");
+  script.add(chaiscript::fun(&RT::Parser::import, this), "import");
 
   // Initailize scope
   RT::UnionNode *	topNode;
   size_t		scopeDepth;
   
   topNode = new RT::UnionNode();
+  if (!_scope.empty())
+    _scope.top()->push(topNode);
   _scope.push(topNode);
   _files.push(path);
   scopeDepth = _scope.size();
@@ -169,6 +172,7 @@ RT::AbstractTree *		RT::Parser::import(std::string const & path)
   // Clean initial scope
   _scope.pop();
   _files.pop();
+
   return topNode;
 }
 

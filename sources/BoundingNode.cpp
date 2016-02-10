@@ -17,7 +17,7 @@ std::list<RT::Intersection>	RT::BoundingNode::renderChildren(Math::Ray const & r
   // Stop if no intersection with bounding tree
   if (_children.empty() || _children.front()->render(ray).empty())
     return std::list<RT::Intersection>();
-
+  
   // Iterate through sub-tree to get intersections
   for (std::list<RT::AbstractTree const *>::const_iterator it = std::next(_children.begin()); it != _children.end(); it++)
   {

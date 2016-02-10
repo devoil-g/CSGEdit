@@ -1,0 +1,106 @@
+translation([-25, 25, 25]); rotation([0,35,-45]); camera(); end(); end();
+
+var c_size = 10.0;
+var c_radius = 1.0;
+var p_radius = 0.78;
+var p_space = 4.3;
+
+//translation([0,0,-c_size / 2 - 0.5]); box(1000,1000,1,true); end();
+
+def cube(c_size, c_radius)
+{
+	specular([255], 8.4)
+	transparency(0.84, 1.32);
+	reflection(0.5);
+	color([255,25,25]);
+		box(c_size, c_size - c_radius * 2, c_size - c_radius * 2, true);
+		box(c_size - c_radius * 2, c_size, c_size - c_radius * 2, true);
+		box(c_size - c_radius * 2, c_size - c_radius * 2, c_size, true);
+
+		rotation([0,0,0]);
+			translation([-(c_size / 2 - c_radius), -(c_size / 2 - c_radius), 0]); cylinder(c_radius, c_size - c_radius * 2, true); end();
+			translation([-(c_size / 2 - c_radius), +(c_size / 2 - c_radius), 0]); cylinder(c_radius, c_size - c_radius * 2, true); end();
+			translation([+(c_size / 2 - c_radius), -(c_size / 2 - c_radius), 0]); cylinder(c_radius, c_size - c_radius * 2, true); end();
+			translation([+(c_size / 2 - c_radius), +(c_size / 2 - c_radius), 0]); cylinder(c_radius, c_size - c_radius * 2, true); end();
+		end();
+
+		rotation([90,0,0]);
+			translation([-(c_size / 2 - c_radius), -(c_size / 2 - c_radius), 0]); cylinder(c_radius, c_size - c_radius * 2, true); end();
+			translation([-(c_size / 2 - c_radius), +(c_size / 2 - c_radius), 0]); cylinder(c_radius, c_size - c_radius * 2, true); end();
+			translation([+(c_size / 2 - c_radius), -(c_size / 2 - c_radius), 0]); cylinder(c_radius, c_size - c_radius * 2, true); end();
+			translation([+(c_size / 2 - c_radius), +(c_size / 2 - c_radius), 0]); cylinder(c_radius, c_size - c_radius * 2, true); end();
+		end();
+
+		rotation([0,90,0]);
+			translation([-(c_size / 2 - c_radius), -(c_size / 2 - c_radius), 0]); cylinder(c_radius, c_size - c_radius * 2, true); end();
+			translation([-(c_size / 2 - c_radius), +(c_size / 2 - c_radius), 0]); cylinder(c_radius, c_size - c_radius * 2, true); end();
+			translation([+(c_size / 2 - c_radius), -(c_size / 2 - c_radius), 0]); cylinder(c_radius, c_size - c_radius * 2, true); end();
+			translation([+(c_size / 2 - c_radius), +(c_size / 2 - c_radius), 0]); cylinder(c_radius, c_size - c_radius * 2, true); end();
+		end();
+
+		translation([-(c_size / 2 - c_radius), -(c_size / 2 - c_radius), -(c_size / 2 - c_radius)]); sphere(c_radius); end();
+		translation([-(c_size / 2 - c_radius), -(c_size / 2 - c_radius), +(c_size / 2 - c_radius)]); sphere(c_radius); end();
+		translation([-(c_size / 2 - c_radius), +(c_size / 2 - c_radius), -(c_size / 2 - c_radius)]); sphere(c_radius); end();
+		translation([-(c_size / 2 - c_radius), +(c_size / 2 - c_radius), +(c_size / 2 - c_radius)]); sphere(c_radius); end();
+		translation([+(c_size / 2 - c_radius), -(c_size / 2 - c_radius), -(c_size / 2 - c_radius)]); sphere(c_radius); end();
+		translation([+(c_size / 2 - c_radius), -(c_size / 2 - c_radius), +(c_size / 2 - c_radius)]); sphere(c_radius); end();
+		translation([+(c_size / 2 - c_radius), +(c_size / 2 - c_radius), -(c_size / 2 - c_radius)]); sphere(c_radius); end();
+		translation([+(c_size / 2 - c_radius), +(c_size / 2 - c_radius), +(c_size / 2 - c_radius)]); sphere(c_radius); end();
+	end();
+	end();
+	end();
+	end();
+}
+
+def points(c_size, p_radius, p_space)
+{
+	color([225]);
+		// 1
+		translation([0,0,-c_size / 2]);
+			sphere(p_radius);
+		end();
+		// 2
+		translation([+c_size / 2,0,0]);
+			translation([0,-c_size/p_space,-c_size/p_space]); sphere(p_radius); end();
+			translation([0,+c_size/p_space,+c_size/p_space]); sphere(p_radius); end();
+		end();
+		// 3
+		translation([0,-c_size / 2,0]);
+			sphere(p_radius);
+			translation([-c_size/p_space,0,-c_size/p_space]); sphere(p_radius); end();
+			translation([+c_size/p_space,0,+c_size/p_space]); sphere(p_radius); end();
+		end();
+		// 4
+		translation([0,+c_size / 2,0]);
+			translation([-c_size/p_space,0,-c_size/p_space]); sphere(p_radius); end();
+			translation([-c_size/p_space,0,+c_size/p_space]); sphere(p_radius); end();
+			translation([+c_size/p_space,0,-c_size/p_space]); sphere(p_radius); end();
+			translation([+c_size/p_space,0,+c_size/p_space]); sphere(p_radius); end();
+		end();
+		// 5
+		translation([-c_size / 2,0,0]);
+			sphere(p_radius);
+			translation([0,-c_size/p_space,-c_size/p_space]); sphere(p_radius); end();
+			translation([0,-c_size/p_space,+c_size/p_space]); sphere(p_radius); end();
+			translation([0,+c_size/p_space,-c_size/p_space]); sphere(p_radius); end();
+			translation([0,+c_size/p_space,+c_size/p_space]); sphere(p_radius); end();
+		end();
+		// 6
+		translation([0,0,+c_size / 2]);
+			translation([-c_size/p_space,-c_size/p_space,0]); sphere(p_radius); end();
+			translation([-c_size/p_space,0,0]); sphere(p_radius); end();
+			translation([-c_size/p_space,+c_size/p_space,0]); sphere(p_radius); end();
+			translation([+c_size/p_space,-c_size/p_space,0]); sphere(p_radius); end();
+			translation([+c_size/p_space,0,0]); sphere(p_radius); end();
+			translation([+c_size/p_space,+c_size/p_space,0]); sphere(p_radius); end();
+		end();
+	end();
+}
+
+bounding();
+	sphere(1.74 * c_size / 2);
+	difference();
+		cube(c_size, c_radius);
+		points(c_size, p_radius, p_space);
+	end();
+end();

@@ -112,31 +112,6 @@ namespace Math
       return matrix;
     }
 
-    std::string				dump() const
-    {
-      std::stringstream			stream;
-
-      stream << "[";
-      for (unsigned int row = 0; row < cRow; row++)
-      {
-	if (row != 0)
-	  stream << ", ";
-	stream << "[";
-
-	for (unsigned int col = 0; col < cCol; col++)
-	{
-	  if (col != 0)
-	    stream << ", ";
-	  stream << _matrix[row][col];
-	}
-	
-	stream << "]";
-      }
-      stream << "]";
-
-      return stream.str();
-    }
-
     template<typename ... Doubles>
     static Math::Matrix<cRow, cCol>	translation(Doubles... args)				// Generate translation matrix
     {
@@ -169,6 +144,31 @@ namespace Math
 	  matrix(i, i) = transformation[0];
 
       return matrix;
+    }
+
+    std::string				dump() const						// Dump the matrix in a string
+    {
+      std::stringstream			stream;
+
+      stream << "[";
+      for (unsigned int row = 0; row < cRow; row++)
+      {
+	if (row != 0)
+	  stream << ", ";
+	stream << "[";
+
+	for (unsigned int col = 0; col < cCol; col++)
+	{
+	  if (col != 0)
+	    stream << ", ";
+	  stream << _matrix[row][col];
+	}
+
+	stream << "]";
+      }
+      stream << "]";
+
+      return stream.str();
     }
 
     // Methods specialized in Matrix.cpp

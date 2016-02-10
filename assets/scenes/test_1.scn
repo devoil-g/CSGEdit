@@ -31,9 +31,13 @@ color([225.0]);
 	translation([-75,+150,19+1]); scale([0.64]); rotation([0,0,-30]) ; mesh("C:/project/CSG-Raytracer/assets/models/bunny.stl"); end(); end(); end();
 	translation([-50,+50,39+1]); scale([10.0]); rotation([0,0,30]) ; tangle(11.8); end(); end(); end();
 	translation([-50,-50,43+1]); rotation([45,0,-45]) ; torus(22,8); end(); end();
+	translation([-80,-180,20+1]); scale([0.56]); rotation([-45,0,-45]); import("C:/project/CSG-Raytracer/assets/scenes/pencil.scn"); end(); end(); end();
 end();
  
 // Troisieme rangee
+reflection(0.72);  translation([+50,+150,68+1]); sphere(28); end(); end();
+transparency(0.92, 1.21); translation([+50,+50,68+1]); sphere(28); end(); end();
+translation([+50,-50,62+1]); scale([4]); rotation([-45,0,-15]); import("C:/project/CSG-Raytracer/assets/scenes/dice.scn"); end(); end(); end();
 color([225.0]);
 	color([255, 105, 105]); translation([+50, -130, 66+1]); box(52,12,52, true); end(); end();
 	color([105, 255, 105]); translation([+50, -150, 66+1]); box(52,12,52, true); end(); end();
