@@ -1,0 +1,50 @@
+// Camera set-up
+translation([-540, 52, 436]); rotation([0, 39.8, -7.2]); camera(); end(); end();
+resolution(640, 360);
+antialiasing(0,2);
+light([255 * 0.2], [255 * 0.8], [255 * 0.2]);
+
+// Lights
+rotation([0, 60, 30]); directional_light([255], 4.2); end();
+occlusion_light([255], 64);
+
+def cube(x)
+{
+	bounding();
+		box(40, true);
+		
+		scale([0.5]);
+		
+			if (x > 0)
+			{
+				translation([-20,-20,-20]); cube(x - 1); end();
+				translation([-20,-20,+20]); cube(x - 1); end();
+				translation([-20,+20,-20]); cube(x - 1); end();
+				translation([-20,+20,+20]); cube(x - 1); end();
+				translation([+20,-20,-20]); cube(x - 1); end();
+				translation([+20,-20,+20]); cube(x - 1); end();
+				translation([+20,+20,-20]); cube(x - 1); end();
+				translation([+20,+20,+20]); cube(x - 1); end();
+			}
+			else
+			{
+				translation([-20,-20,-20]); sphere(15); end();
+				translation([-20,-20,+20]); sphere(15); end();
+				translation([-20,+20,-20]); sphere(15); end();
+				translation([-20,+20,+20]); sphere(15); end();
+				translation([+20,-20,-20]); sphere(15); end();
+				translation([+20,-20,+20]); sphere(15); end();
+				translation([+20,+20,-20]); sphere(15); end();
+				translation([+20,+20,+20]); sphere(15); end();
+			}
+		end();
+	end();
+}
+
+scale([8]);
+	specular([255], 8.4);
+		color([225]);
+			cube(2);
+		end();
+	end();
+end();

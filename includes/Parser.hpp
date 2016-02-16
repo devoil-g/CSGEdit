@@ -72,7 +72,7 @@ namespace RT
     // Utilities
     RT::AbstractTree *	import(std::string const &);	// Import file in current scope
 
-    template<typename X>
+    template<typename X> 
     std::vector<X>	convertVector(const std::vector<chaiscript::Boxed_Value> & v) const	// Convert ChaiScript vector to std::vector of type X
     {
       std::vector<X>  result;
@@ -81,6 +81,8 @@ namespace RT
       return result;
     }
     
+    std::string		directory(std::string const &) const;	// Return directory path of file (for relative import)
+
   public:
     Parser();
     ~Parser();

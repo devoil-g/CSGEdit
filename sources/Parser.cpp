@@ -1,5 +1,4 @@
-// TODO: scene parameter (aa, post-aa, 3D anaglyph, deph of field...) in script
-// TODO: import relative to parent file path
+// TODO: scene parameter (3D anaglyph, deph of field...) in script
 
 #include <chaiscript/chaiscript.hpp>
 #include <chaiscript/chaiscript_stdlib.hpp>
@@ -161,12 +160,14 @@ RT::AbstractTree *		RT::Parser::import(std::string const & path)
   if (!_scope.empty())
     _scope.top()->push(topNode);
   _scope.push(topNode);
-  _files.push(path);
-  _scene->dependencies.push_back(path);
   scopeDepth = _scope.size();
 
+  //_files.push(_files.empty() ? path : std::string(directory(_files.top)) + path);
+  _files.push(_files.empty() ? path : directory(_files.top()).append(path));
+  _scene->dependencies.push_back(_files.top());
+
   // Parsing file
-  script.eval_file(path);
+  script.eval_file(_files.top());
   
   // Check scope status
   if (scopeDepth != _scope.size())
@@ -454,7 +455,10 @@ void	RT::Parser::primitiveTorus(double r1, double r2)
 
 void	RT::Parser::primitiveMesh(std::string const & path)
 {
-  primitivePush(new RT::MeshNode(path));
+  std::string file = directory(_files.top()).append(path);
+
+  _scene->dependencies.push_back(file);
+  primitivePush(new RT::MeshNode(file));
 }
 
 void	RT::Parser::primitivePush(RT::AbstractTree * tree)
@@ -619,7 +623,19 @@ void	RT::Parser::settingLight(const std::vector<chaiscript::Boxed_Value> & a, co
     }
     else
       throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
-
+    
     _scene->config.lightSpecular = RT::Color(r, g, b);
   }
+}
+
+std::string	RT::Parser::directory(std::string const & file) const
+{
+#ifdef _WIN32
+  return file.substr(0, file.find_last_of('\\')) + std::string("\\");
+#else
+  if (file.find_last_of('/') == std::string::npos)
+    return std::string("./");
+  else
+    return file.substr(0, file.find_last_of('/')) + std::string("/");
+#endif
 }
