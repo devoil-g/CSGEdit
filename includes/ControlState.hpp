@@ -3,6 +3,7 @@
 
 #include <SFML/System/Time.hpp>
 #include <string>
+#include <map>
 
 #ifdef WIN32
 #include <windows.h>
@@ -23,18 +24,20 @@ namespace RT
   private:
 
 #ifdef WIN32
-    typedef FILETIME t_FileTime;
+    typedef FILETIME Time;
 #else
-    typedef time_t   t_FileTime;
+    typedef time_t   Time;
 #endif
 
     RT::PreviewRaytracer	_preview;	// Raytracer for preview
     RT::Scene *			_scene;		// Current scene loaded
     std::string			_file;		// Path to current scene file
-    t_FileTime			_time;		// Update time of current file scene
+    std::map<std::string, Time>	_time;		// Update time of associated file
+
 
   private:
-    bool  			updateTime();	// Check if current file has been modified
+    bool  			updateFiles();				// Check if current file and dependencies have been modified
+    bool  			updateFile(std::string const &);	// Update modification time of file
 
   public:
     ControlState(std::string const &);

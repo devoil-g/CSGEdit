@@ -13,15 +13,7 @@
 
 RT::ControlState::ControlState(std::string const & file)
   : _preview(), _scene(nullptr), _file(file), _time()
-{
-  // Initialize file time
-#ifdef WIN32
-  _time.dwLowDateTime = 0;
-  _time.dwHighDateTime = 0;
-#else
-  _time = 0;
-#endif
-}
+{}
 
 RT::ControlState::~ControlState()
 {
@@ -29,10 +21,21 @@ RT::ControlState::~ControlState()
   delete _scene;
 }
 
-bool  RT::ControlState::updateTime()
+bool  RT::ControlState::updateFiles()
+{
+  bool	result = updateFile(_file);
+
+  if (_scene != nullptr)
+    for (std::list<std::string>::const_iterator it = _scene->dependencies.begin(); it != _scene->dependencies.end(); it++)
+      result |= updateFile(*it);
+
+  return result;
+}
+
+bool  RT::ControlState::updateFile(std::string const & file)
 {
 #ifdef WIN32
-  HANDLE f = CreateFileA(_file.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+  HANDLE f = CreateFileA(file.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 
   if (f == NULL)
     throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
@@ -41,9 +44,9 @@ bool  RT::ControlState::updateTime()
   GetFileTime(f, &creation, &lastaccess, &lastwrite);
   CloseHandle(f);
 
-  if (lastwrite.dwHighDateTime > _time.dwHighDateTime || (lastwrite.dwHighDateTime == _time.dwHighDateTime && lastwrite.dwLowDateTime > _time.dwLowDateTime))
+  if (lastwrite.dwHighDateTime > _time[file].dwHighDateTime || (lastwrite.dwHighDateTime == _time[file].dwHighDateTime && lastwrite.dwLowDateTime > _time[file].dwLowDateTime))
   {
-    _time = lastwrite;
+    _time[file] = lastwrite;
     return true;
   }
 #else
@@ -56,9 +59,9 @@ bool  RT::ControlState::updateTime()
   fstat(fh, &st);
   close(fh);
 
-  if (st.st_mtime > _time)
+  if (st.st_mtime > _time[file])
   {
-    _time = st.st_mtime;
+    _time[file] = st.st_mtime;
     return true;
   }
 #endif
@@ -73,7 +76,7 @@ bool  RT::ControlState::update(sf::Time)
     return true;
 
   // Update file time, preview if change detected
-  if (updateTime())
+  if (updateFiles())
   {
     RT::Parser	parser;
 
@@ -143,8 +146,7 @@ bool  RT::ControlState::update(sf::Time)
     if (GetOpenFileName(&fileinfo))
     {
       _file = std::string(path);
-      _time.dwLowDateTime = 0;
-      _time.dwHighDateTime = 0;
+      _time.clear();
     }
     else
       std::cerr << "[WorldEdit] Failed opening file." << std::endl;

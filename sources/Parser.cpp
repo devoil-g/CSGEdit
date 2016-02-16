@@ -162,6 +162,7 @@ RT::AbstractTree *		RT::Parser::import(std::string const & path)
     _scope.top()->push(topNode);
   _scope.push(topNode);
   _files.push(path);
+  _scene->dependencies.push_back(path);
   scopeDepth = _scope.size();
 
   // Parsing file
