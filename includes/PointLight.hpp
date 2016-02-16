@@ -21,11 +21,11 @@ namespace RT
     unsigned int	_quality;		// Quality of the light
 
   public:
-    PointLight(Math::Matrix<4, 4> const &, RT::Color const & = RT::Color(1.f), double = 0, double = 0, double = 0, double = 0, unsigned int = RT::Config::Light::DefaultQuality);
+    PointLight(Math::Matrix<4, 4> const &, RT::Color const & = RT::Color(1.f), double = 0, double = 0, double = 0, double = 0, unsigned int = RT::Config::Light::Quality);
     ~PointLight();
 
-    RT::Color		preview(RT::AbstractTree const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const override;	// Render preview mode of light
-    RT::Color		render(RT::AbstractTree const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const override;	// Render complete light
+    RT::Color		preview(RT::Scene const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const override;	// Render preview mode of light
+    RT::Color		render(RT::Scene const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const override;	// Render complete light
   };
 };
 

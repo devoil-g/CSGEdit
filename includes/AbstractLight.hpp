@@ -7,14 +7,16 @@
 
 namespace RT
 {
+  class Scene;
+
   class AbstractLight
   {
   public:
     AbstractLight();
     virtual ~AbstractLight();
 
-    virtual RT::Color preview(AbstractTree const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const = 0;	// Return preview lighting for given location/material
-    virtual RT::Color render(AbstractTree const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const = 0;	// Return rendered lighting for given location/material
+    virtual RT::Color preview(RT::Scene const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const = 0;	// Return preview lighting for given location/material
+    virtual RT::Color render(RT::Scene const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const = 0;	// Return rendered lighting for given location/material
   };
 };
 

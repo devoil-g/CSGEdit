@@ -16,11 +16,11 @@ std::vector<double>	RT::TorusLeaf::intersection(Math::Ray const & ray) const
   double		a, b, c, d, e;
 
   // Not so clever equations
-  a = pow(ray.dx() * ray.dx() + ray.dy() * ray.dy() + ray.dz() * ray.dz(), 2.f);
+  a = std::pow(ray.dx() * ray.dx() + ray.dy() * ray.dy() + ray.dz() * ray.dz(), 2.f);
   b = 4.f * (ray.dx() * ray.px() + ray.dy() * ray.py() + ray.dz() * ray.pz()) * (ray.dx() * ray.dx() + ray.dy() * ray.dy() + ray.dz() * ray.dz());
-  c = 2.f * (ray.dx() * ray.dx() + ray.dy() * ray.dy() + ray.dz() * ray.dz()) * (ray.px() * ray.px() + ray.py() * ray.py() + ray.pz() * ray.pz() + _r * _r - _h * _h) + 4.f * pow(ray.dx() * ray.px() + ray.dy() * ray.py() + ray.dz() * ray.pz(), 2.f) - 4.f * (ray.dx() * ray.dx() + ray.dy() * ray.dy()) * _r * _r;
+  c = 2.f * (ray.dx() * ray.dx() + ray.dy() * ray.dy() + ray.dz() * ray.dz()) * (ray.px() * ray.px() + ray.py() * ray.py() + ray.pz() * ray.pz() + _r * _r - _h * _h) + 4.f * std::pow(ray.dx() * ray.px() + ray.dy() * ray.py() + ray.dz() * ray.pz(), 2.f) - 4.f * (ray.dx() * ray.dx() + ray.dy() * ray.dy()) * _r * _r;
   d = 4.f * (ray.px() * ray.px() + ray.py() * ray.py() + ray.pz() * ray.pz() + _r * _r - _h * _h) * (ray.dx() * ray.px() + ray.dy() * ray.py() + ray.dz() * ray.pz()) - 8.f * (ray.dx() * ray.px() + ray.dy() * ray.py()) * _r * _r;
-  e = pow(ray.px() * ray.px() + ray.py() * ray.py() + ray.pz() * ray.pz() + _r * _r - _h * _h, 2.f) - 4.f * (ray.px() * ray.px() + ray.py() * ray.py()) * _r * _r;
+  e = std::pow(ray.px() * ray.px() + ray.py() * ray.py() + ray.pz() * ray.pz() + _r * _r - _h * _h, 2.f) - 4.f * (ray.px() * ray.px() + ray.py() * ray.py()) * _r * _r;
   result = Math::Utils::solve(a, b, c, d, e);
 
   // If torus overlap on himself, delete inside intersections
@@ -34,12 +34,12 @@ std::vector<double>	RT::TorusLeaf::intersection(Math::Ray const & ray) const
       list.push_back(result[i]);
     list.sort();
 
-    h = sqrt(1 - ((_r * _r) / (_h * _h))) * _h;
+    h = std::sqrt(1 - ((_r * _r) / (_h * _h))) * _h;
 
     it = list.begin();
     it++;
 
-    if (abs(ray.pz() + ray.dz() * (*it)) < h)
+    if (std::abs(ray.pz() + ray.dz() * (*it)) < h)
     {
       std::vector<double>	tmp;
 
@@ -69,9 +69,9 @@ Math::Ray	RT::TorusLeaf::normal(Math::Ray const & ray) const
   else
   {
     // Simple method to get normal
-    c = _r / sqrt(ray.px() * ray.px() + ray.py() * ray.py());
+    c = _r / std::sqrt(ray.px() * ray.px() + ray.py() * ray.py());
 
-    if (abs(sqrt(pow(ray.px() - (ray.px() * c), 2.f) + pow(ray.py() - (ray.py() * c), 2.f) + pow(ray.pz(), 2.f)) - _h) < Math::Shift)
+    if (std::abs(std::sqrt(std::pow(ray.px() - (ray.px() * c), 2.f) + std::pow(ray.py() - (ray.py() * c), 2.f) + std::pow(ray.pz(), 2.f)) - _h) < Math::Shift)
     {
       normal.dx() = ray.px() - ray.px() * c;
       normal.dy() = ray.py() - ray.py() * c;

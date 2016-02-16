@@ -31,8 +31,8 @@ std::vector<double>	Math::Utils::solve(double a, double b, double c)
   d = b * b - 4.f * a * c;
   if (d >= 0)
   {
-    result.push_back((-b - sqrt(d)) / (2.f * a));
-    result.push_back((-b + sqrt(d)) / (2.f * a));
+    result.push_back((-b - std::sqrt(d)) / (2.f * a));
+    result.push_back((-b + std::sqrt(d)) / (2.f * a));
   }
   return result;
 }
@@ -40,8 +40,8 @@ std::vector<double>	Math::Utils::solve(double a, double b, double c)
 std::vector<double>	Math::Utils::solve(double a, double b, double c, double d, double e)
 {
   std::vector<double>   result;
-  long double		delta, x1, x2;
-  long double		tmp1[5], tmp2[4];
+  double		delta, x1, x2;
+  double		tmp1[5], tmp2[4];
 
 #ifdef _DEBUG
   // Check for invalid parameter
@@ -53,22 +53,22 @@ std::vector<double>	Math::Utils::solve(double a, double b, double c, double d, d
   delta = b / (2.f * a);
 
   tmp1[0] = c / a - 3.f * (delta * delta) / 2.f;
-  tmp1[1] = d / a + pow(delta, 3.f) - c * delta / a;
-  tmp1[2] = e / a - 3.f * pow(delta, 4.f) / 16.f + c * delta * delta / (4.f * a) - d * delta / (2.f * a);
-  tmp1[3] = -2.f * pow(tmp1[0], 3.f) / 27.f - tmp1[1] * tmp1[1] + 8.f * tmp1[0] * tmp1[2] / 3.f;
+  tmp1[1] = d / a + std::pow(delta, 3.f) - c * delta / a;
+  tmp1[2] = e / a - 3.f * std::pow(delta, 4.f) / 16.f + c * delta * delta / (4.f * a) - d * delta / (2.f * a);
+  tmp1[3] = -2.f * std::pow(tmp1[0], 3.f) / 27.f - tmp1[1] * tmp1[1] + 8.f * tmp1[0] * tmp1[2] / 3.f;
   tmp1[4] = -(tmp1[0] * tmp1[0] + 12.f * tmp1[2]) / 3.f;
 
-  delta = pow(tmp1[4], 3.f) / 27.f + tmp1[3] * tmp1[3] / 4.f;
+  delta = std::pow(tmp1[4], 3.f) / 27.f + tmp1[3] * tmp1[3] / 4.f;
   if (delta > 0)
-    delta = cbrt(-tmp1[3] / 2.f + sqrt(delta)) - (tmp1[4] / 3.f) / cbrt(-tmp1[3] / 2.f + sqrt(delta));
+    delta = std::cbrt(-tmp1[3] / 2.f + std::sqrt(delta)) - (tmp1[4] / 3.f) / std::cbrt(-tmp1[3] / 2.f + std::sqrt(delta));
   else if (delta == 0)
     delta = 3.f * tmp1[3] / tmp1[4];
   else
-    delta = 2.f * sqrt(-tmp1[4] / 3.f) * cos(acos(-tmp1[3] / 2.f / pow((-tmp1[4] / 3.f), (3.f / 2.f))) / 3.f);
+    delta = 2.f * std::sqrt(-tmp1[4] / 3.f) * std::cos(std::acos(-tmp1[3] / 2.f / std::pow((-tmp1[4] / 3.f), (3.f / 2.f))) / 3.f);
 
   tmp2[0] = tmp1[0] / 3.f + delta;
-  tmp2[1] = sqrt(tmp2[0] - tmp1[0]);
-  tmp2[2] = sqrt(pow(tmp2[0] / 2.f, 2.f) - tmp1[2]);
+  tmp2[1] = std::sqrt(tmp2[0] - tmp1[0]);
+  tmp2[2] = std::sqrt(std::pow(tmp2[0] / 2.f, 2.f) - tmp1[2]);
   tmp2[3] = -b / (4.f * a);
 
   delta = tmp2[1] * tmp2[1] - 2.f * tmp2[0] - 4.f * tmp2[2];
@@ -77,7 +77,7 @@ std::vector<double>	Math::Utils::solve(double a, double b, double c, double d, d
     x1 = -tmp2[1] / 2.f;
     if (tmp1[1] > 0)
       x1 = -x1;
-    x2 = sqrt(delta) / 2.f;
+    x2 = std::sqrt(delta) / 2.f;
 
     result.push_back(x1 + x2 + tmp2[3]);
     result.push_back(x1 - x2 + tmp2[3]);
@@ -89,7 +89,7 @@ std::vector<double>	Math::Utils::solve(double a, double b, double c, double d, d
     x1 = tmp2[1] / 2.f;
     if (tmp1[1] > 0)
       x1 = -x1;
-    x2 = sqrt(delta) / 2.f;
+    x2 = std::sqrt(delta) / 2.f;
 
     result.push_back(x1 + x2 + tmp2[3]);
     result.push_back(x1 - x2 + tmp2[3]);
@@ -129,9 +129,9 @@ RT::AbstractTree const *  Math::Utils::BoundingSphere(std::vector<std::tuple<dou
       zmax = pts[n];
   }
 
-  xSpan = pow(std::get<0>(xmax) - std::get<0>(xmin), 2.f) + pow(std::get<1>(xmax) - std::get<1>(xmin), 2.f) + pow(std::get<2>(xmax) - std::get<2>(xmin), 2.f);
-  ySpan = pow(std::get<0>(ymax) - std::get<0>(ymin), 2.f) + pow(std::get<1>(ymax) - std::get<1>(ymin), 2.f) + pow(std::get<2>(ymax) - std::get<2>(ymin), 2.f);
-  zSpan = pow(std::get<0>(zmax) - std::get<0>(zmin), 2.f) + pow(std::get<1>(zmax) - std::get<1>(zmin), 2.f) + pow(std::get<2>(zmax) - std::get<2>(zmin), 2.f);
+  xSpan = std::pow(std::get<0>(xmax) - std::get<0>(xmin), 2.f) + std::pow(std::get<1>(xmax) - std::get<1>(xmin), 2.f) + std::pow(std::get<2>(xmax) - std::get<2>(xmin), 2.f);
+  ySpan = std::pow(std::get<0>(ymax) - std::get<0>(ymin), 2.f) + std::pow(std::get<1>(ymax) - std::get<1>(ymin), 2.f) + std::pow(std::get<2>(ymax) - std::get<2>(ymin), 2.f);
+  zSpan = std::pow(std::get<0>(zmax) - std::get<0>(zmin), 2.f) + std::pow(std::get<1>(zmax) - std::get<1>(zmin), 2.f) + std::pow(std::get<2>(zmax) - std::get<2>(zmin), 2.f);
 
   dia1 = xmin;
   dia2 = xmax;
@@ -155,20 +155,20 @@ RT::AbstractTree const *  Math::Utils::BoundingSphere(std::vector<std::tuple<dou
   std::get<1>(center) = (std::get<1>(dia1) + std::get<1>(dia2)) / 2.f;
   std::get<2>(center) = (std::get<2>(dia1) + std::get<2>(dia2)) / 2.f;
 
-  sqRad = pow(std::get<0>(dia2) - std::get<0>(center), 2.f) + pow(std::get<1>(dia2) - std::get<1>(center), 2.f) + pow(std::get<2>(dia2) - std::get<2>(center), 2.f);
-  radius = sqrt(sqRad);
+  sqRad = std::pow(std::get<0>(dia2) - std::get<0>(center), 2.f) + std::pow(std::get<1>(dia2) - std::get<1>(center), 2.f) + std::pow(std::get<2>(dia2) - std::get<2>(center), 2.f);
+  radius = std::sqrt(sqRad);
 
   for (unsigned int n = 0; n < pts.size(); n++)
   {
     double	d;
 
-    d = pow(std::get<0>(pts[n]) - std::get<0>(center), 2.f) + pow(std::get<1>(pts[n]) - std::get<1>(center), 2.f) + pow(std::get<2>(pts[n]) - std::get<2>(center), 2.f);
+    d = std::pow(std::get<0>(pts[n]) - std::get<0>(center), 2.f) + std::pow(std::get<1>(pts[n]) - std::get<1>(center), 2.f) + std::pow(std::get<2>(pts[n]) - std::get<2>(center), 2.f);
 
     if (d > sqRad)
     {
       double	r, offset;
 
-      r = sqrt(d);
+      r = std::sqrt(d);
       radius = (radius + r) / 2.f;
       sqRad = radius * radius;
       offset = r - radius;

@@ -1,6 +1,7 @@
 #include "Exception.hpp"
 #include "Math.hpp"
 #include "PointLight.hpp"
+#include "Scene.hpp"
 
 RT::PointLight::PointLight(Math::Matrix<4, 4> const & transformation, RT::Color const & color, double radius, double intensity, double angle1, double angle2, unsigned int quality)
   : _color(color), _radius(radius), _intensity(intensity), _angle1(angle1), _angle2(angle2), _quality(quality)
@@ -27,10 +28,10 @@ RT::PointLight::PointLight(Math::Matrix<4, 4> const & transformation, RT::Color 
 RT::PointLight::~PointLight()
 {}
 
-RT::Color RT::PointLight::preview(RT::AbstractTree const * tree, Math::Ray const & ray, Math::Ray const & normal, RT::Material const & material) const
+RT::Color RT::PointLight::preview(RT::Scene const * scene, Math::Ray const & ray, Math::Ray const & normal, RT::Material const & material) const
 {
   // If no ambient light, stop
-  if (RT::Config::Light::Diffuse == 0.f || _color == RT::Color(0.f) || material.color == RT::Color(0.f) || material.diffuse == 0.f)
+  if (scene->config.lightDiffuse == 0.f || _color == RT::Color(0.f) || material.color == RT::Color(0.f) || material.diffuse == 0.f)
     return RT::Color(0.f);
 
   Math::Ray light, n;
@@ -53,28 +54,28 @@ RT::Color RT::PointLight::preview(RT::AbstractTree const * tree, Math::Ray const
   light.dz() = _position.pz() - n.pz();
 
   // Calculate normal cosinus with light ray
-  diffuse = fmax(Math::Ray::cos(n, light), 0.f);
+  diffuse = std::fmax(Math::Ray::cos(n, light), 0.f);
   if (diffuse == 0.f)
     return RT::Color(0.f);
 
   if (_angle1 == 0.f && _angle2 == 0.f)
-    return material.color * material.diffuse * intensity * diffuse * _color * RT::Config::Light::Diffuse;
+    return material.color * material.diffuse * intensity * diffuse * _color * scene->config.lightDiffuse;
   else
   {
-    angle = Math::Utils::RadToDeg(acos(-Math::Ray::cos(light, _position)));
+    angle = Math::Utils::RadToDeg(std::acos(-Math::Ray::cos(light, _position)));
 
     if (angle <= _angle1)
-      return material.color * material.diffuse * intensity * diffuse * _color * RT::Config::Light::Diffuse;
+      return material.color * material.diffuse * intensity * diffuse * _color * scene->config.lightDiffuse;
     else if (_angle2 > _angle1 && angle < _angle2)
-      return RT::Color((_angle2 - angle) / (_angle2 - _angle1)) * material.color * material.diffuse * intensity * diffuse * _color * RT::Config::Light::Diffuse;
+      return RT::Color((_angle2 - angle) / (_angle2 - _angle1)) * material.color * material.diffuse * intensity * diffuse * _color * scene->config.lightDiffuse;
     else
       return RT::Color(0.f);
   }
 }
 
-RT::Color RT::PointLight::render(RT::AbstractTree const * tree, Math::Ray const & ray, Math::Ray const & normal, RT::Material const & material) const
+RT::Color RT::PointLight::render(RT::Scene const * scene, Math::Ray const & ray, Math::Ray const & normal, RT::Material const & material) const
 {
-  if ((RT::Config::Light::Diffuse == RT::Color(0.f) && RT::Config::Light::Specular == RT::Color(0.f)) || (material.diffuse == 0.f && material.specular == 0.f) || material.transparency == 1.f || material.reflection == 1.f)
+  if ((scene->config.lightDiffuse == RT::Color(0.f) && scene->config.lightSpecular == RT::Color(0.f)) || (material.diffuse == 0.f && material.specular == 0.f) || material.transparency == 1.f || material.reflection == 1.f)
     return RT::Color(0.f);
 
   Math::Ray n;
@@ -106,13 +107,13 @@ RT::Color RT::PointLight::render(RT::AbstractTree const * tree, Math::Ray const 
 
     for (double a = Math::Random::rand(_radius / (_quality + 1)); a < _radius; a += _radius / (_quality + 1))
       for (double b = Math::Random::rand(Math::Pi / (int)(a / _radius * _quality + 1)); b < Math::Pi; b += Math::Pi / (int)(a / _radius * _quality + 1))
-	for (double c = Math::Random::rand(2.f * Math::Pi / (sin(b) * a / _radius * _quality + 1)); c < 2.f * Math::Pi; c += 2.f * Math::Pi / (sin(b) * a / _radius * _quality + 1))
+	for (double c = Math::Random::rand(2.f * Math::Pi / (std::sin(b) * a / _radius * _quality + 1)); c < 2.f * Math::Pi; c += 2.f * Math::Pi / (std::sin(b) * a / _radius * _quality + 1))
 	{
 	  Math::Matrix<4, 1>	sphere;
 
-	  sphere(0, 0) = cos(b) * a;
-	  sphere(1, 0) = cos(c) * sin(b) * a;
-	  sphere(2, 0) = sin(c) * sin(b) * a;
+	  sphere(0, 0) = std::cos(b) * a;
+	  sphere(1, 0) = std::cos(c) * std::sin(b) * a;
+	  sphere(2, 0) = std::sin(c) * std::sin(b) * a;
 	  sphere(3, 0) = 1.f;
 
 	  sphere = matrix * sphere;
@@ -152,7 +153,7 @@ RT::Color RT::PointLight::render(RT::AbstractTree const * tree, Math::Ray const 
       intensity = (_intensity * _intensity) / (it->dx() * it->dx() + it->dy() * it->dy() + it->dz() * it->dz());
 
     if (angle != 0.f)
-      intersect = tree->render((*it));
+      intersect = scene->tree->render((*it));
 
     // Render light
     while (!intersect.empty() && intersect.front().distance < 0.f)
@@ -170,6 +171,6 @@ RT::Color RT::PointLight::render(RT::AbstractTree const * tree, Math::Ray const 
     specular += light * pow((cos_s > 0.f ? cos_s : 0.f), material.shine) * angle * intensity;
   }
 
-  return diffuse / (double)rays.size() * RT::Config::Light::Diffuse * material.color * material.diffuse * (1.f - material.transparency) * (1.f - material.reflection)
-    + specular / (double)rays.size() * RT::Config::Light::Specular * material.specular * (1.f - material.transparency) * (1.f - material.reflection);
+  return diffuse / (double)rays.size() * scene->config.lightDiffuse * material.color * material.diffuse * (1.f - material.transparency) * (1.f - material.reflection)
+    + specular / (double)rays.size() * scene->config.lightSpecular * material.specular * (1.f - material.transparency) * (1.f - material.reflection);
 }

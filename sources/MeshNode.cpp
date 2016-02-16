@@ -33,14 +33,7 @@ std::list<RT::Intersection>	RT::MeshNode::renderChildren(Math::Ray const & ray) 
 
   // Iterate through triangles to get intersections
   for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
-  {
-    std::list<RT::Intersection> node = (*it)->render(ray);
-
-//    for (std::list<RT::Intersection>::iterator it_node = node.begin(); it_node != node.end(); it_node++)
-//      it_node->node = *it;
-
-    intersect.merge(node);
-  }
+    intersect.merge((*it)->render(ray));
 
   return intersect;
 }

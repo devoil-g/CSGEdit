@@ -39,7 +39,7 @@ void	RT::RenderRaytracer::load(RT::Scene * scene)
     // Reset antialiasing factor
     _antialiasing.resize(_scene->image.getSize().x * _scene->image.getSize().y);
     for (unsigned int i = 0; i < _antialiasing.size(); i++)
-      _antialiasing[i] = RT::Config::AntiAliasing;
+      _antialiasing[i] = _scene->config.liveAntiAliasing;
 
     // Set status to first pass
     _status = First;
@@ -147,7 +147,7 @@ void	RT::RenderRaytracer::antialiasing()
 	+ RT::Color(_scene->image.getPixel(x + 0, y + 1)).b * 2.f
 	+ RT::Color(_scene->image.getPixel(x + 1, y + 1)).b * 1.f;
 
-      sobel[x + y * _scene->image.getSize().x] = sqrt(h_r * h_r + h_g * h_g + h_b * h_b + v_r * v_r + v_g * v_g + v_b * v_b);
+      sobel[x + y * _scene->image.getSize().x] = std::sqrt(h_r * h_r + h_g * h_g + h_b * h_b + v_r * v_r + v_g * v_g + v_b * v_b);
 
       sobel_min = sobel_min < sobel[x + y * _scene->image.getSize().x] ? sobel_min : sobel[x + y * _scene->image.getSize().x];
       sobel_max = sobel_max > sobel[x + y * _scene->image.getSize().x] ? sobel_max : sobel[x + y * _scene->image.getSize().x];
@@ -159,13 +159,13 @@ void	RT::RenderRaytracer::antialiasing()
 
   // Set antialiasing to maximum for borders
   for (unsigned int i = 0; i < _antialiasing.size(); i++)
-    _antialiasing[i] = RT::Config::PostAntiAliasing;
+    _antialiasing[i] = _scene->config.postAntiAliasing;
 
   // Apply sobel to antialiasing image
-  for (int a = RT::Config::PostAntiAliasing; a >= 0; a--)
+  for (int a = _scene->config.postAntiAliasing; a >= 0; a--)
     for (unsigned int x = 1; x < _scene->image.getSize().x - 1; x++)
       for (unsigned int y = 1; y < _scene->image.getSize().y - 1; y++)
-	if ((sobel[x + y * _scene->image.getSize().x] - sobel_min) / (sobel_max - sobel_min) < pow(1.f / 6.4f, RT::Config::PostAntiAliasing - a))
+	if ((sobel[x + y * _scene->image.getSize().x] - sobel_min) / (sobel_max - sobel_min) < std::pow(1.f / 6.4f, _scene->config.postAntiAliasing - a))
 	  _antialiasing[x + y * _scene->image.getSize().x] = a;
 }
 
@@ -202,15 +202,15 @@ void	RT::RenderRaytracer::render(unsigned int zone)
   y = zone / (_scene->image.getSize().x / RT::Config::BlockSize + (_scene->image.getSize().x % RT::Config::BlockSize ? 1 : 0)) * RT::Config::BlockSize;
 
   // Render zone
-  for (unsigned int a = 0; a < RT::Config::BlockSize; a += size)
-    for (unsigned int b = 0; b < RT::Config::BlockSize; b += size)
+  for (unsigned int a = 0; a < RT::Config::BlockSize && active(); a += size)
+    for (unsigned int b = 0; b < RT::Config::BlockSize && active(); b += size)
       if (x + a < _scene->image.getSize().x && y + b < _scene->image.getSize().y)
       {
 	if (_status == First)
 	{
 	  if ((size == RT::Config::BlockSize || a % (size * 2) != 0 || b % (size * 2) != 0))
 	  {
-	    RT::Color clr = renderAntialiasing(x + a, y + b, RT::Config::AntiAliasing);
+	    RT::Color clr = renderAntialiasing(x + a, y + b, _scene->config.liveAntiAliasing);
 
 	    _progress++;
 	    for (unsigned int c = 0; c < size; c++)
@@ -223,13 +223,16 @@ void	RT::RenderRaytracer::render(unsigned int zone)
 	{
 	  if (_antialiasing[(x + a) + (y + b) * _scene->image.getSize().x] > 0)
 	  {
-	    _scene->image.setPixel(x + a, y + b, renderAntialiasing(x + a, y + b, RT::Config::AntiAliasing + _antialiasing[(x + a) + (y + b) * _scene->image.getSize().x]).sfml());
+	    _scene->image.setPixel(x + a, y + b, renderAntialiasing(x + a, y + b, _scene->config.liveAntiAliasing + _antialiasing[(x + a) + (y + b) * _scene->image.getSize().x]).sfml());
 	    _progress++;
 	  }
 	}
       }
 
-  _grid[zone] = size / 2;
+  if (active())
+    _grid[zone] = size / 2;
+  else
+    _grid[zone] = size;
 }
 
 RT::Color RT::RenderRaytracer::renderAntialiasing(unsigned int x, unsigned int y, unsigned int antialiasing) const
@@ -269,8 +272,8 @@ RT::Color RT::RenderRaytracer::renderAnaglyph3D(Math::Ray const & ray) const
     return renderDephOfField((_scene->camera * ray).normalize());
 
   // Calculate focus angle
-  angle = Math::Pi / 2.f - atan(RT::Config::Anaglyph3D::Focal / ((RT::Config::Anaglyph3D::Offset == 0 ? 1 : RT::Config::Anaglyph3D::Offset) / 2.f));
-
+  angle = Math::Pi / 2.f - std::atan(RT::Config::Anaglyph3D::Focal / ((RT::Config::Anaglyph3D::Offset == 0 ? 1 : RT::Config::Anaglyph3D::Offset) / 2.f));
+  
   // Calculate left/right eye ray accoding offset and focus angle
   cam_left = cam_left * Math::Matrix<4, 4>::translation(0.f, +RT::Config::Anaglyph3D::Offset / 2.f, 0.f) * Math::Matrix<4, 4>::rotation(0, 0, -Math::Utils::RadToDeg(angle));
   cam_right = cam_right * Math::Matrix<4, 4>::translation(0.f, -RT::Config::Anaglyph3D::Offset / 2.f, 0.f) * Math::Matrix<4, 4>::rotation(0, 0, +Math::Utils::RadToDeg(angle));
@@ -299,16 +302,16 @@ RT::Color RT::RenderRaytracer::renderDephOfField(Math::Ray const & ray) const
   for (double a = Math::Random::rand(RT::Config::DephOfField::Aperture / RT::Config::DephOfField::Quality); a < RT::Config::DephOfField::Aperture; a += RT::Config::DephOfField::Aperture / RT::Config::DephOfField::Quality)
     for (double b = Math::Random::rand(Math::Pi / (RT::Config::DephOfField::Quality * 2)) - Math::Pi / 2.f; b < Math::Pi / 2.f; b += Math::Pi / RT::Config::DephOfField::Quality)
     {
-      int	nb = (int)(cos(b) * RT::Config::DephOfField::Quality * 2.f * (a / RT::Config::DephOfField::Aperture));
+      int	nb = (int)(std::cos(b) * RT::Config::DephOfField::Quality * 2.f * (a / RT::Config::DephOfField::Aperture));
       if (nb > 0)
 	for (double c = Math::Random::rand(Math::Pi * 2.f / nb); c < Math::Pi * 2.f; c += Math::Pi * 2.f / nb)
 	{
 	  Math::Ray	deph;
 
 	  // Calcul point position in aperture sphere
-	  deph.px() = sin(b) * a;
-	  deph.py() = cos(c) * cos(b) * a;
-	  deph.pz() = sin(c) * cos(b) * a;
+	  deph.px() = std::sin(b) * a;
+	  deph.py() = std::cos(c) * std::cos(b) * a;
+	  deph.pz() = std::sin(c) * std::cos(b) * a;
 
 	  // Randomly rotate point to smooth rendered image
 	  deph = rot * deph;
@@ -409,7 +412,7 @@ RT::Color RT::RenderRaytracer::renderTransparency(Math::Ray const & ray, RT::Int
   }
 
   // Using sphere technique to calculate refracted ray
-  l = sqrt(ray.dx() * ray.dx() + ray.dy() * ray.dy() + ray.dz() * ray.dz());
+  l = std::sqrt(ray.dx() * ray.dx() + ray.dy() * ray.dy() + ray.dz() * ray.dz());
   a = normal.dx() * normal.dx() + normal.dy() * normal.dy() + normal.dz() * normal.dz();
   b = 2.f * (ray.dx() * normal.dx() + ray.dy() * normal.dy() + ray.dz() * normal.dz());
   c = ray.dx() * ray.dx() + ray.dy() * ray.dy() + ray.dz() * ray.dz() - (refraction * l) * (refraction * l);
@@ -447,7 +450,7 @@ RT::Color RT::RenderRaytracer::renderLight(Math::Ray const & ray, RT::Intersecti
   RT::Color light;
 
   for (std::list<RT::AbstractLight const *>::const_iterator it = _scene->light.begin(); it != _scene->light.end(); it++)
-    light += (*it)->render(_scene->tree, ray, intersection.normal, intersection.material);
+    light += (*it)->render(_scene, ray, intersection.normal, intersection.material);
 
   return light;
 }
@@ -465,7 +468,7 @@ double	  RT::RenderRaytracer::progress() const
     if (r == _grid.size())
       return 0.5f;
     else
-      return 0.5f * _progress / (_scene->image.getSize().x * _scene->image.getSize().y * RT::Config::AntiAliasing * RT::Config::AntiAliasing);
+      return 0.5f * _progress / (_scene->image.getSize().x * _scene->image.getSize().y * _scene->config.liveAntiAliasing * _scene->config.liveAntiAliasing);
   }
   else
   {

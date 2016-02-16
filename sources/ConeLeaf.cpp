@@ -86,7 +86,7 @@ Math::Ray	RT::ConeLeaf::normal(Math::Ray const & ray) const
 
     normal.dx() = 2 * normal.px();
     normal.dy() = 2 * normal.py();
-    normal.dz() = sqrt(normal.dx() * normal.dx() + normal.dy() * normal.dy()) * (-x) / y;
+    normal.dz() = std::sqrt(normal.dx() * normal.dx() + normal.dy() * normal.dy()) * (-x) / y;
 
     if (x + _r2 > 0)
       normal.dz() *= -1;

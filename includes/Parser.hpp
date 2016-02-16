@@ -64,9 +64,11 @@ namespace RT
     void	lightPush(RT::AbstractLight *);	// Add a light in scene
 
     // Settings
-    void	settingCamera();				// Set camera position for current scene
-    void	settingResolution(unsigned int, unsigned int);	// Set resolution of current scene
-
+    void	settingCamera();																	// Set camera position for current scene
+    void	settingResolution(unsigned int, unsigned int);														// Set resolution of current scene
+    void	settingAntiAliasing(unsigned int, unsigned int);													// Set antialiasing level of current scene
+    void	settingLight(const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &);	// Set global light multiplier of current scene
+    
     // Utilities
     RT::AbstractTree *	import(std::string const &);	// Import file in current scope
 

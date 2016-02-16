@@ -17,11 +17,11 @@ namespace RT
     unsigned int	_quality;	// Quality of the light
 
   public:
-    OcclusionLight(RT::Color const & = RT::Color(1.f), double = RT::Config::Light::DefaultAmbientRadius, unsigned int = RT::Config::Light::DefaultQuality);
+    OcclusionLight(RT::Color const & = RT::Color(1.f), double = RT::Config::Light::AmbientRadius, unsigned int = RT::Config::Light::Quality);
     ~OcclusionLight();
 
-    RT::Color	  preview(RT::AbstractTree const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const override;	// Render preview mode of light
-    RT::Color	  render(RT::AbstractTree const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const override;	// Render complete light
+    RT::Color	  preview(RT::Scene const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const override;	// Render preview mode of light
+    RT::Color	  render(RT::Scene const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const override;	// Render complete light
   };
 };
 

@@ -2,6 +2,7 @@
 
 #include "DirectionalLight.hpp"
 #include "Math.hpp"
+#include "Scene.hpp"
 
 RT::DirectionalLight::DirectionalLight(Math::Matrix<4, 4> const & transformation, RT::Color const & color, double angle, unsigned int quality)
   : _color(color), _angle(angle), _quality(quality)
@@ -23,10 +24,10 @@ RT::DirectionalLight::DirectionalLight(Math::Matrix<4, 4> const & transformation
 RT::DirectionalLight::~DirectionalLight()
 {}
 
-RT::Color RT::DirectionalLight::preview(RT::AbstractTree const * tree, Math::Ray const & ray, Math::Ray const & normal, RT::Material const & material) const
+RT::Color RT::DirectionalLight::preview(RT::Scene const * scene, Math::Ray const & ray, Math::Ray const & normal, RT::Material const & material) const
 {
   // If no ambient light, stop
-  if (RT::Config::Light::Diffuse == 0.f || _color == RT::Color(0.f) || material.color == RT::Color(0.f) || material.diffuse == 0.f)
+  if (scene->config.lightDiffuse == 0.f || _color == RT::Color(0.f) || material.color == RT::Color(0.f) || material.diffuse == 0.f)
     return RT::Color(0.f);
 
   Math::Ray light, n;
@@ -43,16 +44,16 @@ RT::Color RT::DirectionalLight::preview(RT::AbstractTree const * tree, Math::Ray
   light.dz() = -_position.dz();
 
   // Calculate normal cosinus with light ray
-  diffuse = fmax(Math::Ray::cos(n, light), 0.f);
+  diffuse = std::fmax(Math::Ray::cos(n, light), 0.f);
   if (diffuse == 0.f)
     return RT::Color(0.f);
 
-  return material.color * material.diffuse * diffuse * _color * RT::Config::Light::Diffuse;
+  return material.color * material.diffuse * diffuse * _color * scene->config.lightDiffuse;
 }
 
-RT::Color RT::DirectionalLight::render(RT::AbstractTree const * tree, Math::Ray const & ray, Math::Ray const & normal, RT::Material const & material) const
+RT::Color RT::DirectionalLight::render(RT::Scene const * scene, Math::Ray const & ray, Math::Ray const & normal, RT::Material const & material) const
 {
-  if ((RT::Config::Light::Diffuse == RT::Color(0.f) && RT::Config::Light::Specular == RT::Color(0.f)) || (material.diffuse == 0.f && material.specular == 0.f) || material.transparency == 1.f || material.reflection == 1.f)
+  if ((scene->config.lightDiffuse == RT::Color(0.f) && scene->config.lightSpecular == RT::Color(0.f)) || (material.diffuse == 0.f && material.specular == 0.f) || material.transparency == 1.f || material.reflection == 1.f)
     return RT::Color(0.f);
 
   Math::Ray n;
@@ -82,11 +83,11 @@ RT::Color RT::DirectionalLight::render(RT::AbstractTree const * tree, Math::Ray 
     double  ry, rz;
 
     // Calculate inverse rotation angles of light
-    ry = -asin(-_position.dz());
+    ry = -std::asin(-_position.dz());
     if (_position.dx() != 0 || _position.dy() != 0)
       rz = -_position.dy() > 0 ?
-      +acos(-_position.dx() / sqrt(_position.dx() * _position.dx() + _position.dy() * _position.dy())) :
-      -acos(-_position.dx() / sqrt(_position.dx() * _position.dx() + _position.dy() * _position.dy()));
+      +std::acos(-_position.dx() / std::sqrt(_position.dx() * _position.dx() + _position.dy() * _position.dy())) :
+      -std::acos(-_position.dx() / std::sqrt(_position.dx() * _position.dx() + _position.dy() * _position.dy()));
     else
       rz = 0;
 
@@ -96,9 +97,9 @@ RT::Color RT::DirectionalLight::render(RT::AbstractTree const * tree, Math::Ray 
     for (double a = Math::Random::rand(1.f / (_quality + 1)); a < 1.f; a += 1.f / (_quality + 1))
       for (double b = Math::Random::rand((2.f * Math::Pi) / (int)(2.f * a * Math::Pi + 1.f)); b < 2.f * Math::Pi; b += (2.f * Math::Pi) / (int)(2.f * a * Math::Pi + 1.f))
       {
-	r.dx() = 1.f / tan(Math::Utils::DegToRad(_angle));
-	r.dy() = a * cos(b);
-	r.dz() = a * sin(b);
+	r.dx() = 1.f / std::tan(Math::Utils::DegToRad(_angle));
+	r.dy() = a * std::cos(b);
+	r.dz() = a * std::sin(b);
 	r.d() = matrix * r.d();
 	rays.push_back(r);
       }
@@ -113,7 +114,7 @@ RT::Color RT::DirectionalLight::render(RT::AbstractTree const * tree, Math::Ray 
   // Render generated rays
   for (std::list<Math::Ray>::const_iterator it = rays.begin(); it != rays.end(); it++)
   {
-    std::list<RT::Intersection>	intersect = tree->render((*it).normalize());
+    std::list<RT::Intersection>	intersect = scene->tree->render((*it).normalize());
     RT::Color			light = RT::Color(_color);
     double			cos_d = Math::Ray::cos(n, *it);
     double			cos_s = Math::Ray::cos(r, *it);
@@ -131,9 +132,9 @@ RT::Color RT::DirectionalLight::render(RT::AbstractTree const * tree, Math::Ray 
     diffuse += light * (cos_d > 0.f ? cos_d : -cos_d);
 
     // Apply light to specular component
-    specular += light * pow((cos_s > 0.f ? cos_s : 0.f), material.shine);
+    specular += light * std::pow((cos_s > 0.f ? cos_s : 0.f), material.shine);
   }
 
-  return diffuse / (double)rays.size() * RT::Config::Light::Diffuse * material.color * material.diffuse * (1.f - material.transparency) * (1.f - material.reflection)
-    + specular / (double)rays.size() * RT::Config::Light::Specular * material.specular * (1.f - material.transparency) * (1.f - material.reflection);
+  return diffuse / (double)rays.size() * scene->config.lightDiffuse * material.color * material.diffuse * (1.f - material.transparency) * (1.f - material.reflection)
+    + specular / (double)rays.size() * scene->config.lightSpecular * material.specular * (1.f - material.transparency) * (1.f - material.reflection);
 }

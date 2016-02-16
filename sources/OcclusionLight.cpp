@@ -1,5 +1,6 @@
 #include "Math.hpp"
 #include "OcclusionLight.hpp"
+#include "Scene.hpp"
 
 RT::OcclusionLight::OcclusionLight(RT::Color const & color, double radius, unsigned int quality)
   : _color(color), _radius(radius), _quality(quality)
@@ -11,20 +12,20 @@ RT::OcclusionLight::OcclusionLight(RT::Color const & color, double radius, unsig
 RT::OcclusionLight::~OcclusionLight()
 {}
 
-RT::Color RT::OcclusionLight::preview(RT::AbstractTree const * tree, Math::Ray const & ray, Math::Ray const & normal, RT::Material const & material) const
+RT::Color RT::OcclusionLight::preview(RT::Scene const * scene, Math::Ray const & ray, Math::Ray const & normal, RT::Material const & material) const
 {
-  return material.color * material.ambient * _color * RT::Config::Light::Ambient;
+  return material.color * material.ambient * _color * scene->config.lightAmbient;
 }
 
-RT::Color RT::OcclusionLight::render(RT::AbstractTree const * tree, Math::Ray const & ray, Math::Ray const & normal, RT::Material const & material) const
+RT::Color RT::OcclusionLight::render(RT::Scene const * scene, Math::Ray const & ray, Math::Ray const & normal, RT::Material const & material) const
 {
   // If no ambient light, stop
-  if (RT::Config::Light::Ambient == 0.f || material.ambient == 0.f || material.transparency == 1.f || material.reflection == 1.f)
+  if (scene->config.lightAmbient == 0.f || material.ambient == 0.f || material.transparency == 1.f || material.reflection == 1.f)
     return RT::Color(0.f);
 
   // If quality to basic
   if (_quality <= 1 || _radius == 0.f)
-    return material.color * RT::Config::Light::Ambient * material.ambient * (1.f - material.transparency) * (1.f - material.reflection);
+    return material.color * scene->config.lightAmbient * material.ambient * (1.f - material.transparency) * (1.f - material.reflection);
 
   Math::Ray	n, occ;
   double	ry, rz;
@@ -35,11 +36,11 @@ RT::Color RT::OcclusionLight::render(RT::AbstractTree const * tree, Math::Ray co
     n.d() = Math::Matrix<4, 4>::scale(-1.f) * normal.d();
 
   // Calculate rotation angles of normal
-  ry = -asin(n.dz());
+  ry = -std::asin(n.dz());
   if (n.dx() != 0 || n.dy() != 0)
     rz = n.dy() > 0 ?
-    +acos(n.dx() / sqrt(n.dx() * n.dx() + n.dy() * n.dy())) :
-    -acos(n.dx() / sqrt(n.dx() * n.dx() + n.dy() * n.dy()));
+    +std::acos(n.dx() / std::sqrt(n.dx() * n.dx() + n.dy() * n.dy())) :
+    -std::acos(n.dx() / std::sqrt(n.dx() * n.dx() + n.dy() * n.dy()));
   else
     rz = 0;
 
@@ -56,15 +57,15 @@ RT::Color RT::OcclusionLight::render(RT::AbstractTree const * tree, Math::Ray co
   RT::Color	ambient(0.f);
 
   for (double a = Math::Random::rand(Math::Pi / (2.f * _quality)); a < Math::Pi / 2.f; a += Math::Pi / (2.f * _quality))
-    for (double b = Math::Random::rand(2.f * Math::Pi / (cos(a) * _quality * 2.f + 1.f)); b < 2.f * Math::Pi; b += (2.f * Math::Pi) / (cos(a) * _quality * 2.f + 1.f))
+    for (double b = Math::Random::rand(2.f * Math::Pi / (std::cos(a) * _quality * 2.f + 1.f)); b < 2.f * Math::Pi; b += (2.f * Math::Pi) / (std::cos(a) * _quality * 2.f + 1.f))
     {
       // Calculate ray according to point on the hemisphere
-      occ.dx() = sin(a);
-      occ.dy() = cos(b) * cos(a);
-      occ.dz() = sin(b) * cos(a);
+      occ.dx() = std::sin(a);
+      occ.dy() = std::cos(b) * std::cos(a);
+      occ.dz() = std::sin(b) * std::cos(a);
       occ.d() = matrix * occ.d();
 
-      std::list<RT::Intersection>			  intersect = tree->render(occ.normalize());
+      std::list<RT::Intersection> intersect = scene->tree->render(occ.normalize());
       
       // Occlusion above
       if (material.transparency != 1.f)
@@ -105,5 +106,5 @@ RT::Color RT::OcclusionLight::render(RT::AbstractTree const * tree, Math::Ray co
       nb_ray++;
     }
 
-  return ambient / nb_ray * RT::Config::Light::Ambient * material.color * material.ambient * (1.f - material.transparency) * (1.f - material.reflection);
+  return ambient / nb_ray * scene->config.lightAmbient * material.color * material.ambient * (1.f - material.transparency) * (1.f - material.reflection);
 }

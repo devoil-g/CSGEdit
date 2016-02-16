@@ -21,7 +21,7 @@ namespace RT
     double const	WindowSleep(0.2f);
 
     unsigned int const	BlockSize(16);
-    unsigned int const	AntiAliasing(1);
+    unsigned int const	LiveAntiAliasing(1);
     unsigned int const	PostAntiAliasing(2);
     unsigned int const	MaxRecursivite(3);
 
@@ -30,8 +30,8 @@ namespace RT
       RT::Color const	Ambient(0.4f);
       RT::Color const	Diffuse(0.6f);
       RT::Color const	Specular(0.2f);
-      unsigned const	DefaultQuality(3);
-      double const	DefaultAmbientRadius(32.f);
+      unsigned const	Quality(3);
+      double const	AmbientRadius(32.f);
     };
 
     namespace Anaglyph3D

@@ -7,12 +7,23 @@
 
 #include "AbstractLight.hpp"
 #include "AbstractTree.hpp"
+#include "Color.hpp"
 #include "Matrix.hpp"
 
 namespace RT
 {
   class Scene
   {
+  private:
+    struct Config
+    {
+      unsigned int				liveAntiAliasing;
+      unsigned int				postAntiAliasing;
+      RT::Color					lightAmbient;
+      RT::Color					lightDiffuse;
+      RT::Color					lightSpecular;
+    };
+
   public:
     Scene();
     ~Scene();
@@ -23,6 +34,7 @@ namespace RT
     std::list<RT::AbstractLight const *>	light;		// List of light
     std::string					file;		// Master file of scene
     std::list<std::string>			dependencies;	// List of dependencies of scene
+    Config					config;
   };
 };
 

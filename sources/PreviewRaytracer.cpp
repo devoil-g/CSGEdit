@@ -86,8 +86,8 @@ void	RT::PreviewRaytracer::preview(unsigned int zone)
   y = zone / (_scene->image.getSize().x / RT::Config::BlockSize + (_scene->image.getSize().x % RT::Config::BlockSize ? 1 : 0)) * RT::Config::BlockSize;
 
   // Render zone
-  for (unsigned int a = 0; a < RT::Config::BlockSize; a += size)
-    for (unsigned int b = 0; b < RT::Config::BlockSize; b += size)
+  for (unsigned int a = 0; a < RT::Config::BlockSize && active(); a += size)
+    for (unsigned int b = 0; b < RT::Config::BlockSize && active(); b += size)
       if ((size == RT::Config::BlockSize || a % (size * 2) != 0 || b % (size * 2) != 0) && x + a < _scene->image.getSize().x && y + b < _scene->image.getSize().y)
       {
 	RT::Color clr = preview(x + a, y + b);
@@ -98,7 +98,10 @@ void	RT::PreviewRaytracer::preview(unsigned int zone)
 	      _scene->image.setPixel(x + a + c, y + b + d, clr.sfml());
       }
 
-  _grid[zone] = size / 2;
+  if (active())
+    _grid[zone] = size / 2;
+  else
+    _grid[zone] = size;
 }
 
 RT::Color	RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
@@ -129,7 +132,7 @@ RT::Color	RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
     RT::Color light;
 
     for (std::list<RT::AbstractLight const *>::const_iterator it = _scene->light.begin(); it != _scene->light.end(); it++)
-      light += (*it)->preview(_scene->tree, ray, intersect.front().normal, intersect.front().material);
+      light += (*it)->preview(_scene, ray, intersect.front().normal, intersect.front().material);
 
     return light;
   }

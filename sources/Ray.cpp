@@ -28,7 +28,7 @@ double		Math::Ray::cos(Math::Ray const & A, Math::Ray const & B)
     + (A.dy() + B.dy()) * (A.dy() + B.dy())
     + (A.dz() + B.dz()) * (A.dz() + B.dz());
 
-  return (v12 - (v1 + v2)) / (2 * sqrt(v1 * v2));
+  return (v12 - (v1 + v2)) / (2 * std::sqrt(v1 * v2));
 }
 
 double		Math::Ray::angle(Math::Ray const & A, Math::Ray const & B)
@@ -53,7 +53,7 @@ double		Math::Ray::scalaire(Math::Ray const & A, Math::Ray const & B)
     + (A.dy() + B.dy()) * (A.dy() + B.dy())
     + (A.dz() + B.dz()) * (A.dz() + B.dz());
 
-  return (v12 - (v1 + v2)) / sqrt(v1 * v2);
+  return (v12 - (v1 + v2)) / std::sqrt(v1 * v2);
 }
 
 Math::Ray	Math::Ray::vectoriel(Math::Ray const & A, Math::Ray const & B)
@@ -74,7 +74,7 @@ Math::Ray	Math::Ray::normalize() const
   double	l;
 
   // Get lenght of ray
-  l = sqrt(+this->dx() * this->dx() + this->dy() * this->dy() + this->dz() * this->dz());
+  l = std::sqrt(+this->dx() * this->dx() + this->dy() * this->dy() + this->dz() * this->dz());
 
 #ifdef _DEBUG
   // Should not happen
