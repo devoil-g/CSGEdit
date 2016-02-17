@@ -1,5 +1,8 @@
 # CSG-Raytracer
-How to build (Windows):
+
+![Alt text](/assets/screenshots/test_1.png "Example")
+
+## How to build (Windows):
 
 1. Get SFML prebuilt libraries at http://www.sfml-dev.org/download/sfml/2.3.2/
 2. Extract SFML library archive in directory \<library\>/SFML-2.3.2
