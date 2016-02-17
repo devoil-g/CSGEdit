@@ -3,6 +3,8 @@ translation([-540, 52, 436]); rotation([0, 39.8, -7.2]); camera(); end(); end();
 resolution(640, 360);
 antialiasing(0,2);
 light([255 * 0.4], [255 * 0.6], [255 * 0.2]);
+//anaglyph_3d(64, 680);
+//thread(4);
 
 // Lights
 rotation([0, 60, 30]); directional_light([255], 4.2); end();

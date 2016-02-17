@@ -17,11 +17,19 @@ namespace RT
   private:
     struct Config
     {
+      unsigned int				threadNumber;
       unsigned int				liveAntiAliasing;
       unsigned int				postAntiAliasing;
       RT::Color					lightAmbient;
       RT::Color					lightDiffuse;
       RT::Color					lightSpecular;
+      double					dofAperture;
+      double					dofFocal;
+      unsigned int				dofQuality;
+      double					anaglyphOffset;
+      double					anaglyphFocal;
+      RT::Color					anaglyphMaskLeft;
+      RT::Color					anaglyphMaskRight;
     };
 
   public:

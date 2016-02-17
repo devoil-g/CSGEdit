@@ -42,7 +42,7 @@ void	RT::PreviewRaytracer::begin()
   std::list<std::thread>  threads;
   
   // Launch rendering threads
-  for (unsigned int i = 0; i < RT::Config::ThreadNumber; i++)
+  for (unsigned int i = 0; i < _scene->config.threadNumber; i++)
     threads.push_back(std::thread((void(RT::PreviewRaytracer::*)())(&RT::PreviewRaytracer::preview), this));
   
   // Wait for rendering threads to finish

@@ -1,5 +1,3 @@
-// TODO: scene parameter (3D anaglyph, deph of field...) in script
-
 #include <chaiscript/chaiscript.hpp>
 #include <chaiscript/chaiscript_stdlib.hpp>
 #include <exception>
@@ -149,6 +147,10 @@ RT::AbstractTree *		RT::Parser::import(std::string const & path)
   script.add(chaiscript::fun(std::function<void(unsigned int)>(std::bind(&RT::Parser::settingAntiAliasing, this, std::placeholders::_1, 0))), "antialiasing");
   script.add(chaiscript::fun(std::function<void(unsigned int, unsigned int)>(std::bind(&RT::Parser::settingAntiAliasing, this, std::placeholders::_1, std::placeholders::_2))), "antialiasing");
   script.add(chaiscript::fun(std::function<void(const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &)>(std::bind(&RT::Parser::settingLight, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3))), "light");
+  script.add(chaiscript::fun(std::function<void(double, double)>(std::bind(&RT::Parser::settingDephOfField, this, std::placeholders::_1, std::placeholders::_2, RT::Config::DephOfField::Quality))), "deph_of_field");
+  script.add(chaiscript::fun(std::function<void(double, double)>(std::bind(static_cast<void(RT::Parser::*)(double, double, RT::Color const &, RT::Color const &)>(&RT::Parser::settingAnaglyph3D), this, std::placeholders::_1, std::placeholders::_2, RT::Config::Anaglyph3D::MaskLeft, RT::Config::Anaglyph3D::MaskRight))), "anaglyph_3d");
+  script.add(chaiscript::fun(std::function<void(double, double, const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &)>(std::bind(static_cast<void(RT::Parser::*)(double, double, const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &)>(&RT::Parser::settingAnaglyph3D), this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4))), "anaglyph_3d");
+  script.add(chaiscript::fun(std::function<void(unsigned int)>(std::bind(&RT::Parser::settingThread, this, std::placeholders::_1))), "thread");
   // Others
   script.add(chaiscript::fun(&RT::Parser::import, this), "import");
 
@@ -281,105 +283,33 @@ void	RT::Parser::scopeMaterial(std::string const & material)
 
 void	RT::Parser::scopeColor(const std::vector<chaiscript::Boxed_Value> & v)
 {
-  std::vector<double> clr = convertVector<double>(v);
-  double	      r, g, b;
-
-  if (clr.size() == 1)
-  {
-    r = clr[0] / 255.f;
-    g = clr[0] / 255.f;
-    b = clr[0] / 255.f;
-  }
-  else if (clr.size() == 3)
-  {
-    r = clr[0] / 255.f;
-    g = clr[1] / 255.f;
-    b = clr[2] / 255.f;
-  }
-  else
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
-
   RT::Material	material;
 
-  material.color = RT::Color(r, g, b);
+  material.color = color(v);
   scopeStart(new RT::MaterialNode(material));
 }
 
 void	RT::Parser::scopeAmbient(const std::vector<chaiscript::Boxed_Value> & v)
 {
-  std::vector<double> clr = convertVector<double>(v);
-  double	      r, g, b;
-
-  if (clr.size() == 1)
-  {
-    r = clr[0] / 255.f;
-    g = clr[0] / 255.f;
-    b = clr[0] / 255.f;
-  }
-  else if (clr.size() == 3)
-  {
-    r = clr[0] / 255.f;
-    g = clr[1] / 255.f;
-    b = clr[2] / 255.f;
-  }
-  else
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
-
   RT::Material	material;
 
-  material.ambient = RT::Color(r, g, b);
+  material.ambient = color(v);
   scopeStart(new RT::MaterialNode(material));
 }
 
 void	RT::Parser::scopeDiffuse(const std::vector<chaiscript::Boxed_Value> & v)
 {
-  std::vector<double> clr = convertVector<double>(v);
-  double	      r, g, b;
-
-  if (clr.size() == 1)
-  {
-    r = clr[0] / 255.f;
-    g = clr[0] / 255.f;
-    b = clr[0] / 255.f;
-  }
-  else if (clr.size() == 3)
-  {
-    r = clr[0] / 255.f;
-    g = clr[1] / 255.f;
-    b = clr[2] / 255.f;
-  }
-  else
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
-
   RT::Material	material;
 
-  material.diffuse = RT::Color(r, g, b);
+  material.diffuse = color(v);
   scopeStart(new RT::MaterialNode(material));
 }
 
 void	RT::Parser::scopeSpecular(const std::vector<chaiscript::Boxed_Value> & v, double s)
 {
-  std::vector<double> clr = convertVector<double>(v);
-  double	      r, g, b;
-
-  if (clr.size() == 1)
-  {
-    r = clr[0] / 255.f;
-    g = clr[0] / 255.f;
-    b = clr[0] / 255.f;
-  }
-  else if (clr.size() == 3)
-  {
-    r = clr[0] / 255.f;
-    g = clr[1] / 255.f;
-    b = clr[2] / 255.f;
-  }
-  else
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
-
   RT::Material	material;
 
-  material.specular = RT::Color(r, g, b);
+  material.specular = color(v);
   material.shine = s;
   scopeStart(new RT::MaterialNode(material));
 }
@@ -468,71 +398,17 @@ void	RT::Parser::primitivePush(RT::AbstractTree * tree)
 
 void	RT::Parser::lightDirectional(const std::vector<chaiscript::Boxed_Value> & v, double angle, unsigned int quality)
 {
-  std::vector<double> clr = convertVector<double>(v);
-  double	      r, g, b;
-
-  if (clr.size() == 1)
-  {
-    r = clr[0] / 255.f;
-    g = clr[0] / 255.f;
-    b = clr[0] / 255.f;
-  }
-  else if (clr.size() == 3)
-  {
-    r = clr[0] / 255.f;
-    g = clr[1] / 255.f;
-    b = clr[2] / 255.f;
-  }
-  else
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
-
-  lightPush(new RT::DirectionalLight(_transformation.top(), RT::Color(r, g, b), angle, quality));
+  lightPush(new RT::DirectionalLight(_transformation.top(), color(v), angle, quality));
 }
 
 void	RT::Parser::lightOcclusion(const std::vector<chaiscript::Boxed_Value> & v, double radius, unsigned int quality)
 {
-  std::vector<double> clr = convertVector<double>(v);
-  double	      r, g, b;
-
-  if (clr.size() == 1)
-  {
-    r = clr[0] / 255.f;
-    g = clr[0] / 255.f;
-    b = clr[0] / 255.f;
-  }
-  else if (clr.size() == 3)
-  {
-    r = clr[0] / 255.f;
-    g = clr[1] / 255.f;
-    b = clr[2] / 255.f;
-  }
-  else
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
-
-  lightPush(new RT::OcclusionLight(RT::Color(r, g, b), radius, quality));
+  lightPush(new RT::OcclusionLight(color(v), radius, quality));
 }
 
 void	RT::Parser::lightPoint(const std::vector<chaiscript::Boxed_Value> & v, double radius, double intensity, double angle1, double angle2, unsigned int quality)
 {
-  std::vector<double> clr = convertVector<double>(v);
-  double	      r, g, b;
-
-  if (clr.size() == 1)
-  {
-    r = clr[0] / 255.f;
-    g = clr[0] / 255.f;
-    b = clr[0] / 255.f;
-  }
-  else if (clr.size() == 3)
-  {
-    r = clr[0] / 255.f;
-    g = clr[1] / 255.f;
-    b = clr[2] / 255.f;
-  }
-  else
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
-
-  lightPush(new RT::PointLight(_transformation.top(), RT::Color(r, g, b), radius, intensity, angle1, angle2, quality));
+  lightPush(new RT::PointLight(_transformation.top(), color(v), radius, intensity, angle1, angle2, quality));
 }
 
 void	RT::Parser::lightPush(RT::AbstractLight * light)
@@ -569,62 +445,50 @@ void	RT::Parser::settingLight(const std::vector<chaiscript::Boxed_Value> & a, co
   // Set global light multiplier only if in main file
   if (_files.size() == 1)
   {
-    std::vector<double> clr;
-    double		r, g, b;
+    _scene->config.lightAmbient = color(a);
+    _scene->config.lightDiffuse = color(d);
+    _scene->config.lightSpecular = color(s);
+  }
+}
 
-    clr = convertVector<double>(a);
-    if (clr.size() == 1)
-    {
-      r = clr[0] / 255.f;
-      g = clr[0] / 255.f;
-      b = clr[0] / 255.f;
-    }
-    else if (clr.size() == 3)
-    {
-      r = clr[0] / 255.f;
-      g = clr[1] / 255.f;
-      b = clr[2] / 255.f;
-    }
-    else
+void	RT::Parser::settingDephOfField(double aperture, double focal, unsigned int quality)
+{
+  // Set deph of field configuration only if in main file
+  if (_files.size() == 1)
+  {
+    _scene->config.dofAperture = aperture;
+    _scene->config.dofFocal = focal;
+    _scene->config.dofQuality = quality;
+  }
+}
+
+void	RT::Parser::settingAnaglyph3D(double offset, double focal, const std::vector<chaiscript::Boxed_Value> & left, const std::vector<chaiscript::Boxed_Value> & right)
+{
+  settingAnaglyph3D(offset, focal, color(left), color(right));
+}
+
+void	RT::Parser::settingAnaglyph3D(double offset, double focal, RT::Color const & left, RT::Color const & right)
+{
+  // Set deph of field configuration only if in main file
+  if (_files.size() == 1)
+  {
+    _scene->config.anaglyphOffset = offset;
+    _scene->config.anaglyphFocal = focal;
+    _scene->config.anaglyphMaskLeft = left;
+    _scene->config.anaglyphMaskRight = right;
+  }
+}
+
+void	RT::Parser::settingThread(unsigned int thread)
+{
+  // Set number of rendering thread only in main file
+  if (_files.size() == 1)
+  {
+    // Cancel if invalid number of thread
+    if (thread < 1)
       throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
 
-    _scene->config.lightAmbient = RT::Color(r, g, b);
-
-    clr = convertVector<double>(d);
-    if (clr.size() == 1)
-    {
-      r = clr[0] / 255.f;
-      g = clr[0] / 255.f;
-      b = clr[0] / 255.f;
-    }
-    else if (clr.size() == 3)
-    {
-      r = clr[0] / 255.f;
-      g = clr[1] / 255.f;
-      b = clr[2] / 255.f;
-    }
-    else
-      throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
-
-    _scene->config.lightDiffuse = RT::Color(r, g, b);
-
-    clr = convertVector<double>(s);
-    if (clr.size() == 1)
-    {
-      r = clr[0] / 255.f;
-      g = clr[0] / 255.f;
-      b = clr[0] / 255.f;
-    }
-    else if (clr.size() == 3)
-    {
-      r = clr[0] / 255.f;
-      g = clr[1] / 255.f;
-      b = clr[2] / 255.f;
-    }
-    else
-      throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
-    
-    _scene->config.lightSpecular = RT::Color(r, g, b);
+    _scene->config.threadNumber = thread;
   }
 }
 
@@ -638,4 +502,16 @@ std::string	RT::Parser::directory(std::string const & file) const
   else
     return file.substr(0, file.find_last_of('/')) + std::string("/");
 #endif
+}
+
+RT::Color	RT::Parser::color(const std::vector<chaiscript::Boxed_Value> & v) const
+{
+  std::vector<double>	clr = convertVector<double>(v);
+
+  if (clr.size() == 1)
+    return RT::Color(clr[0] / 255.f, clr[0] / 255.f, clr[0] / 255.f);
+  else if (clr.size() == 3)
+    return RT::Color(clr[0] / 255.f, clr[1] / 255.f, clr[2] / 255.f);
+  else
+    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
 }

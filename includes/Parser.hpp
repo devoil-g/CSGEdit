@@ -68,7 +68,11 @@ namespace RT
     void	settingResolution(unsigned int, unsigned int);														// Set resolution of current scene
     void	settingAntiAliasing(unsigned int, unsigned int);													// Set antialiasing level of current scene
     void	settingLight(const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &);	// Set global light multiplier of current scene
-    
+    void	settingDephOfField(double, double, unsigned int);													// Set deph of field parameters of current scene
+    void	settingAnaglyph3D(double, double, const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &);				// Set 3D anaglyph parameters of current scene
+    void	settingAnaglyph3D(double, double, RT::Color const &, RT::Color const &);										// Set 3D anaglyph parameters of current scene
+    void	settingThread(unsigned int);																// Set the number of thread for rendering
+
     // Utilities
     RT::AbstractTree *	import(std::string const &);	// Import file in current scope
 
@@ -81,7 +85,8 @@ namespace RT
       return result;
     }
     
-    std::string		directory(std::string const &) const;	// Return directory path of file (for relative import)
+    std::string		directory(std::string const &) const;				// Return directory path of file (for relative import)
+    RT::Color		color(const std::vector<chaiscript::Boxed_Value> &) const;	// Convert the array to a RT::Color
 
   public:
     Parser();
