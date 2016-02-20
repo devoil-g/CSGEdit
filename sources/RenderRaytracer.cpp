@@ -204,13 +204,15 @@ void	RT::RenderRaytracer::render()
 void	RT::RenderRaytracer::render(unsigned int zone)
 {
   unsigned int	size = _grid[zone];
-  unsigned int	x, y;
+  unsigned int	x, y, p;
 
   _grid[zone] = RT::Config::BlockSize + 1;
 
   // Calcul zone coordinates (x, y)
   x = zone % (_scene->image.getSize().x / RT::Config::BlockSize + (_scene->image.getSize().x % RT::Config::BlockSize ? 1 : 0)) * RT::Config::BlockSize;
   y = zone / (_scene->image.getSize().x / RT::Config::BlockSize + (_scene->image.getSize().x % RT::Config::BlockSize ? 1 : 0)) * RT::Config::BlockSize;
+
+  p = 0;
 
   // Render zone
   for (unsigned int a = 0; a < RT::Config::BlockSize && active(); a += size)
@@ -223,7 +225,7 @@ void	RT::RenderRaytracer::render(unsigned int zone)
 	  {
 	    RT::Color clr = renderAntialiasing(x + a, y + b, _scene->config.liveAntiAliasing);
 
-	    _progress += _scene->config.liveAntiAliasing * _scene->config.liveAntiAliasing;
+	    p += _scene->config.liveAntiAliasing * _scene->config.liveAntiAliasing;
 	    for (unsigned int c = 0; c < size; c++)
 	      for (unsigned int d = 0; d < size; d++)
 		if (x + a + c < _scene->image.getSize().x && y + b + d < _scene->image.getSize().y)
@@ -235,13 +237,16 @@ void	RT::RenderRaytracer::render(unsigned int zone)
 	  if (_antialiasing[(x + a) + (y + b) * _scene->image.getSize().x] > 0)
 	  {
 	    _scene->image.setPixel(x + a, y + b, renderAntialiasing(x + a, y + b, _scene->config.liveAntiAliasing + _antialiasing[(x + a) + (y + b) * _scene->image.getSize().x]).sfml());
-	    _progress += (_scene->config.liveAntiAliasing + _antialiasing[(x + a) + (y + b) * _scene->image.getSize().x]) * (_scene->config.liveAntiAliasing + _antialiasing[(x + a) + (y + b) * _scene->image.getSize().x]);
+	    p += (_scene->config.liveAntiAliasing + _antialiasing[(x + a) + (y + b) * _scene->image.getSize().x]) * (_scene->config.liveAntiAliasing + _antialiasing[(x + a) + (y + b) * _scene->image.getSize().x]);
 	  }
 	}
       }
 
   if (active())
+  {
     _grid[zone] = size / 2;
+    _progress += p;
+  }
   else
     _grid[zone] = size;
 }

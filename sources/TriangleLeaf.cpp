@@ -11,11 +11,9 @@ std::vector<double>	RT::TriangleLeaf::intersection(Math::Ray const & ray) const
 {
   std::vector<double>	result;
   Math::Ray		v, v0, v1, v2;
-  double		a, b, c, d, l;
+  double		a, b, c, d;
 
   // Very clever method to get intersection distance
-  l = std::sqrt(ray.dx() * ray.dx() + ray.dy() * ray.dy() + ray.dz() * ray.dz());
-
   v0.dx() = std::get<0>(_p1) - std::get<0>(_p0);
   v0.dy() = std::get<1>(_p1) - std::get<1>(_p0);
   v0.dz() = std::get<2>(_p1) - std::get<2>(_p0);
