@@ -20,3 +20,7 @@
   6. Configure
   7. Generate
 9. Project has been generated in \<build\>
+
+## How tu build (Linux):
+
+You use Linux. You're strong. Do it yourself. Use CMake.
