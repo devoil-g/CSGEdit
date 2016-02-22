@@ -66,16 +66,12 @@ std::string	RT::IntersectionNode::dump() const
 {
   std::stringstream stream;
 
-  stream << "intersection(){";
+  stream << "intersection();";
 
   for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
-  {
-    if (it != _children.begin())
-      stream << ", ";
     stream << (*it)->dump();
-  }
 
-  stream << "}";
+  stream << "end();";
 
   return stream.str();
 }

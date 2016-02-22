@@ -9,6 +9,8 @@
 #include "Exception.hpp"
 #endif
 
+#include "Math.hpp"
+
 namespace Math
 {
   template<unsigned int cRow, unsigned int cCol>

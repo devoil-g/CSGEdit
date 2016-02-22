@@ -2,6 +2,7 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <iostream>
 
+#include "Config.hpp"
 #include "ControlState.hpp"
 #include "RenderState.hpp"
 #include "StateMachine.hpp"
@@ -147,9 +148,10 @@ bool  RT::ControlState::update(sf::Time)
     {
       _file = std::string(path);
       _time.clear();
+      std::cout << "[" << RT::Config::WindowTitle << "] Opening file '" << _file << "'." << std::endl;
     }
     else
-      std::cerr << "[WorldEdit] Failed opening file." << std::endl;
+      std::cout << "[" << RT::Config::WindowTitle << "] Failed opening file." << std::endl;
 #endif
   }
 

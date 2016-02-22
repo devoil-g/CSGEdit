@@ -135,7 +135,7 @@ std::string	RT::BoxLeaf::dump() const
 {
   std::stringstream stream;
 
-  stream << "box(x = " << _x << ", y = " << _y << ", z = " << _z << ", center = " << (_center ? "true" : "false") << ")";
+  stream << "box(" << _x << ", " << _y << ", " << _z << ", " << (_center ? "true" : "false") << ");";
 
   return stream.str();
 }

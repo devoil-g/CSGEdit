@@ -20,10 +20,12 @@ namespace RT
     void			loadStl(std::string const &);				// Load a .stl file
 
   public:
+    MeshNode();
     MeshNode(std::string const &);
     ~MeshNode();
 
     std::string			dump() const override;					// Dump CSG tree
+    void			push(RT::AbstractTree const *) override;		// Push a triangle in mesh
   };
 };
 

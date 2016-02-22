@@ -61,6 +61,4 @@ void  RT::Config::initialize(int argc, char **argv)
   // If +1 thread, keep one thread for display.
   else
     RT::Config::ThreadNumber = systemThread - 1;
-
-  std::cout << "[Config] Number of rendering thread set to '" << RT::Config::ThreadNumber << "'." << std::endl;
 }

@@ -20,8 +20,10 @@ namespace RT
     OcclusionLight(RT::Color const & = RT::Color(1.f), double = RT::Config::Light::AmbientRadius, unsigned int = RT::Config::Light::Quality);
     ~OcclusionLight();
 
-    RT::Color	  preview(RT::Scene const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const override;	// Render preview mode of light
-    RT::Color	  render(RT::Scene const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const override;	// Render complete light
+    RT::Color		preview(RT::Scene const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const override;	// Render preview mode of light
+    RT::Color		render(RT::Scene const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const override;	// Render complete light
+
+    std::string		dump() const override;											// Dump light in string
   };
 };
 

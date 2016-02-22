@@ -40,7 +40,7 @@ std::string	RT::TangleLeaf::dump() const
 {
   std::stringstream stream;
 
-  stream << "tangle(c = " << _c << ")";
+  stream << "tangle(" << _c << ");";
 
   return stream.str();
 }

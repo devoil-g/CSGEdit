@@ -60,16 +60,12 @@ std::string	RT::BoundingNode::dump() const
 {
   std::stringstream stream;
 
-  stream << "bounding(){";
+  stream << "bounding();";
 
   for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
-  {
-    if (it != _children.begin())
-      stream << ", ";
     stream << (*it)->dump();
-  }
 
-  stream << "}";
+  stream << "end();";
 
   return stream.str();
 }

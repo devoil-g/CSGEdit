@@ -14,7 +14,7 @@ namespace RT
     extern std::string	ExecutablePath;
     extern unsigned int	ThreadNumber;
 
-    std::string	const	WindowTitle("WorldEdit");
+    std::string	const	WindowTitle("CSGEdit");
     std::string	const	WindowIcon("C:/project/CSG-Raytracer/assets/icons/icon16.png");
     unsigned int const	WindowWidth(640);
     unsigned int const	WindowHeight(360);

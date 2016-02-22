@@ -148,7 +148,7 @@ std::string RT::Color::dump() const
 {
   std::stringstream   stream;
 
-  stream << "color(r = " << r << ", g = " << g << ", b = " << b << ")";
+  stream << "[" << r << ", " << g << ", " << b << "]";
 
   return stream.str();
 }

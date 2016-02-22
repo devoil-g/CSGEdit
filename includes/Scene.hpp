@@ -40,9 +40,10 @@ namespace RT
     Math::Matrix<4, 4>				camera;		// Matrix camera
     RT::AbstractTree const *			tree;		// CSG tree
     std::list<RT::AbstractLight const *>	light;		// List of light
-    std::string					file;		// Master file of scene
     std::list<std::string>			dependencies;	// List of dependencies of scene
     Config					config;
+
+    std::string					dump() const;	// Return scene dump
   };
 };
 

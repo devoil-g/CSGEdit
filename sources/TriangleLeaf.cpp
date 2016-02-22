@@ -65,7 +65,18 @@ std::string	RT::TriangleLeaf::dump() const
 {
   std::stringstream stream;
 
-  stream << "triangle(p0 = [" << std::get<0>(_p0) << ", " << std::get<1>(_p0) << ", " << std::get<2>(_p0) << "], p1 = [" << std::get<0>(_p1) << ", " << std::get<1>(_p1) << ", " << std::get<2>(_p1) << "], p2 = [" << std::get<0>(_p2) << ", " << std::get<1>(_p2) << ", " << std::get<2>(_p2) << "])";
+  stream << "triangle([" << std::get<0>(_p0) << ", " << std::get<1>(_p0) << ", " << std::get<2>(_p0) << "], [" << std::get<0>(_p1) << ", " << std::get<1>(_p1) << ", " << std::get<2>(_p1) << "], [" << std::get<0>(_p2) << ", " << std::get<1>(_p2) << ", " << std::get<2>(_p2) << "]);";
 
   return stream.str();
+}
+
+std::vector<std::tuple<double, double, double>>	RT::TriangleLeaf::points() const
+{
+  std::vector<std::tuple<double, double, double>> result;
+
+  result.push_back(std::tuple<double, double, double>(std::get<0>(_p0), std::get<1>(_p0), std::get<2>(_p0)));
+  result.push_back(std::tuple<double, double, double>(std::get<0>(_p1), std::get<1>(_p1), std::get<2>(_p1)));
+  result.push_back(std::tuple<double, double, double>(std::get<0>(_p2), std::get<1>(_p2), std::get<2>(_p2)));
+
+  return result;
 }

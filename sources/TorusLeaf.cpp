@@ -92,7 +92,7 @@ std::string	RT::TorusLeaf::dump() const
 {
   std::stringstream stream;
 
-  stream << "torus(r = " << _r << ", h = " << _h << ")";
+  stream << "torus(" << _r << ", " << _h << ");";
 
   return stream.str();
 }

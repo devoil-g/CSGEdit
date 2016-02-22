@@ -59,17 +59,54 @@ std::list<RT::Intersection> RT::MaterialNode::renderChildren(Math::Ray const & r
 std::string	RT::MaterialNode::dump() const
 {
   std::stringstream stream;
+  unsigned int	    n;
 
-  stream << "material(color = " << _material.color.dump() << ", ambient = " << _material.ambient.dump() << ", diffuse = " << _material.diffuse.dump() << ", specular = " << _material.specular.dump() << ", shine = " << _material.shine << ", reflection = " << _material.reflection << ", refraction = " << _material.refraction << ", transparency = " << _material.transparency << "){";
+  n = 0;
 
-  for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
+  // Search for non-default materials
+  if (_material.color != 1.f)
   {
-    if (it != _children.begin())
-      stream << ", ";
-    stream << (*it)->dump();
+    stream << "color(" << _material.color.dump() << ");";
+    n++;
+  }
+  if (_material.ambient != 1.f)
+  {
+    stream << "ambient(" << _material.ambient.dump() << ");";
+    n++;
+  }
+  if (_material.diffuse != 1.f)
+  {
+    stream << "diffuse(" << _material.diffuse.dump() << ");";
+    n++;
+  }
+  if (_material.specular != 1.f || _material.shine != 1.f)
+  {
+    stream << "specular(" << _material.specular.dump() << ", " << _material.shine << ");";
+    n++;
+  }
+  if (_material.reflection != 0.f)
+  {
+    stream << "reflection(" << _material.reflection << ");";
+    n++;
+  }
+  if (_material.transparency != 0.f || _material.refraction != 1.f)
+  {
+    stream << "transparency(" << _material.transparency << ", " << _material.refraction << ");";
+    n++;
   }
 
-  stream << "}";
+  // If no material, force an union
+  if (n == 0)
+  {
+    stream << "union();";
+    n++;
+  }
+
+  for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
+    stream << (*it)->dump();
+
+  for (unsigned int i = 0; i < n; i++)
+    stream << "end();";
 
   return stream.str();
 }

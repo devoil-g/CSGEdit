@@ -1,4 +1,5 @@
 #include <list>
+#include <sstream>
 
 #include "DirectionalLight.hpp"
 #include "Math.hpp"
@@ -137,4 +138,24 @@ RT::Color RT::DirectionalLight::render(RT::Scene const * scene, Math::Ray const 
 
   return diffuse / (double)rays.size() * scene->config.lightDiffuse * material.color * material.diffuse * (1.f - material.transparency) * (1.f - material.reflection)
     + specular / (double)rays.size() * scene->config.lightSpecular * material.specular * (1.f - material.transparency) * (1.f - material.reflection);
+}
+
+std::string		RT::DirectionalLight::dump() const
+{
+  std::stringstream	stream;
+  Math::Matrix<4, 4>	transformation;
+  double		ry, rz;
+
+  // Calculate rotation angles of light
+  ry = +std::asin(-_position.dz());
+  if (_position.dx() != 0 || _position.dy() != 0)
+    rz = _position.dy() > 0 ?
+    +std::acos(-_position.dx() / std::sqrt(_position.dx() * _position.dx() + _position.dy() * _position.dy())) :
+    -std::acos(-_position.dx() / std::sqrt(_position.dx() * _position.dx() + _position.dy() * _position.dy()));
+  else
+    rz = 0;
+
+  stream << "transformation(" << Math::Matrix<4, 4>::rotation(0, Math::Utils::RadToDeg(ry), Math::Utils::RadToDeg(rz)).dump() << ");directional_light(" << _color.dump() << ", " << _angle << ", " << _quality << ");end();";
+
+  return stream.str();
 }

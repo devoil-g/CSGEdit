@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "Config.hpp"
 #include "Scene.hpp"
 
@@ -6,7 +8,6 @@ RT::Scene::Scene()
   image.create(RT::Config::WindowWidth, RT::Config::WindowHeight);
   camera = Math::Matrix<4, 4>::identite();
   tree = nullptr;
-  file = "";
 
   // Thread
   config.threadNumber = RT::Config::ThreadNumber;
@@ -40,4 +41,25 @@ RT::Scene::~Scene()
     delete light.back();
     light.pop_back();
   }
+}
+
+std::string		RT::Scene::dump() const
+{
+  std::stringstream	stream;
+
+  // Config
+  stream << "thread(" << config.threadNumber << ");";
+  stream << "antialiasing(" << config.liveAntiAliasing << ", " << config.postAntiAliasing << ");";
+  stream << "light(" << config.lightAmbient.dump() << ", " << config.lightDiffuse.dump() << ", " << config.lightSpecular.dump() << ");";
+  stream << "deph_of_field(" << config.dofAperture << ", " << config.dofFocal << ", " << config.dofQuality << ");";
+  stream << "anaglyph_3d(" << config.anaglyphOffset << ", " << config.anaglyphFocal << ", " << config.anaglyphMaskLeft.dump() << ", " << config.anaglyphMaskRight.dump() << ");";
+
+  stream << "resolution(" << image.getSize().x << ", " << image.getSize().y << ");";
+  stream << "transformation(" << camera.dump() << ");camera();end();";
+  stream << tree->dump();
+  
+  for (std::list<RT::AbstractLight const *>::const_iterator it = light.begin(); it != light.end(); it++)
+    stream << (*it)->dump();
+
+  return stream.str();
 }

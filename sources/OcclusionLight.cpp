@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "Math.hpp"
 #include "OcclusionLight.hpp"
 #include "Scene.hpp"
@@ -107,4 +109,13 @@ RT::Color RT::OcclusionLight::render(RT::Scene const * scene, Math::Ray const & 
     }
 
   return ambient / nb_ray * scene->config.lightAmbient * material.color * material.ambient * (1.f - material.transparency) * (1.f - material.reflection);
+}
+
+std::string	RT::OcclusionLight::dump() const
+{
+  std::stringstream	stream;
+
+  stream << "occlusion_light(" << _color.dump() << ", " << _radius << ", " << _quality << ");";
+
+  return stream.str();
 }

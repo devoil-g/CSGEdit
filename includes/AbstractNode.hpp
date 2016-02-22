@@ -22,7 +22,7 @@ namespace RT
     virtual ~AbstractNode();
 
     std::list<RT::Intersection>	render(Math::Ray const &) const;			// Render a list of intersection from the sub-tree according to ray
-    void  push(RT::AbstractTree const *);						// Add a CSG tree to sub-trees list
+    virtual void		push(RT::AbstractTree const *);				// Add a CSG tree to sub-trees list
   };
 };
 

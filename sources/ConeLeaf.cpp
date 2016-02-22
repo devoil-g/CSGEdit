@@ -110,7 +110,10 @@ std::string	RT::ConeLeaf::dump() const
 {
   std::stringstream stream;
 
-  stream << "cone(r1 = " << _r1 << ", r2 = " << _r2 << ", h = " << _h << ", center = " << (_center ? "true" : "false") << ")";
+  if (_r1 == _r2)
+    stream << "cylinder(" << _r1 << ", " << _h << ", " << (_center ? "true" : "false") << ");";
+  else
+    stream << "cone(" << _r1 << ", " << _r2 << ", " << _h << ", " << (_center ? "true" : "false") << ");";
 
   return stream.str();
 }

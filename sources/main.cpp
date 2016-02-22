@@ -93,7 +93,7 @@ int	main(int argc, char ** argv)
 
   try
   {
-    std::cout << "[WorldEdit] Opening file '" << file << "'." << std::endl;
+    std::cout << "[" << RT::Config::WindowTitle << "] Opening file '" << file << "'." << std::endl;
     RT::initialize(argc, argv);
 
     // Push initial state in state machine here

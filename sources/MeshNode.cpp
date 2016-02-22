@@ -8,6 +8,10 @@
 #include "MeshNode.hpp"
 #include "TriangleLeaf.hpp"
 
+RT::MeshNode::MeshNode()
+  : _bound(nullptr)
+{}
+
 RT::MeshNode::MeshNode(std::string const & path)
   : _bound(nullptr)
 {
@@ -80,16 +84,32 @@ std::string	RT::MeshNode::dump() const
 {
   std::stringstream stream;
 
-  stream << "mesh(){";
+  stream << "mesh();";
+
+  for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
+    stream << (*it)->dump();
+
+  stream << "end();";
+
+  return stream.str();
+}
+
+void		RT::MeshNode::push(RT::AbstractTree const * node)
+{
+  if (dynamic_cast<RT::TriangleLeaf const *>(node))
+    RT::AbstractNode::push(node);
+  else
+    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+
+  std::vector<std::tuple<double, double, double>> pts;
 
   for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
   {
-    if (it != _children.begin())
-      stream << ", ";
-    stream << (*it)->dump();
+    std::vector<std::tuple<double, double, double>> pt = dynamic_cast<RT::TriangleLeaf const *>(*it)->points();
+    
+    pts.insert(pts.end(), pt.begin(), pt.end());
   }
 
-  stream << "}";
-
-  return stream.str();
+  delete _bound;
+  _bound = Math::Utils::BoundingSphere(pts);
 }

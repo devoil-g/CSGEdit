@@ -17,16 +17,18 @@ namespace RT
   class Parser
   {
   private:
-    std::stack<RT::AbstractNode *>	_scope;			// Stack of scopes
-    std::stack<Math::Matrix<4, 4>>	_transformation;	// Stack of transformations
-    std::stack<std::string>		_files;			// Stack of loaded files
-    RT::Scene *				_scene;			// Scene being currently loaded
+    std::stack<RT::AbstractNode *>		_scope;			// Stack of scopes
+    std::stack<Math::Matrix<4, 4>>		_transformation;	// Stack of transformations
+    std::stack<std::string>			_files;			// Stack of loaded files
+    std::stack<chaiscript::ChaiScript *>	_script;		// Stack of scripts
+    RT::Scene *					_scene;			// Scene being currently loaded
 
     // Scope CSG
     void	scopeDifference();	// Push a CSG difference in scope
     void	scopeIntersection();	// Push a CSG intersection in scope
     void	scopeUnion();		// Push a CSG union in scope
     // Scope transformations
+    void	scopeTransformation(const std::vector<chaiscript::Boxed_Value> &);	// Push a transformation in scope
     void	scopeTranslation(const std::vector<chaiscript::Boxed_Value> &);		// Push a translation in scope
     void	scopeMirror(const std::vector<chaiscript::Boxed_Value> &);		// Push a mirror in scope
     void	scopeRotation(const std::vector<chaiscript::Boxed_Value> &);		// Push a rotation in scope
@@ -42,6 +44,7 @@ namespace RT
     void	scopeTransparency(double, double);					// Push a transparency and refraction material in scope
     // Scope others
     void	scopeBounding();	// Push a bounding node in scope
+    void	scopeMesh();		// Push a mesh node in scope
     // Scope utlilites
     void	scopeStart(RT::AbstractNode *);	// Push a new scope in stack
     void	scopeEnd();			// Pop last scope in stack
@@ -75,12 +78,13 @@ namespace RT
 
     // Utilities
     RT::AbstractTree *	import(std::string const &);	// Import file in current scope
+    void		include(std::string const &);	// Include file in current scope
 
     template<typename X> 
     std::vector<X>	convertVector(const std::vector<chaiscript::Boxed_Value> & v) const	// Convert ChaiScript vector to std::vector of type X
     {
       std::vector<X>  result;
-
+      
       std::transform(v.begin(), v.end(), std::back_inserter(result), [](const chaiscript::Boxed_Value &bv) { return chaiscript::Boxed_Number(bv).get_as<X>(); });
       return result;
     }

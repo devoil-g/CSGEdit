@@ -24,6 +24,8 @@ namespace RT
 
     RT::Color		preview(RT::Scene const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const override;	// Render preview mode
     RT::Color		render(RT::Scene const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const override;	// Render complete light
+
+    std::string		dump() const override;											// Dump light in string
   };
 };
 

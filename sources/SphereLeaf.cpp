@@ -38,7 +38,7 @@ std::string	RT::SphereLeaf::dump() const
 {
   std::stringstream stream;
 
-  stream << "sphere(r = " << _r << ")";
+  stream << "sphere(" << _r << ");";
 
   return stream.str();
 }
