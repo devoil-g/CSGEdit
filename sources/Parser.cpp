@@ -41,7 +41,7 @@ RT::Scene *		RT::Parser::load(std::string const & path)
   try
   {
     // Parse file
-    _scene->tree = import(path);
+    _scene->tree() = import(path);
   }
   catch (std::exception e)
   {
@@ -65,10 +65,10 @@ RT::Scene *		RT::Parser::load(std::string const & path)
   }
 
   // If no light, force basic configuration
-  if (_scene->light.empty())
+  if (_scene->light().empty())
   {
-    _scene->light.push_back(new RT::OcclusionLight(RT::Color(1.f), 0));
-    _scene->light.push_back(new RT::DirectionalLight(Math::Matrix<4, 4>::rotation(0, 60, 30), RT::Color(1.f), 0));
+    _scene->light().push_back(new RT::OcclusionLight(RT::Color(1.f), 0));
+    _scene->light().push_back(new RT::DirectionalLight(Math::Matrix<4, 4>::rotation(0, 60, 30), RT::Color(1.f), 0));
   }
 
   _transformation.pop();
@@ -168,7 +168,7 @@ RT::AbstractTree *		RT::Parser::import(std::string const & path)
 
   //_files.push(_files.empty() ? path : std::string(directory(_files.top)) + path);
   _files.push(_files.empty() ? path : directory(_files.top()).append(path));
-  _scene->dependencies.push_back(_files.top());
+  _scene->dependencies().push_back(_files.top());
 
   // Parsing file
   _script.top()->eval_file(_files.top());
@@ -189,7 +189,7 @@ RT::AbstractTree *		RT::Parser::import(std::string const & path)
 void	RT::Parser::include(std::string const & path)
 {
   _files.push(_files.empty() ? path : directory(_files.top()).append(path));
-  _scene->dependencies.push_back(_files.top());
+  _scene->dependencies().push_back(_files.top());
 
   // Parsing file
   _script.top()->eval_file(_files.top());
@@ -407,7 +407,7 @@ void	RT::Parser::primitiveMesh(std::string const & path)
 {
   std::string file = directory(_files.top()).append(path);
 
-  _scene->dependencies.push_back(file);
+  _scene->dependencies().push_back(file);
   primitivePush(new RT::MeshNode(file));
 }
 
@@ -433,21 +433,21 @@ void	RT::Parser::lightPoint(const std::vector<chaiscript::Boxed_Value> & v, doub
 
 void	RT::Parser::lightPush(RT::AbstractLight * light)
 {
-  _scene->light.push_back(light);
+  _scene->light().push_back(light);
 }
 
 void	RT::Parser::settingCamera()
 {
   // Set camera only if in main file
   if (_files.size() == 1)
-    _scene->camera = _transformation.top();
+    _scene->camera() = _transformation.top();
 }
 
 void	RT::Parser::settingResolution(unsigned int width, unsigned int height)
 {
   // Set resolution only if in main file
   if (_files.size() == 1)
-    _scene->image.create(width, height);
+    _scene->image().create(width, height);
 }
 
 void	RT::Parser::settingAntiAliasing(unsigned int live, unsigned int post)
@@ -455,8 +455,8 @@ void	RT::Parser::settingAntiAliasing(unsigned int live, unsigned int post)
   // Set antialiasing only if in main file
   if (_files.size() == 1)
   {
-    _scene->config.liveAntiAliasing = live + 1;
-    _scene->config.postAntiAliasing = post;
+    _scene->config().liveAntiAliasing = live + 1;
+    _scene->config().postAntiAliasing = post;
   }
 }
 
@@ -465,9 +465,9 @@ void	RT::Parser::settingLight(const std::vector<chaiscript::Boxed_Value> & a, co
   // Set global light multiplier only if in main file
   if (_files.size() == 1)
   {
-    _scene->config.lightAmbient = color(a);
-    _scene->config.lightDiffuse = color(d);
-    _scene->config.lightSpecular = color(s);
+    _scene->config().lightAmbient = color(a);
+    _scene->config().lightDiffuse = color(d);
+    _scene->config().lightSpecular = color(s);
   }
 }
 
@@ -476,9 +476,9 @@ void	RT::Parser::settingDephOfField(double aperture, double focal, unsigned int 
   // Set deph of field configuration only if in main file
   if (_files.size() == 1)
   {
-    _scene->config.dofAperture = aperture;
-    _scene->config.dofFocal = focal;
-    _scene->config.dofQuality = quality;
+    _scene->config().dofAperture = aperture;
+    _scene->config().dofFocal = focal;
+    _scene->config().dofQuality = quality;
   }
 }
 
@@ -492,10 +492,10 @@ void	RT::Parser::settingAnaglyph3D(double offset, double focal, RT::Color const 
   // Set deph of field configuration only if in main file
   if (_files.size() == 1)
   {
-    _scene->config.anaglyphOffset = offset;
-    _scene->config.anaglyphFocal = focal;
-    _scene->config.anaglyphMaskLeft = left;
-    _scene->config.anaglyphMaskRight = right;
+    _scene->config().anaglyphOffset = offset;
+    _scene->config().anaglyphFocal = focal;
+    _scene->config().anaglyphMaskLeft = left;
+    _scene->config().anaglyphMaskRight = right;
   }
 }
 
@@ -508,7 +508,7 @@ void	RT::Parser::settingThread(unsigned int thread)
     if (thread < 1)
       throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
 
-    _scene->config.threadNumber = thread;
+    _scene->config().threadNumber = thread;
   }
 }
 

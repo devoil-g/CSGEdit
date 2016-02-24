@@ -16,18 +16,18 @@ RT::OcclusionLight::~OcclusionLight()
 
 RT::Color RT::OcclusionLight::preview(RT::Scene const * scene, Math::Ray const & ray, Math::Ray const & normal, RT::Material const & material) const
 {
-  return material.color * material.ambient * _color * scene->config.lightAmbient;
+  return material.color * material.ambient * _color * scene->config().lightAmbient;
 }
 
 RT::Color RT::OcclusionLight::render(RT::Scene const * scene, Math::Ray const & ray, Math::Ray const & normal, RT::Material const & material) const
 {
   // If no ambient light, stop
-  if (scene->config.lightAmbient == 0.f || material.ambient == 0.f || material.transparency == 1.f || material.reflection == 1.f)
+  if (scene->config().lightAmbient == 0.f || material.ambient == 0.f || material.transparency == 1.f || material.reflection == 1.f)
     return RT::Color(0.f);
 
   // If quality to basic
   if (_quality <= 1 || _radius == 0.f)
-    return material.color * scene->config.lightAmbient * material.ambient * (1.f - material.transparency) * (1.f - material.reflection);
+    return material.color * scene->config().lightAmbient * material.ambient * (1.f - material.transparency) * (1.f - material.reflection);
 
   Math::Ray	n, occ;
   double	ry, rz;
@@ -67,7 +67,7 @@ RT::Color RT::OcclusionLight::render(RT::Scene const * scene, Math::Ray const & 
       occ.dz() = std::sin(b) * std::cos(a);
       occ.d() = matrix * occ.d();
 
-      std::list<RT::Intersection> intersect = scene->tree->render(occ.normalize());
+      std::list<RT::Intersection> intersect = scene->tree()->render(occ.normalize());
       
       // Occlusion above
       if (material.transparency != 1.f)
@@ -108,7 +108,7 @@ RT::Color RT::OcclusionLight::render(RT::Scene const * scene, Math::Ray const & 
       nb_ray++;
     }
 
-  return ambient / nb_ray * scene->config.lightAmbient * material.color * material.ambient * (1.f - material.transparency) * (1.f - material.reflection);
+  return ambient / nb_ray * scene->config().lightAmbient * material.color * material.ambient * (1.f - material.transparency) * (1.f - material.reflection);
 }
 
 std::string	RT::OcclusionLight::dump() const

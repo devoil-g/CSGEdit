@@ -28,7 +28,7 @@ RT::DirectionalLight::~DirectionalLight()
 RT::Color RT::DirectionalLight::preview(RT::Scene const * scene, Math::Ray const & ray, Math::Ray const & normal, RT::Material const & material) const
 {
   // If no ambient light, stop
-  if (scene->config.lightDiffuse == 0.f || _color == RT::Color(0.f) || material.color == RT::Color(0.f) || material.diffuse == 0.f)
+  if (scene->config().lightDiffuse == 0.f || _color == RT::Color(0.f) || material.color == RT::Color(0.f) || material.diffuse == 0.f)
     return RT::Color(0.f);
 
   Math::Ray light, n;
@@ -49,12 +49,12 @@ RT::Color RT::DirectionalLight::preview(RT::Scene const * scene, Math::Ray const
   if (diffuse == 0.f)
     return RT::Color(0.f);
 
-  return material.color * material.diffuse * diffuse * _color * scene->config.lightDiffuse;
+  return material.color * material.diffuse * diffuse * _color * scene->config().lightDiffuse;
 }
 
 RT::Color RT::DirectionalLight::render(RT::Scene const * scene, Math::Ray const & ray, Math::Ray const & normal, RT::Material const & material) const
 {
-  if ((scene->config.lightDiffuse == RT::Color(0.f) && scene->config.lightSpecular == RT::Color(0.f)) || (material.diffuse == 0.f && material.specular == 0.f) || material.transparency == 1.f || material.reflection == 1.f)
+  if ((scene->config().lightDiffuse == RT::Color(0.f) && scene->config().lightSpecular == RT::Color(0.f)) || (material.diffuse == 0.f && material.specular == 0.f) || material.transparency == 1.f || material.reflection == 1.f)
     return RT::Color(0.f);
 
   Math::Ray n;
@@ -115,7 +115,7 @@ RT::Color RT::DirectionalLight::render(RT::Scene const * scene, Math::Ray const 
   // Render generated rays
   for (std::list<Math::Ray>::const_iterator it = rays.begin(); it != rays.end(); it++)
   {
-    std::list<RT::Intersection>	intersect = scene->tree->render((*it).normalize());
+    std::list<RT::Intersection>	intersect = scene->tree()->render((*it).normalize());
     RT::Color			light = RT::Color(_color);
     double			cos_d = Math::Ray::cos(n, *it);
     double			cos_s = Math::Ray::cos(r, *it);
@@ -136,8 +136,8 @@ RT::Color RT::DirectionalLight::render(RT::Scene const * scene, Math::Ray const 
     specular += light * std::pow((cos_s > 0.f ? cos_s : 0.f), material.shine);
   }
 
-  return diffuse / (double)rays.size() * scene->config.lightDiffuse * material.color * material.diffuse * (1.f - material.transparency) * (1.f - material.reflection)
-    + specular / (double)rays.size() * scene->config.lightSpecular * material.specular * (1.f - material.transparency) * (1.f - material.reflection);
+  return diffuse / (double)rays.size() * scene->config().lightDiffuse * material.color * material.diffuse * (1.f - material.transparency) * (1.f - material.reflection)
+    + specular / (double)rays.size() * scene->config().lightSpecular * material.specular * (1.f - material.transparency) * (1.f - material.reflection);
 }
 
 std::string		RT::DirectionalLight::dump() const

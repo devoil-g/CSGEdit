@@ -12,17 +12,10 @@ RT::RenderPauseState::RenderPauseState(RT::RenderRaytracer & render, RT::Scene *
   RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Paused, _render.progress());
 
   // Apply a dark filter to image
-  _image.create(scene->image.getSize().x, scene->image.getSize().y);
+  _image.create(scene->image().getSize().x, scene->image().getSize().y);
   for (unsigned int x = 0; x < _image.getSize().x; x++)
     for (unsigned int y = 0; y < _image.getSize().y; y++)
-    {
-      RT::Color	clr = RT::Color(scene->image.getPixel(x, y));
-
-      clr.r /= 2.f;
-      clr.g /= 2.f;
-      clr.b /= 2.f;
-      _image.setPixel(x, y, clr.sfml());
-    }
+      _image.setPixel(x, y, (RT::Color(scene->image().getPixel(x, y)) / 2.f).sfml());
   
   // Prompt progress
   std::cout << "[Render] Paused at " << (int)(_render.progress() * 100.f) << "." << ((int)(_render.progress() * 1000.f)) % 10 << " %.                \r" << std::flush;

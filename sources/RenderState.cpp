@@ -32,7 +32,7 @@ bool  RT::RenderState::update(sf::Time elapsed)
   if (progress == 1.f)
   {
     std::cout << "[Render] Completed in " << (int)_elapsed.asSeconds() / 3600 << "h " << (int)_elapsed.asSeconds() % 3600 / 60 << "m " << (int)_elapsed.asSeconds() % 60 << "s.        " << std::endl;
-    _scene->image.saveToFile("screenshots/screenshot_" + std::to_string(std::time(nullptr)) + ".png");
+    _scene->image().saveToFile("screenshots/screenshot_" + std::to_string(std::time(nullptr)) + ".png");
     RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Normal, 1.f);
     RT::StateMachine::Instance().pop();
     return false;
@@ -72,5 +72,5 @@ bool  RT::RenderState::update(sf::Time elapsed)
 
 void  RT::RenderState::draw()
 {
-  RT::Window::Instance().draw(_scene->image);
+  RT::Window::Instance().draw(_scene->image());
 }

@@ -26,12 +26,12 @@ void	RT::PreviewRaytracer::load(RT::Scene * scene)
   else
   {
     // Reset image
-    for (unsigned int y = 0; y < _scene->image.getSize().y; y++)
-      for (unsigned int x = 0; x < _scene->image.getSize().x; x++)
-	_scene->image.setPixel(x, y, RT::Color(0.084f).sfml());
+    for (unsigned int y = 0; y < _scene->image().getSize().y; y++)
+      for (unsigned int x = 0; x < _scene->image().getSize().x; x++)
+	_scene->image().setPixel(x, y, RT::Color(0.084f).sfml());
 
     // Reset zone grid
-    _grid.resize((_scene->image.getSize().x / RT::Config::BlockSize + (_scene->image.getSize().x % RT::Config::BlockSize ? 1 : 0)) * (_scene->image.getSize().y / RT::Config::BlockSize + (_scene->image.getSize().y % RT::Config::BlockSize ? 1 : 0)));
+    _grid.resize((_scene->image().getSize().x / RT::Config::BlockSize + (_scene->image().getSize().x % RT::Config::BlockSize ? 1 : 0)) * (_scene->image().getSize().y / RT::Config::BlockSize + (_scene->image().getSize().y % RT::Config::BlockSize ? 1 : 0)));
     for (unsigned int i = 0; i < _grid.size(); i++)
       _grid[i] = RT::Config::BlockSize;
   }
@@ -41,8 +41,11 @@ void	RT::PreviewRaytracer::begin()
 {
   std::list<std::thread>  threads;
   
+  if (_scene == nullptr)
+    return;
+
   // Launch rendering threads
-  for (unsigned int i = 0; i < _scene->config.threadNumber; i++)
+  for (unsigned int i = 0; i < _scene->config().threadNumber; i++)
     threads.push_back(std::thread((void(RT::PreviewRaytracer::*)())(&RT::PreviewRaytracer::preview), this));
   
   // Wait for rendering threads to finish
@@ -82,20 +85,20 @@ void	RT::PreviewRaytracer::preview(unsigned int zone)
   _grid[zone] = RT::Config::BlockSize + 1;
 
   // Calcul zone coordinates (x, y)
-  x = zone % (_scene->image.getSize().x / RT::Config::BlockSize + (_scene->image.getSize().x % RT::Config::BlockSize ? 1 : 0)) * RT::Config::BlockSize;
-  y = zone / (_scene->image.getSize().x / RT::Config::BlockSize + (_scene->image.getSize().x % RT::Config::BlockSize ? 1 : 0)) * RT::Config::BlockSize;
+  x = zone % (_scene->image().getSize().x / RT::Config::BlockSize + (_scene->image().getSize().x % RT::Config::BlockSize ? 1 : 0)) * RT::Config::BlockSize;
+  y = zone / (_scene->image().getSize().x / RT::Config::BlockSize + (_scene->image().getSize().x % RT::Config::BlockSize ? 1 : 0)) * RT::Config::BlockSize;
 
   // Render zone
   for (unsigned int a = 0; a < RT::Config::BlockSize && active(); a += size)
     for (unsigned int b = 0; b < RT::Config::BlockSize && active(); b += size)
-      if ((size == RT::Config::BlockSize || a % (size * 2) != 0 || b % (size * 2) != 0) && x + a < _scene->image.getSize().x && y + b < _scene->image.getSize().y)
+      if ((size == RT::Config::BlockSize || a % (size * 2) != 0 || b % (size * 2) != 0) && x + a < _scene->image().getSize().x && y + b < _scene->image().getSize().y)
       {
 	RT::Color clr = preview(x + a, y + b);
 
 	for (unsigned int c = 0; c < size; c++)
 	  for (unsigned int d = 0; d < size; d++)
-	    if (x + a + c < _scene->image.getSize().x && y + b + d < _scene->image.getSize().y)
-	      _scene->image.setPixel(x + a + c, y + b + d, clr.sfml());
+	    if (x + a + c < _scene->image().getSize().x && y + b + d < _scene->image().getSize().y)
+	      _scene->image().setPixel(x + a + c, y + b + d, clr.sfml());
       }
 
   if (active())
@@ -113,14 +116,14 @@ RT::Color	RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
   ray.px() = 0;
   ray.py() = 0;
   ray.pz() = 0;
-  ray.dx() = (double)_scene->image.getSize().x;
-  ray.dy() = (double)_scene->image.getSize().x / 2 - x + 0.5f;
-  ray.dz() = (double)_scene->image.getSize().y / 2 - y + 0.5f;
-  ray = (_scene->camera * ray).normalize();
+  ray.dx() = (double)_scene->image().getSize().x;
+  ray.dy() = (double)_scene->image().getSize().x / 2 - x + 0.5f;
+  ray.dz() = (double)_scene->image().getSize().y / 2 - y + 0.5f;
+  ray = (_scene->camera() * ray).normalize();
 
   // Render intersections using ray
-  if (_scene->tree)
-    intersect = _scene->tree->render(ray);
+  if (_scene->tree())
+    intersect = _scene->tree()->render(ray);
 
   // Delete back intersections
   while (!intersect.empty() && intersect.front().distance < 0)
@@ -131,7 +134,7 @@ RT::Color	RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
   {
     RT::Color light;
 
-    for (std::list<RT::AbstractLight const *>::const_iterator it = _scene->light.begin(); it != _scene->light.end(); it++)
+    for (std::list<RT::AbstractLight const *>::const_iterator it = _scene->light().begin(); it != _scene->light().end(); it++)
       light += (*it)->preview(_scene, ray, intersect.front().normal, intersect.front().material);
 
     return light;
@@ -154,5 +157,5 @@ double	  RT::PreviewRaytracer::progress() const
     n *= 2;
   }
 
-  return (double)r / (double)(_scene->image.getSize().x * _scene->image.getSize().y);
+  return (double)r / (double)(_scene->image().getSize().x * _scene->image().getSize().y);
 }

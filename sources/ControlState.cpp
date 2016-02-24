@@ -27,7 +27,7 @@ bool  RT::ControlState::updateFiles()
   bool	result = updateFile(_file);
 
   if (_scene != nullptr)
-    for (std::list<std::string>::const_iterator it = _scene->dependencies.begin(); it != _scene->dependencies.end(); it++)
+    for (std::list<std::string>::const_iterator it = _scene->dependencies().begin(); it != _scene->dependencies().end(); it++)
       result |= updateFile(*it);
 
   return result;
@@ -36,12 +36,12 @@ bool  RT::ControlState::updateFiles()
 bool  RT::ControlState::updateFile(std::string const & file)
 {
 #ifdef WIN32
-  HANDLE f = CreateFileA(file.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+  FILETIME  creation, lastaccess, lastwrite;
+  HANDLE    f = CreateFileA(file.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 
   if (f == NULL)
     throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
   
-  FILETIME creation, lastaccess, lastwrite;
   GetFileTime(f, &creation, &lastaccess, &lastwrite);
   CloseHandle(f);
 
@@ -51,15 +51,11 @@ bool  RT::ControlState::updateFile(std::string const & file)
     return true;
   }
 #else
-  struct stat st;
-  int fh = open(_file.c_str(), O_RDONLY);
-
-  if (fh < 0)
+  struct stat	st;
+  
+  if (stat(_file.c_str(), &st) < 0)
     throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
   
-  fstat(fh, &st);
-  close(fh);
-
   if (st.st_mtime > _time[file])
   {
     _time[file] = st.st_mtime;
@@ -85,6 +81,7 @@ bool  RT::ControlState::update(sf::Time)
     _preview.stop();
     delete _scene;
     _scene = parser.load(_file);
+    updateFiles();
     _preview.load(_scene);
     if (_scene)
       _preview.start();
@@ -116,7 +113,7 @@ bool  RT::ControlState::update(sf::Time)
     fileinfo.FlagsEx = 0;
 
     if (GetSaveFileName(&fileinfo))
-      _scene->image.saveToFile(std::string(path));
+      _scene->image().saveToFile(std::string(path));
 #endif
   }
 
@@ -143,15 +140,12 @@ bool  RT::ControlState::update(sf::Time)
     fileinfo.lpstrDefExt = nullptr;
     fileinfo.FlagsEx = 0;
 
-    // Remove false to enable OpenFileDialogWindow
     if (GetOpenFileName(&fileinfo))
     {
       _file = std::string(path);
       _time.clear();
       std::cout << "[" << RT::Config::WindowTitle << "] Opening file '" << _file << "'." << std::endl;
     }
-    else
-      std::cout << "[" << RT::Config::WindowTitle << "] Failed opening file." << std::endl;
 #endif
   }
 
@@ -177,5 +171,5 @@ bool  RT::ControlState::update(sf::Time)
 void  RT::ControlState::draw()
 {
   if (_scene)
-    RT::Window::Instance().draw(_scene->image);
+    RT::Window::Instance().draw(_scene->image());
 }

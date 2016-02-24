@@ -31,7 +31,7 @@ RT::PointLight::~PointLight()
 RT::Color RT::PointLight::preview(RT::Scene const * scene, Math::Ray const & ray, Math::Ray const & normal, RT::Material const & material) const
 {
   // If no ambient light, stop
-  if (scene->config.lightDiffuse == 0.f || _color == RT::Color(0.f) || material.color == RT::Color(0.f) || material.diffuse == 0.f)
+  if (scene->config().lightDiffuse == 0.f || _color == RT::Color(0.f) || material.color == RT::Color(0.f) || material.diffuse == 0.f)
     return RT::Color(0.f);
 
   Math::Ray light, n;
@@ -59,15 +59,15 @@ RT::Color RT::PointLight::preview(RT::Scene const * scene, Math::Ray const & ray
     return RT::Color(0.f);
 
   if (_angle1 == 0.f && _angle2 == 0.f)
-    return material.color * material.diffuse * intensity * diffuse * _color * scene->config.lightDiffuse;
+    return material.color * material.diffuse * intensity * diffuse * _color * scene->config().lightDiffuse;
   else
   {
     angle = Math::Utils::RadToDeg(std::acos(-Math::Ray::cos(light, _position)));
 
     if (angle <= _angle1)
-      return material.color * material.diffuse * intensity * diffuse * _color * scene->config.lightDiffuse;
+      return material.color * material.diffuse * intensity * diffuse * _color * scene->config().lightDiffuse;
     else if (_angle2 > _angle1 && angle < _angle2)
-      return RT::Color((_angle2 - angle) / (_angle2 - _angle1)) * material.color * material.diffuse * intensity * diffuse * _color * scene->config.lightDiffuse;
+      return RT::Color((_angle2 - angle) / (_angle2 - _angle1)) * material.color * material.diffuse * intensity * diffuse * _color * scene->config().lightDiffuse;
     else
       return RT::Color(0.f);
   }
@@ -75,7 +75,7 @@ RT::Color RT::PointLight::preview(RT::Scene const * scene, Math::Ray const & ray
 
 RT::Color RT::PointLight::render(RT::Scene const * scene, Math::Ray const & ray, Math::Ray const & normal, RT::Material const & material) const
 {
-  if ((scene->config.lightDiffuse == RT::Color(0.f) && scene->config.lightSpecular == RT::Color(0.f)) || (material.diffuse == 0.f && material.specular == 0.f) || material.transparency == 1.f || material.reflection == 1.f)
+  if ((scene->config().lightDiffuse == RT::Color(0.f) && scene->config().lightSpecular == RT::Color(0.f)) || (material.diffuse == 0.f && material.specular == 0.f) || material.transparency == 1.f || material.reflection == 1.f)
     return RT::Color(0.f);
 
   Math::Ray n;
@@ -153,7 +153,7 @@ RT::Color RT::PointLight::render(RT::Scene const * scene, Math::Ray const & ray,
       intensity = (_intensity * _intensity) / (it->dx() * it->dx() + it->dy() * it->dy() + it->dz() * it->dz());
 
     if (angle != 0.f)
-      intersect = scene->tree->render((*it));
+      intersect = scene->tree()->render((*it));
 
     // Render light
     while (!intersect.empty() && intersect.front().distance < 0.f)
@@ -171,8 +171,8 @@ RT::Color RT::PointLight::render(RT::Scene const * scene, Math::Ray const & ray,
     specular += light * pow((cos_s > 0.f ? cos_s : 0.f), material.shine) * angle * intensity;
   }
 
-  return diffuse / (double)rays.size() * scene->config.lightDiffuse * material.color * material.diffuse * (1.f - material.transparency) * (1.f - material.reflection)
-    + specular / (double)rays.size() * scene->config.lightSpecular * material.specular * (1.f - material.transparency) * (1.f - material.reflection);
+  return diffuse / (double)rays.size() * scene->config().lightDiffuse * material.color * material.diffuse * (1.f - material.transparency) * (1.f - material.reflection)
+    + specular / (double)rays.size() * scene->config().lightSpecular * material.specular * (1.f - material.transparency) * (1.f - material.reflection);
 }
 
 std::string		RT::PointLight::dump() const
