@@ -10,82 +10,60 @@ RT::TorusLeaf::TorusLeaf(double r, double h)
 RT::TorusLeaf::~TorusLeaf()
 {}
 
-std::vector<double>	RT::TorusLeaf::intersection(Math::Ray const & ray) const
+std::vector<double>	RT::TorusLeaf::intersection(RT::Ray const & ray) const
 {
-  std::vector<double>	result;
-  double		a, b, c, d, e;
-
   // Not so clever equations
-  a = std::pow(ray.dx() * ray.dx() + ray.dy() * ray.dy() + ray.dz() * ray.dz(), 2.f);
-  b = 4.f * (ray.dx() * ray.px() + ray.dy() * ray.py() + ray.dz() * ray.pz()) * (ray.dx() * ray.dx() + ray.dy() * ray.dy() + ray.dz() * ray.dz());
-  c = 2.f * (ray.dx() * ray.dx() + ray.dy() * ray.dy() + ray.dz() * ray.dz()) * (ray.px() * ray.px() + ray.py() * ray.py() + ray.pz() * ray.pz() + _r * _r - _h * _h) + 4.f * std::pow(ray.dx() * ray.px() + ray.dy() * ray.py() + ray.dz() * ray.pz(), 2.f) - 4.f * (ray.dx() * ray.dx() + ray.dy() * ray.dy()) * _r * _r;
-  d = 4.f * (ray.px() * ray.px() + ray.py() * ray.py() + ray.pz() * ray.pz() + _r * _r - _h * _h) * (ray.dx() * ray.px() + ray.dy() * ray.py() + ray.dz() * ray.pz()) - 8.f * (ray.dx() * ray.px() + ray.dy() * ray.py()) * _r * _r;
-  e = std::pow(ray.px() * ray.px() + ray.py() * ray.py() + ray.pz() * ray.pz() + _r * _r - _h * _h, 2.f) - 4.f * (ray.px() * ray.px() + ray.py() * ray.py()) * _r * _r;
-  result = Math::Utils::solve(a, b, c, d, e);
+  std::vector<double>	result = Math::Utils::solve(
+    std::pow(ray.d().x() * ray.d().x() + ray.d().y() * ray.d().y() + ray.d().z() * ray.d().z(), 2.f),
+    4.f * (ray.d().x() * ray.p().x() + ray.d().y() * ray.p().y() + ray.d().z() * ray.p().z()) * (ray.d().x() * ray.d().x() + ray.d().y() * ray.d().y() + ray.d().z() * ray.d().z()),
+    2.f * (ray.d().x() * ray.d().x() + ray.d().y() * ray.d().y() + ray.d().z() * ray.d().z()) * (ray.p().x() * ray.p().x() + ray.p().y() * ray.p().y() + ray.p().z() * ray.p().z() + _r * _r - _h * _h) + 4.f * std::pow(ray.d().x() * ray.p().x() + ray.d().y() * ray.p().y() + ray.d().z() * ray.p().z(), 2.f) - 4.f * (ray.d().x() * ray.d().x() + ray.d().y() * ray.d().y()) * _r * _r,
+    4.f * (ray.p().x() * ray.p().x() + ray.p().y() * ray.p().y() + ray.p().z() * ray.p().z() + _r * _r - _h * _h) * (ray.d().x() * ray.p().x() + ray.d().y() * ray.p().y() + ray.d().z() * ray.p().z()) - 8.f * (ray.d().x() * ray.p().x() + ray.d().y() * ray.p().y()) * _r * _r,
+    std::pow(ray.p().x() * ray.p().x() + ray.p().y() * ray.p().y() + ray.p().z() * ray.p().z() + _r * _r - _h * _h, 2.f) - 4.f * (ray.p().x() * ray.p().x() + ray.p().y() * ray.p().y()) * _r * _r
+    );
 
   // If torus overlap on himself, delete inside intersections
   if (_h > _r && result.size() == 4)
   {
-    std::list<double>			list;
-    std::list<double>::const_iterator	it;
-    double				h;
-
+    std::list<double>	list;
+    
     for (unsigned int i = 0; i < 4; i++)
       list.push_back(result[i]);
     list.sort();
 
-    h = std::sqrt(1 - ((_r * _r) / (_h * _h))) * _h;
-
-    it = list.begin();
-    it++;
-
-    if (std::abs(ray.pz() + ray.dz() * (*it)) < h)
-    {
-      std::vector<double>	tmp;
-
-      tmp.push_back(list.front());
-      tmp.push_back(list.back());
-      return tmp;
-    }
-
-    return result;
+    if (std::abs(ray.p().z() + ray.d().z() * (*std::next(list.begin()))) < std::sqrt(1 - ((_r * _r) / (_h * _h))) * _h)
+      return { list.front(), list.back() };
   }
-  else
-    return result;
+
+  return result;
 }
 
-Math::Ray	RT::TorusLeaf::normal(Math::Ray const & ray) const
+Math::Vector<4>		RT::TorusLeaf::normal(Math::Vector<4> const & pt) const
 {
-  Math::Ray	normal;
-  double	c;
-
+  Math::Vector<4>	n;
+  
   // Point perfectly centered
-  if (ray.px() == 0 && ray.py() == 0)
-  {
-    normal.dx() = 0;
-    normal.dy() = 0;
-    normal.dz() = 1;
-  }
+  if (pt.x() == 0.f && pt.y() == 0.f)
+    n.z() = 1.f;
   else
   {
-    // Simple method to get normal
-    c = _r / std::sqrt(ray.px() * ray.px() + ray.py() * ray.py());
+    // Simple method to get n
+    double	c = _r / std::sqrt(pt.x() * pt.x() + pt.y() * pt.y());
 
-    if (std::abs(std::sqrt(std::pow(ray.px() - (ray.px() * c), 2.f) + std::pow(ray.py() - (ray.py() * c), 2.f) + std::pow(ray.pz(), 2.f)) - _h) < Math::Shift)
+    if (std::abs(std::sqrt(std::pow(pt.x() - (pt.x() * c), 2.f) + std::pow(pt.y() - (pt.y() * c), 2.f) + std::pow(pt.z(), 2.f)) - _h) < Math::Shift)
     {
-      normal.dx() = ray.px() - ray.px() * c;
-      normal.dy() = ray.py() - ray.py() * c;
-      normal.dz() = ray.pz();
+      n.x() = pt.x() - pt.x() * c;
+      n.y() = pt.y() - pt.y() * c;
+      n.z() = pt.z();
     }
     else
     {
-      normal.dx() = ray.px() + ray.px() * c;
-      normal.dy() = ray.py() + ray.py() * c;
-      normal.dz() = ray.pz();
+      n.x() = pt.x() + pt.x() * c;
+      n.y() = pt.y() + pt.y() * c;
+      n.z() = pt.z();
     }
   }
 
-  return normal;
+  return n;
 }
 
 std::string	RT::TorusLeaf::dump() const

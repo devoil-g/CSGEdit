@@ -14,8 +14,8 @@ namespace RT
   private:
     double const	_c;						// Constant used in tangle equation
 
-    std::vector<double>	intersection(Math::Ray const &) const override;	// Render intersection distance according to ray
-    Math::Ray		normal(Math::Ray const &) const override;	// Calculate normal from intersection point
+    std::vector<double>	intersection(RT::Ray const &) const override;	// Render intersection distance according to ray
+    Math::Vector<4>	normal(Math::Vector<4> const &) const override;	// Calculate normal from intersection point
 
   public:
     TangleLeaf(double);

@@ -1,6 +1,6 @@
 #include "Intersection.hpp"
 
-RT::Intersection::Intersection(Math::Ray const & norm, double dist)
+RT::Intersection::Intersection(RT::Ray const & norm, double dist)
   : node(nullptr), normal(norm), distance(dist), material()
 {}
 

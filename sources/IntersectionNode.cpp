@@ -8,37 +8,32 @@ RT::IntersectionNode::IntersectionNode()
 RT::IntersectionNode::~IntersectionNode()
 {}
 
-std::list<RT::Intersection>	RT::IntersectionNode::renderChildren(Math::Ray const & ray) const
+std::list<RT::Intersection>	RT::IntersectionNode::renderChildren(RT::Ray const & ray) const
 {
-  std::list<std::list<RT::Intersection> > intersect_list;
+  if (_children.empty())
+    return std::list<RT::Intersection>();
+
+  std::list<RT::Intersection>			intersect;
 
   // Iterate through sub-tree to get intersections
-  for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
+  for (std::list<RT::AbstractTree *>::const_iterator it = _children.begin(); it != _children.end(); it++)
   {
     std::list<RT::Intersection> node = (*it)->render(ray);
-
-    // Atribute intersections to children
-    for (std::list<RT::Intersection>::iterator it_node = node.begin(); it_node != node.end(); it_node++)
-      it_node->node = *it;
 
     // Acceleration tweak
     if (node.empty())
       return std::list<RT::Intersection>();
 
-    intersect_list.push_back(node);
+    // Atribute intersections to children
+    for (std::list<RT::Intersection>::iterator it_node = node.begin(); it_node != node.end(); it_node++)
+      it_node->node = *it;
+
+    intersect.merge(node);
   }
 
-  std::map<RT::AbstractTree const *, bool>  inside;
-  std::list<RT::Intersection>		    intersect, result;
-  unsigned int				    state = 0;
-
-  // Merge all intersections
-  for (std::list<std::list<RT::Intersection> >::iterator iter = intersect_list.begin(); iter != intersect_list.end(); iter++)
-    intersect.merge(*iter);
-
-  // Set all positions to 'outside' (false)
-  for (std::list<RT::Intersection>::iterator iter = intersect.begin(); iter != intersect.end(); iter++)
-    inside[iter->node] = false;
+  std::map<RT::AbstractTree const *, bool>	inside;
+  std::list<RT::Intersection>			result;
+  unsigned int					state = 0;
 
   // Iterate through intersections
   for (std::list<RT::Intersection>::iterator iter = intersect.begin(); iter != intersect.end(); iter++)
@@ -68,7 +63,7 @@ std::string	RT::IntersectionNode::dump() const
 
   stream << "intersection();";
 
-  for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
+  for (std::list<RT::AbstractTree *>::const_iterator it = _children.begin(); it != _children.end(); it++)
     stream << (*it)->dump();
 
   stream << "end();";

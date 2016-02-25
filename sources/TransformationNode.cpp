@@ -9,13 +9,13 @@ RT::TransformationNode::TransformationNode(Math::Matrix<4, 4> const & transforma
 RT::TransformationNode::~TransformationNode()
 {}
 
-std::list<RT::Intersection>	RT::TransformationNode::renderChildren(Math::Ray const & ray) const
+std::list<RT::Intersection>	RT::TransformationNode::renderChildren(RT::Ray const & ray) const
 {
   std::list<std::list<RT::Intersection> > intersect_list;
-  Math::Ray const &			  r = _transformation.inverse() * ray;
+  RT::Ray const &			  r = _transformation.inverse() * ray;
 
   // Iterate through sub-tree to get intersections
-  for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
+  for (std::list<RT::AbstractTree *>::const_iterator it = _children.begin(); it != _children.end(); it++)
   {
     std::list<RT::Intersection> node = (*it)->render(r);
 
@@ -74,7 +74,7 @@ std::string	RT::TransformationNode::dump() const
 
   stream << "transformation(" << _transformation.dump() << ");";
 
-  for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
+  for (std::list<RT::AbstractTree *>::const_iterator it = _children.begin(); it != _children.end(); it++)
     stream << (*it)->dump();
 
   stream << "end();";

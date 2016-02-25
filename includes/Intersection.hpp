@@ -11,11 +11,11 @@ namespace RT
   class Intersection
   {
   public:
-    Intersection(Math::Ray const &, double);
+    Intersection(RT::Ray const &, double);
     ~Intersection();
 
     RT::AbstractTree const *	node;			// Sub-tree containing intersection object
-    Math::Ray			normal;			// Normal with intersected object
+    RT::Ray			normal;			// Normal with intersected object
     double			distance;		// Distance of intersection
     RT::Material		material;		// Material to apply
 

@@ -1,3 +1,5 @@
+// TODO: Create a multi-dimensional vector class
+
 #include <ctime>
 #include <limits>
 

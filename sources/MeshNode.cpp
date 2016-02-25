@@ -27,16 +27,16 @@ RT::MeshNode::MeshNode(std::string const & path)
 RT::MeshNode::~MeshNode()
 {}
 
-std::list<RT::Intersection>	RT::MeshNode::renderChildren(Math::Ray const & ray) const
+std::list<RT::Intersection>	RT::MeshNode::renderChildren(RT::Ray const & ray) const
 {
-  std::list<RT::Intersection>		  intersect;
-
   // Stop if no intersection with bounding sphere
   if (_bound && _bound->render(ray).empty())
     return std::list<RT::Intersection>();
 
+  std::list<RT::Intersection>	intersect;
+
   // Iterate through triangles to get intersections
-  for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
+  for (std::list<RT::AbstractTree *>::const_iterator it = _children.begin(); it != _children.end(); it++)
     intersect.merge((*it)->render(ray));
 
   return intersect;
@@ -86,7 +86,7 @@ std::string	RT::MeshNode::dump() const
 
   stream << "mesh();";
 
-  for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
+  for (std::list<RT::AbstractTree *>::const_iterator it = _children.begin(); it != _children.end(); it++)
     stream << (*it)->dump();
 
   stream << "end();";
@@ -94,16 +94,16 @@ std::string	RT::MeshNode::dump() const
   return stream.str();
 }
 
-void		RT::MeshNode::push(RT::AbstractTree const * node)
+void		RT::MeshNode::push(RT::AbstractTree * node)
 {
-  if (dynamic_cast<RT::TriangleLeaf const *>(node))
+  if (dynamic_cast<RT::TriangleLeaf *>(node))
     RT::AbstractNode::push(node);
   else
     throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
 
   std::vector<std::tuple<double, double, double>> pts;
 
-  for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
+  for (std::list<RT::AbstractTree *>::const_iterator it = _children.begin(); it != _children.end(); it++)
   {
     std::vector<std::tuple<double, double, double>> pt = dynamic_cast<RT::TriangleLeaf const *>(*it)->points();
     

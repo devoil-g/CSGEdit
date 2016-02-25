@@ -264,15 +264,15 @@ RT::Color RT::RenderRaytracer::renderAntialiasing(unsigned int x, unsigned int y
   for (unsigned int a = 0; a < antialiasing; a++)
     for (unsigned int b = 0; b < antialiasing; b++)
     {
-      Math::Ray	ray;
+      RT::Ray	ray;
 
       // Calculate sub-pixel ray
-      ray.px() = 0;
-      ray.py() = 0;
-      ray.pz() = 0;
-      ray.dx() = _scene->image().getSize().x;
-      ray.dy() = _scene->image().getSize().x / 2.f - x + (2.f * a + 1) / (2.f * antialiasing);
-      ray.dz() = _scene->image().getSize().y / 2.f - y + (2.f * b + 1) / (2.f * antialiasing);
+      ray.p().x() = 0;
+      ray.p().y() = 0;
+      ray.p().z() = 0;
+      ray.d().x() = _scene->image().getSize().x;
+      ray.d().y() = _scene->image().getSize().x / 2.f - x + (2.f * a + 1) / (2.f * antialiasing);
+      ray.d().z() = _scene->image().getSize().y / 2.f - y + (2.f * b + 1) / (2.f * antialiasing);
 
       // Sum rendered color
       clr += renderAnaglyph3D(ray.normalize());
@@ -282,7 +282,7 @@ RT::Color RT::RenderRaytracer::renderAntialiasing(unsigned int x, unsigned int y
   return clr / (antialiasing * antialiasing);
 }
 
-RT::Color RT::RenderRaytracer::renderAnaglyph3D(Math::Ray const & ray) const
+RT::Color RT::RenderRaytracer::renderAnaglyph3D(RT::Ray const & ray) const
 {
   RT::Color	      clr_left, clr_right;
   Math::Matrix<4, 4>  cam_left(_scene->camera()), cam_right(_scene->camera());
@@ -307,11 +307,11 @@ RT::Color RT::RenderRaytracer::renderAnaglyph3D(Math::Ray const & ray) const
   return (clr_left * _scene->config().anaglyphMaskLeft) + (clr_right * _scene->config().anaglyphMaskRight);
 }
 
-RT::Color RT::RenderRaytracer::renderDephOfField(Math::Ray const & ray) const
+RT::Color RT::RenderRaytracer::renderDephOfField(RT::Ray const & ray) const
 {
   unsigned int	      nb_ray;
   Math::Matrix<4, 4>  rot = Math::Matrix<4, 4>::rotation(Math::Random::rand(360.f), Math::Random::rand(360.f), Math::Random::rand(360.f));
-  Math::Ray	      pt = Math::Matrix<4, 4>::translation(ray.dx() * _scene->config().dofFocal, ray.dy() * _scene->config().dofFocal, ray.dz() * _scene->config().dofFocal) * ray;
+  RT::Ray	      pt = Math::Matrix<4, 4>::translation(ray.d().x() * _scene->config().dofFocal, ray.d().y() * _scene->config().dofFocal, ray.d().z() * _scene->config().dofFocal) * ray;
   RT::Color	      clr;
 
   // If no deph of field, just return rendered ray
@@ -327,24 +327,24 @@ RT::Color RT::RenderRaytracer::renderDephOfField(Math::Ray const & ray) const
       if (nb > 0)
 	for (double c = Math::Random::rand(Math::Pi * 2.f / nb); c < Math::Pi * 2.f; c += Math::Pi * 2.f / nb)
 	{
-	  Math::Ray	deph;
+	  RT::Ray	deph;
 
 	  // Calcul point position in aperture sphere
-	  deph.px() = std::sin(b) * a;
-	  deph.py() = std::cos(c) * std::cos(b) * a;
-	  deph.pz() = std::sin(c) * std::cos(b) * a;
+	  deph.p().x() = std::sin(b) * a;
+	  deph.p().y() = std::cos(c) * std::cos(b) * a;
+	  deph.p().z() = std::sin(c) * std::cos(b) * a;
 
 	  // Randomly rotate point to smooth rendered image
 	  deph = rot * deph;
 
 	  // Calculate ray
-	  deph.px() = deph.px() + ray.px();
-	  deph.py() = deph.py() + ray.py();
-	  deph.pz() = deph.pz() + ray.pz();
-	  deph.dx() = pt.px() - deph.px();
-	  deph.dy() = pt.py() - deph.py();
-	  deph.dz() = pt.pz() - deph.pz();
-
+	  deph.p().x() = deph.p().x() + ray.p().x();
+	  deph.p().y() = deph.p().y() + ray.p().y();
+	  deph.p().z() = deph.p().z() + ray.p().z();
+	  deph.d().x() = pt.p().x() - deph.p().x();
+	  deph.d().y() = pt.p().y() - deph.p().y();
+	  deph.d().z() = pt.p().z() - deph.p().z();
+	  
 	  // Sum rendered colors
 	  clr += renderRay(deph.normalize());
 
@@ -356,16 +356,13 @@ RT::Color RT::RenderRaytracer::renderDephOfField(Math::Ray const & ray) const
   return clr / nb_ray;
 }
 
-RT::Color RT::RenderRaytracer::renderRay(Math::Ray const & ray, unsigned int recursivite) const
+RT::Color RT::RenderRaytracer::renderRay(RT::Ray const & ray, unsigned int recursivite) const
 {
   if (recursivite > RT::Config::MaxRecursivite)
     return RT::Color(0.f);
 
-  std::list<RT::Intersection>	intersect;
-
   // Render intersections list with CSG tree
-  if (_scene->tree())
-    intersect = _scene->tree()->render(ray);
+  std::list<RT::Intersection>	intersect = (_scene->tree() ? _scene->tree()->render(ray) : std::list<RT::Intersection>());
 
   // Drop intersection behind camera
   while (!intersect.empty() && intersect.front().distance < 0)
@@ -373,100 +370,81 @@ RT::Color RT::RenderRaytracer::renderRay(Math::Ray const & ray, unsigned int rec
 
   // If no intersection, return background color (black)
   if (!intersect.empty())
-  {
-    RT::Color	reflection, transparency, light;
-
     // Calculate transparency, reflection and light
-    reflection = renderReflection(ray, intersect.front(), recursivite);
-    transparency = renderTransparency(ray, intersect.front(), recursivite);
-    light = renderLight(ray, intersect.front(), recursivite);
-
-    // Return color applying light modifiers
-    return reflection + transparency + light;
-  }
+    return renderReflection(ray, intersect.front(), recursivite)
+      + renderTransparency(ray, intersect.front(), recursivite)
+      + renderLight(ray, intersect.front(), recursivite);
   else
     return RT::Color(0.f);
 }
 
-RT::Color RT::RenderRaytracer::renderReflection(Math::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite) const
+RT::Color RT::RenderRaytracer::renderReflection(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite) const
 {
   if (intersection.material.reflection == 0.f ||
     intersection.material.transparency == 1.f)
     return RT::Color(0.f);
 
-  Math::Ray new_ray, normal;
-  double    k;
+  RT::Ray	new_ray;
+  double	k;
 
   // Reverse normal if necessary
-  normal = intersection.normal;
-  if (Math::Ray::cos(ray, intersection.normal) > 0)
-    normal.d() = Math::Matrix<4, 4>::scale(-1.f) * intersection.normal.d();
+  RT::Ray	normal = intersection.normal;
+  if (RT::Ray::cos(ray, intersection.normal) > 0)
+    normal.d() = intersection.normal.d() * -1.f;
 
-  k = -(normal.dx() * (normal.px() - ray.px()) + normal.dy() * (normal.py() - ray.py()) + normal.dz() * (normal.pz() - ray.pz())) / (normal.dx() * normal.dx() + normal.dy() * normal.dy() + normal.dz() * normal.dz());
+  k = -(normal.d().x() * (normal.p().x() - ray.p().x()) + normal.d().y() * (normal.p().y() - ray.p().y()) + normal.d().z() * (normal.p().z() - ray.p().z())) / (normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z());
 
-  new_ray.px() = normal.px() + normal.dx() * Math::Shift;
-  new_ray.py() = normal.py() + normal.dy() * Math::Shift;
-  new_ray.pz() = normal.pz() + normal.dz() * Math::Shift;
-  new_ray.dx() = ray.px() + 2.f * (normal.px() + normal.dx() * k - ray.px()) - normal.px();
-  new_ray.dy() = ray.py() + 2.f * (normal.py() + normal.dy() * k - ray.py()) - normal.py();
-  new_ray.dz() = ray.pz() + 2.f * (normal.pz() + normal.dz() * k - ray.pz()) - normal.pz();
+  new_ray.p().x() = normal.p().x() + normal.d().x() * Math::Shift;
+  new_ray.p().y() = normal.p().y() + normal.d().y() * Math::Shift;
+  new_ray.p().z() = normal.p().z() + normal.d().z() * Math::Shift;
+  new_ray.d().x() = ray.p().x() + 2.f * (normal.p().x() + normal.d().x() * k - ray.p().x()) - normal.p().x();
+  new_ray.d().y() = ray.p().y() + 2.f * (normal.p().y() + normal.d().y() * k - ray.p().y()) - normal.p().y();
+  new_ray.d().z() = ray.p().z() + 2.f * (normal.p().z() + normal.d().z() * k - ray.p().z()) - normal.p().z();
 
   return renderRay(new_ray, recursivite + 1) * intersection.material.color * intersection.material.reflection * (1.f - intersection.material.transparency);
 }
 
-RT::Color RT::RenderRaytracer::renderTransparency(Math::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite) const
+RT::Color RT::RenderRaytracer::renderTransparency(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite) const
 {
   if (intersection.material.transparency == 0.f)
     return RT::Color(0.f);
 
-  Math::Ray normal;
-  double    refraction;
-  double  a, b, c, l;
-
   // Inverse normal and refraction if necessary
-  normal = intersection.normal;
-  refraction = intersection.material.refraction;
-  if (Math::Ray::cos(ray, intersection.normal) > 0)
+  RT::Ray	normal = intersection.normal;
+  double	refraction = intersection.material.refraction;
+  
+  if (RT::Ray::cos(ray, intersection.normal) > 0)
   {
-    normal.d() = Math::Matrix<4, 4>::scale(-1.f) * intersection.normal.d();
+    normal.d() = intersection.normal.d() * -1.f;
     refraction = 1.f / refraction;
   }
 
   // Using sphere technique to calculate refracted ray
-  l = std::sqrt(ray.dx() * ray.dx() + ray.dy() * ray.dy() + ray.dz() * ray.dz());
-  a = normal.dx() * normal.dx() + normal.dy() * normal.dy() + normal.dz() * normal.dz();
-  b = 2.f * (ray.dx() * normal.dx() + ray.dy() * normal.dy() + ray.dz() * normal.dz());
-  c = ray.dx() * ray.dx() + ray.dy() * ray.dy() + ray.dz() * ray.dz() - (refraction * l) * (refraction * l);
-
-  std::vector<double> result = Math::Utils::solve(a, b, c);
+  double	l = std::sqrt(ray.d().x() * ray.d().x() + ray.d().y() * ray.d().y() + ray.d().z() * ray.d().z());
+  
+  std::vector<double> result = Math::Utils::solve(
+    normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z(),
+    2.f * (ray.d().x() * normal.d().x() + ray.d().y() * normal.d().y() + ray.d().z() * normal.d().z()),
+    ray.d().x() * ray.d().x() + ray.d().y() * ray.d().y() + ray.d().z() * ray.d().z() - (refraction * l) * (refraction * l)
+    );
 
   // Reflection if invalid refraction
-  Math::Ray new_ray;
+  RT::Ray new_ray;
   if (result.empty())
   {
-    double  k = -(normal.dx() * (normal.px() - ray.px()) + normal.dy() * (normal.py() - ray.py()) + normal.dz() * (normal.pz() - ray.pz())) / (normal.dx() * normal.dx() + normal.dy() * normal.dy() + normal.dz() * normal.dz());
-
-    new_ray.px() = normal.px() + normal.dx() * Math::Shift;
-    new_ray.py() = normal.py() + normal.dy() * Math::Shift;
-    new_ray.pz() = normal.pz() + normal.dz() * Math::Shift;
-    new_ray.dx() = ray.px() + 2.f * (normal.px() + normal.dx() * k - ray.px()) - normal.px();
-    new_ray.dy() = ray.py() + 2.f * (normal.py() + normal.dy() * k - ray.py()) - normal.py();
-    new_ray.dz() = ray.pz() + 2.f * (normal.pz() + normal.dz() * k - ray.pz()) - normal.pz();
+    new_ray.p() = normal.p() + normal.d() * Math::Shift;
+    new_ray.d() = normal.p() - ray.p() - 2.f * normal.d() * (normal.d().x() * (normal.p().x() - ray.p().x()) + normal.d().y() * (normal.p().y() - ray.p().y()) + normal.d().z() * (normal.p().z() - ray.p().z())) / (normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z());
   }
   else
   {
-    new_ray.px() = normal.px() - normal.dx() * Math::Shift;
-    new_ray.py() = normal.py() - normal.dy() * Math::Shift;
-    new_ray.pz() = normal.pz() - normal.dz() * Math::Shift;
-    new_ray.dx() = ray.dx() + normal.dx() * result.front();
-    new_ray.dy() = ray.dy() + normal.dy() * result.front();
-    new_ray.dz() = ray.dz() + normal.dz() * result.front();
+    new_ray.p() = normal.p() - normal.d() * Math::Shift;
+    new_ray.d() = ray.d() + normal.d() * result.front();
   }
 
   return renderRay(new_ray, recursivite) * intersection.material.color * intersection.material.transparency;
 }
 
-RT::Color RT::RenderRaytracer::renderLight(Math::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite) const
+RT::Color RT::RenderRaytracer::renderLight(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite) const
 {
   RT::Color light;
 
@@ -480,9 +458,8 @@ double	  RT::RenderRaytracer::progress() const
 {
   if (_status == First)
   {
-    unsigned int  total;
+    unsigned int	total = 0;
 
-    total = 0;
     for (unsigned int a = 0; a < _grid.size(); a++)
       if (_grid[a] == 0)
 	total++;
@@ -494,9 +471,8 @@ double	  RT::RenderRaytracer::progress() const
   }
   else
   {
-    unsigned int  total;
+    unsigned int	total = 0;
 
-    total = 0;
     for (unsigned int a = 0; a < _grid.size(); a++)
       if (_grid[a] == 0)
 	total++;

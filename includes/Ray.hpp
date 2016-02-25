@@ -2,46 +2,33 @@
 #define _RAY_HPP_
 
 #include "Matrix.hpp"
+#include "Vector.hpp"
 
-namespace Math
+namespace RT
 {
   class Ray
   {
   private:
-    Math::Matrix<4, 1>		_p, _d;	// Coordonnées de l'origine et de vecteur direction
+    Math::Vector<4>		_p, _d;						// Coordonnées de l'origine et de vecteur direction
 
   public:
-    Ray();
-    ~Ray();
+    Ray() { _p(3) = 1.f; }
+    ~Ray() {};
 
-    static double		cos(Math::Ray const &, Math::Ray const &);		// Calculate cosinus between two rays
-    static double		angle(Math::Ray const &, Math::Ray const &);		// Calculate angle (radian) between two rays
-    static double		scalaire(Math::Ray const &, Math::Ray const &);		// Apply scalaire to rays
-    static Math::Ray		vectoriel(Math::Ray const &, Math::Ray const &);	// Apply vectoriel to rays
+    inline Math::Vector<4> &	p() { return _p; };				// Return point of origin matrix
+    inline Math::Vector<4> &	d() { return _d; };				// Return direction vector matrix
+    inline Math::Vector<4>	p() const { return _p; };			// Return point of origin matrix
+    inline Math::Vector<4>	d() const { return _d; };			// Return direction vector matrix
 
-    Math::Ray			normalize() const;					// Return a normalized ray
+    RT::Ray			normalize() const;				// Return a normalized ray
 
-    inline Math::Matrix<4, 1> &	p() { return _p; };			// Return point of origin matrix
-    inline Math::Matrix<4, 1> &	d() { return _d; };			// Return direction vector matrix
-    inline Math::Matrix<4, 1>	p() const { return _p; };		// Return point of origin matrix
-    inline Math::Matrix<4, 1>	d() const { return _d; };		// Return direction vector matrix
-
-    inline double &		px() { return _p(0, 0); };		// Return X component of point of origin
-    inline double &		py() { return _p(1, 0); };		// Return Y component of point of origin
-    inline double &		pz() { return _p(2, 0); };		// Return Z component of point of origin
-    inline double		px() const { return _p(0, 0); };	// Return X component of point of origin
-    inline double		py() const { return _p(1, 0); };	// Return Y component of point of origin
-    inline double		pz() const { return _p(2, 0); };	// Return Z component of point of origin
-
-    inline double &		dx() { return _d(0, 0); };		// Return X component of direction vector
-    inline double &		dy() { return _d(1, 0); };		// Return Y component of direction vector
-    inline double &		dz() { return _d(2, 0); };		// Return Z component of direction vector
-    inline double		dx() const { return _d(0, 0); };	// Return X component of direction vector
-    inline double		dy() const { return _d(1, 0); };	// Return Y component of direction vector
-    inline double		dz() const { return _d(2, 0); };	// Return Z component of direction vector
+    static double		cos(RT::Ray const &, RT::Ray const &);		// Calculate cosinus between two rays
+    static double		angle(RT::Ray const &, RT::Ray const &);	// Calculate angle (radian) between two rays
+    static double		scalaire(RT::Ray const &, RT::Ray const &);	// Apply scalaire to rays
+    static RT::Ray		vectoriel(RT::Ray const &, RT::Ray const &);	// Apply vectoriel to rays
   };
 };
 
-Math::Ray operator*(Math::Matrix<4, 4> const &, Math::Ray const &);
+RT::Ray operator*(Math::Matrix<4, 4> const &, RT::Ray const &);
 
 #endif

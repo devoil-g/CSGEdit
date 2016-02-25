@@ -42,6 +42,7 @@ SET(SAMPLE_SRCS
 	./sources/Math.cpp
 	./sources/Matrix.cpp
 	./sources/Ray.cpp
+	./sources/Vector.cpp
 	./sources/Window.cpp
 
 	./sources/StateMachine.cpp
@@ -93,6 +94,7 @@ SET(SAMPLE_HDRS
 	./includes/Math.hpp
 	./includes/Matrix.hpp
 	./includes/Ray.hpp
+	./includes/Vector.hpp
 	./includes/Window.hpp
 
 	./includes/StateMachine.hpp

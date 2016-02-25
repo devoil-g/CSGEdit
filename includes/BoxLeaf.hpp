@@ -15,8 +15,8 @@ namespace RT
     double const	_x, _y, _z;	// Box dimension according to X, Y and Z axis
     bool const		_center;	// false= (0,0,0) at origin of the box, true= (0,0,0) at center of the box
 
-    std::vector<double>	intersection(Math::Ray const &) const override;	// Render intersection distance according to ray
-    Math::Ray		normal(Math::Ray const &) const override;	// Calculate normal from intersection point
+    std::vector<double>	intersection(RT::Ray const &) const override;	// Render intersection distance according to ray
+    Math::Vector<4>	normal(Math::Vector<4> const &) const override;	// Calculate normal from intersection point
 
   public:
     BoxLeaf(double, double, double, bool);

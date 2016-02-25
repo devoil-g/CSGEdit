@@ -15,8 +15,8 @@ namespace RT
     AbstractLight();
     virtual ~AbstractLight();
 
-    virtual RT::Color	preview(RT::Scene const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const = 0;	// Return preview lighting for given location/material
-    virtual RT::Color	render(RT::Scene const *, Math::Ray const &, Math::Ray const &, RT::Material const &) const = 0;	// Return rendered lighting for given location/material
+    virtual RT::Color	preview(RT::Scene const *, RT::Ray const &, RT::Ray const &, RT::Material const &) const = 0;	// Return preview lighting for given location/material
+    virtual RT::Color	render(RT::Scene const *, RT::Ray const &, RT::Ray const &, RT::Material const &) const = 0;	// Return rendered lighting for given location/material
 
     virtual std::string	dump() const = 0;											// Dump light in string
   };

@@ -7,34 +7,34 @@ RT::TriangleLeaf::TriangleLeaf(std::tuple<double, double, double> const & p0, st
 RT::TriangleLeaf::~TriangleLeaf()
 {}
 
-std::vector<double>	RT::TriangleLeaf::intersection(Math::Ray const & ray) const
+std::vector<double>	RT::TriangleLeaf::intersection(RT::Ray const & ray) const
 {
   std::vector<double>	result;
-  Math::Ray		v, v0, v1, v2;
+  RT::Ray		v, v0, v1, v2;
   double		a, b, c, d;
 
   // Very clever method to get intersection distance
-  v0.dx() = std::get<0>(_p1) - std::get<0>(_p0);
-  v0.dy() = std::get<1>(_p1) - std::get<1>(_p0);
-  v0.dz() = std::get<2>(_p1) - std::get<2>(_p0);
+  v0.d().x() = std::get<0>(_p1) - std::get<0>(_p0);
+  v0.d().y() = std::get<1>(_p1) - std::get<1>(_p0);
+  v0.d().z() = std::get<2>(_p1) - std::get<2>(_p0);
 
-  v1.dx() = std::get<0>(_p2) - std::get<0>(_p0);
-  v1.dy() = std::get<1>(_p2) - std::get<1>(_p0);
-  v1.dz() = std::get<2>(_p2) - std::get<2>(_p0);
+  v1.d().x() = std::get<0>(_p2) - std::get<0>(_p0);
+  v1.d().y() = std::get<1>(_p2) - std::get<1>(_p0);
+  v1.d().z() = std::get<2>(_p2) - std::get<2>(_p0);
 
-  v2.dx() = ray.px() - std::get<0>(_p0);
-  v2.dy() = ray.py() - std::get<1>(_p0);
-  v2.dz() = ray.pz() - std::get<2>(_p0);
+  v2.d().x() = ray.p().x() - std::get<0>(_p0);
+  v2.d().y() = ray.p().y() - std::get<1>(_p0);
+  v2.d().z() = ray.p().z() - std::get<2>(_p0);
 
-  v = Math::Ray::vectoriel(v0, v1);
-  d = -(v.dx() * ray.dx() + v.dy() * ray.dy() + v.dz() * ray.dz());
-  c = (v.dx() * v2.dx() + v.dy() * v2.dy() + v.dz() * v2.dz()) / d;
+  v = RT::Ray::vectoriel(v0, v1);
+  d = -(v.d().x() * ray.d().x() + v.d().y() * ray.d().y() + v.d().z() * ray.d().z());
+  c = (v.d().x() * v2.d().x() + v.d().y() * v2.d().y() + v.d().z() * v2.d().z()) / d;
 
-  v = Math::Ray::vectoriel(v2, v1);
-  a = -(v.dx() * ray.dx() + v.dy() * ray.dy() + v.dz() * ray.dz()) / d;
+  v = RT::Ray::vectoriel(v2, v1);
+  a = -(v.d().x() * ray.d().x() + v.d().y() * ray.d().y() + v.d().z() * ray.d().z()) / d;
 
-  v = Math::Ray::vectoriel(v0, v2);
-  b = -(v.dx() * ray.dx() + v.dy() * ray.dy() + v.dz() * ray.dz()) / d;
+  v = RT::Ray::vectoriel(v0, v2);
+  b = -(v.d().x() * ray.d().x() + v.d().y() * ray.d().y() + v.d().z() * ray.d().z()) / d;
 
   // Push intersection if inside the triangle
   if (a > 0 && b > 0 && a + b < 1)
@@ -43,22 +43,20 @@ std::vector<double>	RT::TriangleLeaf::intersection(Math::Ray const & ray) const
   return result;
 }
 
-Math::Ray	RT::TriangleLeaf::normal(Math::Ray const &) const
+Math::Vector<4>	RT::TriangleLeaf::normal(Math::Vector<4> const &) const
 {
-  Math::Ray	normal, v0, v1;
+  RT::Ray	v0, v1;
 
   // Calculate intersection using cross product
-  v0.dx() = std::get<0>(_p1) - std::get<0>(_p0);
-  v0.dy() = std::get<1>(_p1) - std::get<1>(_p0);
-  v0.dz() = std::get<2>(_p1) - std::get<2>(_p0);
+  v0.d().x() = std::get<0>(_p1) - std::get<0>(_p0);
+  v0.d().y() = std::get<1>(_p1) - std::get<1>(_p0);
+  v0.d().z() = std::get<2>(_p1) - std::get<2>(_p0);
 
-  v1.dx() = std::get<0>(_p2) - std::get<0>(_p0);
-  v1.dy() = std::get<1>(_p2) - std::get<1>(_p0);
-  v1.dz() = std::get<2>(_p2) - std::get<2>(_p0);
+  v1.d().x() = std::get<0>(_p2) - std::get<0>(_p0);
+  v1.d().y() = std::get<1>(_p2) - std::get<1>(_p0);
+  v1.d().z() = std::get<2>(_p2) - std::get<2>(_p0);
 
-  normal = Math::Ray::vectoriel(v0, v1);
-
-  return normal;
+  return RT::Ray::vectoriel(v0, v1).d();
 }
 
 std::string	RT::TriangleLeaf::dump() const

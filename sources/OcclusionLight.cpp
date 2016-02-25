@@ -14,12 +14,12 @@ RT::OcclusionLight::OcclusionLight(RT::Color const & color, double radius, unsig
 RT::OcclusionLight::~OcclusionLight()
 {}
 
-RT::Color RT::OcclusionLight::preview(RT::Scene const * scene, Math::Ray const & ray, Math::Ray const & normal, RT::Material const & material) const
+RT::Color RT::OcclusionLight::preview(RT::Scene const * scene, RT::Ray const & ray, RT::Ray const & normal, RT::Material const & material) const
 {
   return material.color * material.ambient * _color * scene->config().lightAmbient;
 }
 
-RT::Color RT::OcclusionLight::render(RT::Scene const * scene, Math::Ray const & ray, Math::Ray const & normal, RT::Material const & material) const
+RT::Color RT::OcclusionLight::render(RT::Scene const * scene, RT::Ray const & ray, RT::Ray const & normal, RT::Material const & material) const
 {
   // If no ambient light, stop
   if (scene->config().lightAmbient == 0.f || material.ambient == 0.f || material.transparency == 1.f || material.reflection == 1.f)
@@ -29,20 +29,20 @@ RT::Color RT::OcclusionLight::render(RT::Scene const * scene, Math::Ray const & 
   if (_quality <= 1 || _radius == 0.f)
     return material.color * scene->config().lightAmbient * material.ambient * (1.f - material.transparency) * (1.f - material.reflection);
 
-  Math::Ray	n, occ;
-  double	ry, rz;
+  RT::Ray	occ;
 
   // Inverse normal if necessary
-  n = normal;
-  if (Math::Ray::cos(ray, normal) > 0)
-    n.d() = Math::Matrix<4, 4>::scale(-1.f) * normal.d();
+  RT::Ray	n = normal;
+  if (RT::Ray::cos(ray, normal) > 0)
+    n.d() *= -1;
 
   // Calculate rotation angles of normal
-  ry = -std::asin(n.dz());
-  if (n.dx() != 0 || n.dy() != 0)
-    rz = n.dy() > 0 ?
-    +std::acos(n.dx() / std::sqrt(n.dx() * n.dx() + n.dy() * n.dy())) :
-    -std::acos(n.dx() / std::sqrt(n.dx() * n.dx() + n.dy() * n.dy()));
+  double	ry = -std::asin(n.d().z()), rz;
+
+  if (n.d().x() != 0 || n.d().y() != 0)
+    rz = n.d().y() > 0 ?
+    +std::acos(n.d().x() / std::sqrt(n.d().x() * n.d().x() + n.d().y() * n.d().y())) :
+    -std::acos(n.d().x() / std::sqrt(n.d().x() * n.d().x() + n.d().y() * n.d().y()));
   else
     rz = 0;
 
@@ -50,23 +50,21 @@ RT::Color RT::OcclusionLight::render(RT::Scene const * scene, Math::Ray const & 
   Math::Matrix<4, 4>  matrix = Math::Matrix<4, 4>::rotation(0, Math::Utils::RadToDeg(ry), Math::Utils::RadToDeg(rz));
 
   // Point origin right above intersection
-  occ.px() = n.px() + n.dx() * Math::Shift;
-  occ.py() = n.py() + n.dy() * Math::Shift;
-  occ.pz() = n.pz() + n.dz() * Math::Shift;
-
+  occ.p() = n.p() + n.d() * Math::Shift;
+  
   // Generate and render occlusion rays
-  unsigned int	nb_ray(0);
-  RT::Color	ambient(0.f);
+  unsigned int	nb_ray = 0;
+  RT::Color	ambient = 0.f;
 
   for (double a = Math::Random::rand(Math::Pi / (2.f * _quality)); a < Math::Pi / 2.f; a += Math::Pi / (2.f * _quality))
     for (double b = Math::Random::rand(2.f * Math::Pi / (std::cos(a) * _quality * 2.f + 1.f)); b < 2.f * Math::Pi; b += (2.f * Math::Pi) / (std::cos(a) * _quality * 2.f + 1.f))
     {
       // Calculate ray according to point on the hemisphere
-      occ.dx() = std::sin(a);
-      occ.dy() = std::cos(b) * std::cos(a);
-      occ.dz() = std::sin(b) * std::cos(a);
+      occ.d().x() = std::sin(a);
+      occ.d().y() = std::cos(b) * std::cos(a);
+      occ.d().z() = std::sin(b) * std::cos(a);
       occ.d() = matrix * occ.d();
-
+      
       std::list<RT::Intersection> intersect = scene->tree()->render(occ.normalize());
       
       // Occlusion above
@@ -95,7 +93,7 @@ RT::Color RT::OcclusionLight::render(RT::Scene const * scene, Math::Ray const & 
 	
 	while (it != intersect.rend() && -it->distance < 0.f)
 	  it++;
-	while (it != intersect.rend() && light != RT::Color(0.f))
+	while (it != intersect.rend() && -it->distance < _radius && light != RT::Color(0.f))
 	{
 	  // NOTE: occlusion ray is not reflected
 	  ambient += RT::Color(-it->distance / _radius) * light * it->material.color * (1.f - it->material.transparency) * (material.transparency);

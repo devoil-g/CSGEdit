@@ -110,15 +110,12 @@ void	RT::PreviewRaytracer::preview(unsigned int zone)
 RT::Color	RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
 {
   std::list<RT::Intersection>	intersect;
-  Math::Ray			ray;
+  RT::Ray			ray;
 
   // Calcul ray according to (x, y) coordinates
-  ray.px() = 0;
-  ray.py() = 0;
-  ray.pz() = 0;
-  ray.dx() = (double)_scene->image().getSize().x;
-  ray.dy() = (double)_scene->image().getSize().x / 2 - x + 0.5f;
-  ray.dz() = (double)_scene->image().getSize().y / 2 - y + 0.5f;
+  ray.d().x() = (double)_scene->image().getSize().x;
+  ray.d().y() = (double)_scene->image().getSize().x / 2 - x + 0.5f;
+  ray.d().z() = (double)_scene->image().getSize().y / 2 - y + 0.5f;
   ray = (_scene->camera() * ray).normalize();
 
   // Render intersections using ray

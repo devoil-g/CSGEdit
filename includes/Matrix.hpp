@@ -16,7 +16,7 @@ namespace Math
   template<unsigned int cRow, unsigned int cCol>
   class Matrix
   {
-  private:
+  protected:
     double				_matrix[cRow][cCol];					// Matrix value container
 
   public:
@@ -57,7 +57,71 @@ namespace Math
 #endif
       return _matrix[row][col];
     };
-    
+
+    Math::Matrix<cRow, cCol> &		operator+=(Math::Matrix<cRow, cCol> const & m)		// Matrix addition
+    {
+      for (unsigned int row = 0; row < cRow; row++)
+	for (unsigned int col = 0; col < cCol; col++)
+	  (*this)(row, col) += m(row, col);
+
+      return *this;
+    }
+
+    Math::Matrix<cRow, cCol>		operator+(Math::Matrix<cRow, cCol> const & m) const	// Matrix addition
+    {
+      return Math::Matrix<cRow, cCol>(*this) += m;
+    }
+
+    Math::Matrix<cRow, cCol> &		operator-=(Math::Matrix<cRow, cCol> const & m)		// Matrix subtraction
+    {
+      for (unsigned int row = 0; row < cRow; row++)
+	for (unsigned int col = 0; col < cCol; col++)
+	  (*this)(row, col) -= m(row, col);
+
+      return *this;
+    }
+
+    Math::Matrix<cRow, cCol>		operator-(Math::Matrix<cRow, cCol> const & m) const	// Matrix subtraction
+    {
+      return Math::Matrix<cRow, cCol>(*this) -= m;
+    }
+
+    Math::Matrix<cRow, cCol> &		operator/=(double v)					// Matrix division
+    {
+#ifdef _DEBUG
+      if (v == 0.f)
+	throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+#endif
+      for (unsigned int row = 0; row < cRow; row++)
+	for (unsigned int col = 0; col < cCol; col++)
+	  (*this)(row, col) /= v;
+
+      return *this;
+    }
+
+    Math::Matrix<cRow, cCol>		operator/(double v) const				// Matrix division
+    {
+      return Math::Matrix<cRow, cCol>(*this) /= v;
+    }
+
+    Math::Matrix<cRow, cCol> &		operator*=(double v)					// Matrix matrix multiplication
+    {
+#ifdef _DEBUG
+      if (v == 0.f)
+	throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+#endif
+      for (unsigned int row = 0; row < cRow; row++)
+	for (unsigned int col = 0; col < cCol; col++)
+	  (*this)(row, col) *= v;
+
+      return *this;
+    }
+
+    Math::Matrix<cRow, cCol>		operator*(double v) const				// Matrix multiplication
+    {
+      return Math::Matrix<cRow, cCol>(*this) *= v;
+    }
+
     template<unsigned int dRow, unsigned int dCol>
     Math::Matrix<cRow, dCol>		operator*(Math::Matrix<dRow, dCol> const & m) const	// Matrix multiplication
     {
@@ -72,19 +136,6 @@ namespace Math
 	    matrix(row, col) += (*this)(row, x) * m(x, col);
 
       return matrix;
-
-      /*
-      for (unsigned int i = 0; i < cRow; i++) {
-	_mm_store_ps((float *)&result._matrix[i],
-	  _mm_add_ps(
-	    _mm_add_ps(
-	      _mm_mul_ps(_mm_set1_ps(((const float *)&_matrix[i])[0]), m._matrix[0]),
-	      _mm_mul_ps(_mm_set1_ps(((const float *)&_matrix[i])[1]), m._matrix[1])),
-	    _mm_add_ps(
-	      _mm_mul_ps(_mm_set1_ps(((const float *)&_matrix[i])[2]), m._matrix[2]),
-	      _mm_mul_ps(_mm_set1_ps(((const float *)&_matrix[i])[3]), m._matrix[3]))));
-      }
-      */
     }
 
     Math::Matrix<cRow, cCol>		transpose() const					// Generate transpose matrix
@@ -183,5 +234,8 @@ namespace Math
     static Math::Matrix<cRow, cCol>	shear(double, double, double, double, double, double);	// Generate shearing matrix
   };
 };
+
+template<unsigned int cRow, unsigned int cCol>
+Math::Matrix<cRow, cCol>	operator*(double v, Math::Matrix<cRow, cCol> const & m) { return m * v; }
 
 #endif

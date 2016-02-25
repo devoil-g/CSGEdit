@@ -7,12 +7,15 @@ RT::MaterialNode::MaterialNode(RT::Material const & material)
 RT::MaterialNode::~MaterialNode()
 {}
 
-std::list<RT::Intersection> RT::MaterialNode::renderChildren(Math::Ray const & ray) const
+std::list<RT::Intersection> RT::MaterialNode::renderChildren(RT::Ray const & ray) const
 {
+  if (_children.empty())
+    return std::list<RT::Intersection>();
+
   std::list<RT::Intersection> intersect;
 
   // Iterate through sub-tree to get intersections
-  for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
+  for (std::list<RT::AbstractTree *>::const_iterator it = _children.begin(); it != _children.end(); it++)
   {
     std::list<RT::Intersection>	node = (*it)->render(ray);
 
@@ -29,10 +32,6 @@ std::list<RT::Intersection> RT::MaterialNode::renderChildren(Math::Ray const & r
   std::map<RT::AbstractTree const *, bool>  inside;
   std::list<RT::Intersection>		    result;
   unsigned int				    state = 0;
-
-  // Set all positions to 'outside' (false)
-  for (std::list<RT::Intersection>::const_iterator iter = intersect.begin(); iter != intersect.end(); iter++)
-    inside[iter->node] = false;
 
   // Iterate through intersections
   for (std::list<RT::Intersection>::const_iterator iter = intersect.begin(); iter != intersect.end(); iter++)
@@ -102,7 +101,7 @@ std::string	RT::MaterialNode::dump() const
     n++;
   }
 
-  for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
+  for (std::list<RT::AbstractTree *>::const_iterator it = _children.begin(); it != _children.end(); it++)
     stream << (*it)->dump();
 
   for (unsigned int i = 0; i < n; i++)

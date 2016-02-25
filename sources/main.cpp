@@ -1,12 +1,10 @@
 #include <iostream>
 #include <string>
 
-#include "StateMachine.hpp"
-#include "ControlState.hpp"
 #include "Config.hpp"
+#include "ControlState.hpp"
 #include "Exception.hpp"
-#include "Math.hpp"
-#include "Material.hpp"
+#include "StateMachine.hpp"
 #include "Window.hpp"
 
 #ifdef _WIN32

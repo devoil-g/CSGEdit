@@ -10,30 +10,21 @@ RT::TangleLeaf::TangleLeaf(double c)
 RT::TangleLeaf::~TangleLeaf()
 {}
 
-std::vector<double>	RT::TangleLeaf::intersection(Math::Ray const & ray) const
+std::vector<double>	RT::TangleLeaf::intersection(RT::Ray const & ray) const
 {
-  double		a, b, c, d, e;
-
   // Resolve tangle equation X^4 - 5X² + Y^4 - 5Y² + Z^4 - 5Z² + C = 0
-  a = std::pow(ray.dx(), 4.0) + std::pow(ray.dy(), 4.0) + std::pow(ray.dz(), 4.f);
-  b = 4.f * (std::pow(ray.dx(), 3.f) * ray.px() + std::pow(ray.dy(), 3.f) * ray.py() + std::pow(ray.dz(), 3.f) * ray.pz());
-  c = 6.f * (ray.dx() * ray.dx() * ray.px() * ray.px() + ray.dy() * ray.dy() * ray.py() * ray.py() + ray.dz() * ray.dz() * ray.pz() * ray.pz()) - 5.f * (ray.dx() * ray.dx() + ray.dy() * ray.dy() + ray.dz() * ray.dz());
-  d = 4.f * (std::pow(ray.px(), 3.f) * ray.dx() + std::pow(ray.py(), 3.f) * ray.dy() + std::pow(ray.pz(), 3.f) * ray.dz()) - 10.f * (ray.dx() * ray.px() + ray.dy() * ray.py() + ray.dz() * ray.pz());
-  e = std::pow(ray.px(), 4.f) + std::pow(ray.py(), 4.f) + std::pow(ray.pz(), 4.f) - 5.f * (ray.px() * ray.px() + ray.py() * ray.py() + ray.pz() * ray.pz()) + _c;
-
-  return Math::Utils::solve(a, b, c, d, e);
+  return Math::Utils::solve(
+    std::pow(ray.d().x(), 4.0) + std::pow(ray.d().y(), 4.0) + std::pow(ray.d().z(), 4.f),
+    4.f * (std::pow(ray.d().x(), 3.f) * ray.p().x() + std::pow(ray.d().y(), 3.f) * ray.p().y() + std::pow(ray.d().z(), 3.f) * ray.p().z()),
+    6.f * (ray.d().x() * ray.d().x() * ray.p().x() * ray.p().x() + ray.d().y() * ray.d().y() * ray.p().y() * ray.p().y() + ray.d().z() * ray.d().z() * ray.p().z() * ray.p().z()) - 5.f * (ray.d().x() * ray.d().x() + ray.d().y() * ray.d().y() + ray.d().z() * ray.d().z()),
+    4.f * (std::pow(ray.p().x(), 3.f) * ray.d().x() + std::pow(ray.p().y(), 3.f) * ray.d().y() + std::pow(ray.p().z(), 3.f) * ray.d().z()) - 10.f * (ray.d().x() * ray.p().x() + ray.d().y() * ray.p().y() + ray.d().z() * ray.p().z()),
+    std::pow(ray.p().x(), 4.f) + std::pow(ray.p().y(), 4.f) + std::pow(ray.p().z(), 4.f) - 5.f * (ray.p().x() * ray.p().x() + ray.p().y() * ray.p().y() + ray.p().z() * ray.p().z()) + _c
+    );
 }
 
-Math::Ray	RT::TangleLeaf::normal(Math::Ray const & ray) const
+Math::Vector<4>	RT::TangleLeaf::normal(Math::Vector<4> const & pt) const
 {
-  Math::Ray	normal;
-
-  // Derive tangle's equation
-  normal.dx() = 4.f * std::pow(ray.px(), 3.f) - 10.f * ray.px();
-  normal.dy() = 4.f * std::pow(ray.py(), 3.f) - 10.f * ray.py();
-  normal.dz() = 4.f * std::pow(ray.pz(), 3.f) - 10.f * ray.pz();
-
-  return normal;
+  return pt * pt * pt * 4.f - pt * 10.f;
 }
 
 std::string	RT::TangleLeaf::dump() const

@@ -8,18 +8,18 @@ RT::BoundingNode::BoundingNode()
 RT::BoundingNode::~BoundingNode()
 {}
 
-std::list<RT::Intersection>	RT::BoundingNode::renderChildren(Math::Ray const & ray) const
+std::list<RT::Intersection>	RT::BoundingNode::renderChildren(RT::Ray const & ray) const
 {
-  std::map<RT::AbstractTree const *, bool>  inside;
-  std::list<RT::Intersection>		    intersect, result;
-  unsigned int				    state = 0;
-
   // Stop if no intersection with bounding tree
   if (_children.empty() || _children.front()->render(ray).empty())
     return std::list<RT::Intersection>();
-  
+ 
+  std::map<RT::AbstractTree const *, bool>	inside;
+  std::list<RT::Intersection>			intersect, result;
+  unsigned int					state = 0;
+
   // Iterate through sub-tree to get intersections
-  for (std::list<RT::AbstractTree const *>::const_iterator it = std::next(_children.begin()); it != _children.end(); it++)
+  for (std::list<RT::AbstractTree *>::const_iterator it = std::next(_children.begin()); it != _children.end(); it++)
   {
     std::list<RT::Intersection> node = (*it)->render(ray);
 
@@ -29,10 +29,6 @@ std::list<RT::Intersection>	RT::BoundingNode::renderChildren(Math::Ray const & r
 
     intersect.merge(node);
   }
-
-  // Set all positions to 'outside' (false)
-  for (std::list<RT::Intersection>::iterator iter = intersect.begin(); iter != intersect.end(); iter++)
-    inside[iter->node] = false;
 
   // Iterate through intersections
   for (std::list<RT::Intersection>::iterator iter = intersect.begin(); iter != intersect.end(); iter++)
@@ -62,7 +58,7 @@ std::string	RT::BoundingNode::dump() const
 
   stream << "bounding();";
 
-  for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
+  for (std::list<RT::AbstractTree *>::const_iterator it = _children.begin(); it != _children.end(); it++)
     stream << (*it)->dump();
 
   stream << "end();";

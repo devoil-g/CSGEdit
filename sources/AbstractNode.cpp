@@ -13,7 +13,7 @@ RT::AbstractNode::~AbstractNode()
   }
 }
 
-std::list<RT::Intersection>	RT::AbstractNode::render(Math::Ray const & ray) const
+std::list<RT::Intersection>	RT::AbstractNode::render(RT::Ray const & ray) const
 {
   std::list<RT::Intersection>	result = renderChildren(ray);
 
@@ -24,7 +24,7 @@ std::list<RT::Intersection>	RT::AbstractNode::render(Math::Ray const & ray) cons
   return result;
 }
 
-void	RT::AbstractNode::push(RT::AbstractTree const * node)
+void	RT::AbstractNode::push(RT::AbstractTree * node)
 {
   // Push sub-tree in list if not nullptr
   if (node)

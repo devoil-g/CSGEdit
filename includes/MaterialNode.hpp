@@ -16,7 +16,7 @@ namespace RT
   private:
     RT::Material const		_material;						// Material applied to sub-node
     
-    std::list<RT::Intersection>	renderChildren(Math::Ray const &) const override;	// Render sub-tree
+    std::list<RT::Intersection>	renderChildren(RT::Ray const &) const override;	// Render sub-tree
 
   public:
     MaterialNode(RT::Material const &);

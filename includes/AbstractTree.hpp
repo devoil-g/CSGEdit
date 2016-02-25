@@ -15,7 +15,7 @@ namespace RT
     AbstractTree();
     virtual ~AbstractTree();
 
-    virtual std::list<RT::Intersection>	render(Math::Ray const &) const = 0;	// Render a list of intersection from the sub-tree according to ray
+    virtual std::list<RT::Intersection>	render(RT::Ray const &) const = 0;	// Render a list of intersection from the sub-tree according to ray
     virtual std::string			dump() const = 0;			// Dump CSG tree
   };
 };

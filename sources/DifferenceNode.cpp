@@ -8,53 +8,39 @@ RT::DifferenceNode::DifferenceNode()
 RT::DifferenceNode::~DifferenceNode()
 {}
 
-std::list<RT::Intersection>	RT::DifferenceNode::renderChildren(Math::Ray const & ray) const
+std::list<RT::Intersection>	RT::DifferenceNode::renderChildren(RT::Ray const & ray) const
 {
-  std::list<std::list<RT::Intersection> > intersect_list;
+  if (_children.empty())
+    return std::list<RT::Intersection>();
 
+  std::list<RT::Intersection>			uni = _children.front()->render(ray);
+
+  if (uni.empty())
+    return std::list<RT::Intersection>();
+
+  std::list<RT::Intersection>			dif;
+  
   // Iterate through sub-tree to get intersections
-  for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
+  for (std::list<RT::AbstractTree *>::const_iterator it = std::next(_children.begin()); it != _children.end(); it++)
   {
     std::list<RT::Intersection> node = (*it)->render(ray);
 
     // Atribute intersections to children
     for (std::list<RT::Intersection>::iterator it_node = node.begin(); it_node != node.end(); it_node++)
     {
-      it_node->node = *it;
-
       // Reverse normal (for refraction)
-      if (it != _children.begin())
-	it_node->normal.d() = Math::Matrix<4, 4>::scale(-1.f) * it_node->normal.d();
+      it_node->normal.d() *= -1.f;
+      it_node->node = *it;
     }
 
-    // Acceleration tweak
-    if (node.empty() && it == _children.begin())
-      return std::list<RT::Intersection>();
-
-    intersect_list.push_back(node);
+    dif.merge(node);
   }
 
-  std::map<RT::AbstractTree const *, bool>  inside;
-  std::list<RT::Intersection>::iterator	    it_uni, it_dif;
-  std::list<RT::Intersection>		    uni, dif, result;
-  unsigned int				    state_uni = 0;
-  unsigned int				    state_dif = 0;
+  std::map<RT::AbstractTree const *, bool>	inside;
+  std::list<RT::Intersection>			result;
+  unsigned int					state_uni = 0, state_dif = 0;
 
-  // Create positive and negative objects lists
-  for (std::list<std::list<RT::Intersection> >::iterator iter = intersect_list.begin(); iter != intersect_list.end(); iter++)
-  {
-    if (iter == intersect_list.begin())
-      uni.merge(*iter);
-    else
-      dif.merge(*iter);
-  }
-
-  // Set all positions to 'outside' (false)
-  for (std::list<RT::Intersection>::iterator iter = dif.begin(); iter != dif.end(); iter++)
-    inside[iter->node] = false;
-
-  it_uni = uni.begin();
-  it_dif = dif.begin();
+  std::list<RT::Intersection>::iterator		it_uni = uni.begin(), it_dif = dif.begin();
 
   // Iteration through positive object intersections
   while (it_uni != uni.end())
@@ -102,7 +88,7 @@ std::string	RT::DifferenceNode::dump() const
 
   stream << "difference();";
 
-  for (std::list<RT::AbstractTree const *>::const_iterator it = _children.begin(); it != _children.end(); it++)
+  for (std::list<RT::AbstractTree *>::const_iterator it = _children.begin(); it != _children.end(); it++)
     stream << (*it)->dump();
 
   stream << "end();";
