@@ -27,8 +27,7 @@ RT::Color RT::DirectionalLight::preview(RT::Scene const * scene, RT::Ray const &
     return RT::Color(0.f);
 
   RT::Ray	light;
-  double	diffuse;
-
+  
   // Inverse normal if necessary
   RT::Ray	n = normal;
   if (RT::Ray::cos(ray, normal) > 0)
@@ -38,7 +37,7 @@ RT::Color RT::DirectionalLight::preview(RT::Scene const * scene, RT::Ray const &
   light.d() = _position.d() * -1.f;
   
   // Calculate normal cosinus with light ray
-  diffuse = std::fmax(RT::Ray::cos(n, light), 0.f);
+  double	diffuse = std::fmax(RT::Ray::cos(n, light), 0.f);
   if (diffuse == 0.f)
     return RT::Color(0.f);
 

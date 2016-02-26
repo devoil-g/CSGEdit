@@ -1,5 +1,3 @@
-// TODO: Create a multi-dimensional vector class
-
 #include <ctime>
 #include <limits>
 
@@ -19,10 +17,7 @@ void	Math::initialize()
 }
 
 std::vector<double>	Math::Utils::solve(double a, double b, double c)
-{
-  std::vector<double>   result;
-  double		d;
-
+{ 
 #ifdef _DEBUG
   // Check for invalid parameter
   if (a == 0)
@@ -30,21 +25,17 @@ std::vector<double>	Math::Utils::solve(double a, double b, double c)
 #endif
 
   // Solve equation
-  d = b * b - 4.f * a * c;
+  double  d = b * b - 4.f * a * c;
   if (d >= 0)
-  {
-    result.push_back((-b - std::sqrt(d)) / (2.f * a));
-    result.push_back((-b + std::sqrt(d)) / (2.f * a));
-  }
-  return result;
+    return { (-b - std::sqrt(d)) / (2.f * a), (-b + std::sqrt(d)) / (2.f * a) };
+  else
+    return std::vector<double>();
 }
 
 std::vector<double>	Math::Utils::solve(double a, double b, double c, double d, double e)
 {
   std::vector<double>   result;
-  double		delta, x1, x2;
-  double		tmp1[5], tmp2[4];
-
+  
 #ifdef _DEBUG
   // Check for invalid parameter
   if (a == 0)
@@ -52,49 +43,51 @@ std::vector<double>	Math::Utils::solve(double a, double b, double c, double d, d
 #endif
 
   // Solve equation
-  delta = b / (2.f * a);
+  double  delta = b / (2.f * a);
 
-  tmp1[0] = c / a - 3.f * (delta * delta) / 2.f;
-  tmp1[1] = d / a + std::pow(delta, 3.f) - c * delta / a;
-  tmp1[2] = e / a - 3.f * std::pow(delta, 4.f) / 16.f + c * delta * delta / (4.f * a) - d * delta / (2.f * a);
-  tmp1[3] = -2.f * std::pow(tmp1[0], 3.f) / 27.f - tmp1[1] * tmp1[1] + 8.f * tmp1[0] * tmp1[2] / 3.f;
-  tmp1[4] = -(tmp1[0] * tmp1[0] + 12.f * tmp1[2]) / 3.f;
+  double  f = c / a - 3.f * delta * delta / 2.f;
+  double  g = d / a + delta * delta * delta - c * delta / a;
+  double  h = e / a - 3.f * delta * delta * delta * delta / 16.f + c * delta * delta / (4.f * a) - d * delta / (2.f * a);
+  double  i = -2.f * f * f * f / 27.f - g * g + 8.f * f * h / 3.f;
+  double  j = -(f * f + 12.f * h) / 3.f;
 
-  delta = std::pow(tmp1[4], 3.f) / 27.f + tmp1[3] * tmp1[3] / 4.f;
+  delta = j * j * j / 27.f + i * i / 4.f;
   if (delta > 0)
-    delta = std::cbrt(-tmp1[3] / 2.f + std::sqrt(delta)) - (tmp1[4] / 3.f) / std::cbrt(-tmp1[3] / 2.f + std::sqrt(delta));
+    delta = std::cbrt(-i / 2.f + std::sqrt(delta)) - (j / 3.f) / std::cbrt(-i / 2.f + std::sqrt(delta));
   else if (delta == 0)
-    delta = 3.f * tmp1[3] / tmp1[4];
+    delta = 3.f * i / j;
   else
-    delta = 2.f * std::sqrt(-tmp1[4] / 3.f) * std::cos(std::acos(-tmp1[3] / 2.f / std::pow((-tmp1[4] / 3.f), (3.f / 2.f))) / 3.f);
+    delta = 2.f * std::sqrt(-j / 3.f) * std::cos(std::acos(-i / 2.f / std::pow((-j / 3.f), (3.f / 2.f))) / 3.f);
 
-  tmp2[0] = tmp1[0] / 3.f + delta;
-  tmp2[1] = std::sqrt(tmp2[0] - tmp1[0]);
-  tmp2[2] = std::sqrt(std::pow(tmp2[0] / 2.f, 2.f) - tmp1[2]);
-  tmp2[3] = -b / (4.f * a);
+  double  k = f / 3.f + delta;
+  double  l = std::sqrt(k - f);
+  double  m = std::sqrt(std::pow(k / 2.f, 2.f) - h);
+  double  n = -b / (4.f * a);
 
-  delta = tmp2[1] * tmp2[1] - 2.f * tmp2[0] - 4.f * tmp2[2];
+  delta = l * l - 2.f * k - 4.f * m;
   if (delta >= 0)
   {
-    x1 = -tmp2[1] / 2.f;
-    if (tmp1[1] > 0)
+    double  x1 = -l / 2.f;
+    if (g > 0)
       x1 = -x1;
-    x2 = std::sqrt(delta) / 2.f;
+    
+    double  x2 = std::sqrt(delta) / 2.f;
 
-    result.push_back(x1 + x2 + tmp2[3]);
-    result.push_back(x1 - x2 + tmp2[3]);
+    result.push_back(x1 + x2 + n);
+    result.push_back(x1 - x2 + n);
   }
 
-  delta = tmp2[1] * tmp2[1] - 2.f * tmp2[0] + 4.f * tmp2[2];
+  delta = l * l - 2.f * k + 4.f * m;
   if (delta >= 0)
   {
-    x1 = tmp2[1] / 2.f;
-    if (tmp1[1] > 0)
+    double  x1 = l / 2.f;
+    if (g > 0)
       x1 = -x1;
-    x2 = std::sqrt(delta) / 2.f;
 
-    result.push_back(x1 + x2 + tmp2[3]);
-    result.push_back(x1 - x2 + tmp2[3]);
+    double  x2 = std::sqrt(delta) / 2.f;
+
+    result.push_back(x1 + x2 + n);
+    result.push_back(x1 - x2 + n);
   }
 
   return result;

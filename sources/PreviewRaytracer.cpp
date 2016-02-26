@@ -80,13 +80,13 @@ void	RT::PreviewRaytracer::preview()
 void	RT::PreviewRaytracer::preview(unsigned int zone)
 {
   unsigned int	size = _grid[zone];
-  unsigned int	x, y;
-
+  
+  // Lock grid zone
   _grid[zone] = RT::Config::BlockSize + 1;
 
   // Calcul zone coordinates (x, y)
-  x = zone % (_scene->image().getSize().x / RT::Config::BlockSize + (_scene->image().getSize().x % RT::Config::BlockSize ? 1 : 0)) * RT::Config::BlockSize;
-  y = zone / (_scene->image().getSize().x / RT::Config::BlockSize + (_scene->image().getSize().x % RT::Config::BlockSize ? 1 : 0)) * RT::Config::BlockSize;
+  unsigned int	x = zone % (_scene->image().getSize().x / RT::Config::BlockSize + (_scene->image().getSize().x % RT::Config::BlockSize ? 1 : 0)) * RT::Config::BlockSize;
+  unsigned int	y = zone / (_scene->image().getSize().x / RT::Config::BlockSize + (_scene->image().getSize().x % RT::Config::BlockSize ? 1 : 0)) * RT::Config::BlockSize;
 
   // Render zone
   for (unsigned int a = 0; a < RT::Config::BlockSize && active(); a += size)
@@ -109,8 +109,7 @@ void	RT::PreviewRaytracer::preview(unsigned int zone)
 
 RT::Color	RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
 {
-  std::list<RT::Intersection>	intersect;
-  RT::Ray			ray;
+  RT::Ray	ray;
 
   // Calcul ray according to (x, y) coordinates
   ray.d().x() = (double)_scene->image().getSize().x;
@@ -119,9 +118,8 @@ RT::Color	RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
   ray = (_scene->camera() * ray).normalize();
 
   // Render intersections using ray
-  if (_scene->tree())
-    intersect = _scene->tree()->render(ray);
-
+  std::list<RT::Intersection>	intersect = (_scene->tree() ? _scene->tree()->render(ray) : std::list<RT::Intersection>());
+  
   // Delete back intersections
   while (!intersect.empty() && intersect.front().distance < 0)
     intersect.pop_front();

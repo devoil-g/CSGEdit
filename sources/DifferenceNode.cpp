@@ -19,7 +19,7 @@ std::list<RT::Intersection>	RT::DifferenceNode::renderChildren(RT::Ray const & r
     return std::list<RT::Intersection>();
 
   std::list<RT::Intersection>			dif;
-  
+
   // Iterate through sub-tree to get intersections
   for (std::list<RT::AbstractTree *>::const_iterator it = std::next(_children.begin()); it != _children.end(); it++)
   {

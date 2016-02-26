@@ -6,9 +6,3 @@ RT::Intersection::Intersection(RT::Ray const & norm, double dist)
 
 RT::Intersection::~Intersection()
 {}
-
-bool	RT::Intersection::operator<(RT::Intersection const & inter) const
-{
-  // Compare intersections distances
-  return this->distance < inter.distance;
-}

@@ -37,11 +37,9 @@ sf::Color	RT::Color::sfml() const
 
 RT::Color	RT::Color::normalize() const
 {
-  double	r, g, b;
-
-  r = this->r;
-  g = this->g;
-  b = this->b;
+  double	r = this->r;
+  double	g = this->g;
+  double	b = this->b;
 
   // Check if components positive
   if (r < 0)

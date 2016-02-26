@@ -3,11 +3,9 @@
 
 double		RT::Ray::cos(RT::Ray const & A, RT::Ray const & B)
 {
-  double	v1, v2, v12;
-
   // Get squared vector lenght
-  v1 = A.d().x() * A.d().x() + A.d().y() * A.d().y() + A.d().z() * A.d().z();
-  v2 = B.d().x() * B.d().x() + B.d().y() * B.d().y() + B.d().z() * B.d().z();
+  double	v1 = A.d().x() * A.d().x() + A.d().y() * A.d().y() + A.d().z() * A.d().z();
+  double	v2 = B.d().x() * B.d().x() + B.d().y() * B.d().y() + B.d().z() * B.d().z();
 
 #ifdef _DEBUG
   // Should not happen
@@ -16,7 +14,7 @@ double		RT::Ray::cos(RT::Ray const & A, RT::Ray const & B)
 #endif
 
   // Get lenght of A+B
-  v12 = (A.d().x() + B.d().x()) * (A.d().x() + B.d().x())
+  double	v12 = (A.d().x() + B.d().x()) * (A.d().x() + B.d().x())
     + (A.d().y() + B.d().y()) * (A.d().y() + B.d().y())
     + (A.d().z() + B.d().z()) * (A.d().z() + B.d().z());
 
@@ -65,6 +63,6 @@ RT::Ray		operator*(Math::Matrix<4, 4> const & matrix, RT::Ray const & ray)
 
   r.p() = matrix * ray.p();
   r.d() = matrix * ray.d();
-  
+
   return r;
 }

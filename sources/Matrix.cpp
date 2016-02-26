@@ -2,34 +2,31 @@
 #include "Matrix.hpp"
 
 template<>
-Math::Matrix<4, 4>    Math::Matrix<4, 4>::inverse() const
+Math::Matrix<4, 4>	Math::Matrix<4, 4>::inverse() const
 {
-  Math::Matrix<4, 4>  matrix;
-  double	      det, s0, s1, s2, s3, s4, s5, c0, c1, c2, c3, c4, c5;
+  Math::Matrix<4, 4>	matrix;
+  
+  double  s0 = (*this)(0, 0) * (*this)(1, 1) - (*this)(0, 1) * (*this)(1, 0);
+  double  s1 = (*this)(0, 0) * (*this)(2, 1) - (*this)(0, 1) * (*this)(2, 0);
+  double  s2 = (*this)(0, 0) * (*this)(3, 1) - (*this)(0, 1) * (*this)(3, 0);
+  double  s3 = (*this)(1, 0) * (*this)(2, 1) - (*this)(1, 1) * (*this)(2, 0);
+  double  s4 = (*this)(1, 0) * (*this)(3, 1) - (*this)(1, 1) * (*this)(3, 0);
+  double  s5 = (*this)(2, 0) * (*this)(3, 1) - (*this)(2, 1) * (*this)(3, 0);
 
-  s0 = (*this)(0, 0) * (*this)(1, 1) - (*this)(0, 1) * (*this)(1, 0);
-  s1 = (*this)(0, 0) * (*this)(2, 1) - (*this)(0, 1) * (*this)(2, 0);
-  s2 = (*this)(0, 0) * (*this)(3, 1) - (*this)(0, 1) * (*this)(3, 0);
-  s3 = (*this)(1, 0) * (*this)(2, 1) - (*this)(1, 1) * (*this)(2, 0);
-  s4 = (*this)(1, 0) * (*this)(3, 1) - (*this)(1, 1) * (*this)(3, 0);
-  s5 = (*this)(2, 0) * (*this)(3, 1) - (*this)(2, 1) * (*this)(3, 0);
-
-  c0 = (*this)(0, 2) * (*this)(1, 3) - (*this)(0, 3) * (*this)(1, 2);
-  c1 = (*this)(0, 2) * (*this)(2, 3) - (*this)(0, 3) * (*this)(2, 2);
-  c2 = (*this)(0, 2) * (*this)(3, 3) - (*this)(0, 3) * (*this)(3, 2);
-  c3 = (*this)(1, 2) * (*this)(2, 3) - (*this)(1, 3) * (*this)(2, 2);
-  c4 = (*this)(1, 2) * (*this)(3, 3) - (*this)(1, 3) * (*this)(3, 2);
-  c5 = (*this)(2, 2) * (*this)(3, 3) - (*this)(2, 3) * (*this)(3, 2);
-
-  det = s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0;
+  double  c0 = (*this)(0, 2) * (*this)(1, 3) - (*this)(0, 3) * (*this)(1, 2);
+  double  c1 = (*this)(0, 2) * (*this)(2, 3) - (*this)(0, 3) * (*this)(2, 2);
+  double  c2 = (*this)(0, 2) * (*this)(3, 3) - (*this)(0, 3) * (*this)(3, 2);
+  double  c3 = (*this)(1, 2) * (*this)(2, 3) - (*this)(1, 3) * (*this)(2, 2);
+  double  c4 = (*this)(1, 2) * (*this)(3, 3) - (*this)(1, 3) * (*this)(3, 2);
+  double  c5 = (*this)(2, 2) * (*this)(3, 3) - (*this)(2, 3) * (*this)(3, 2);
 
 #ifdef _DEBUG
   // Not supposed to happen
-  if (det == 0)
+  if (s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0 == 0.f)
     throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
 #endif
 
-  det = 1.f / det;
+  double  det = 1.f / (s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0);
 
   matrix(0, 0) = (+(*this)(1, 1) * c5 - (*this)(2, 1) * c4 + (*this)(3, 1) * c3) * det;
   matrix(1, 0) = (-(*this)(1, 0) * c5 + (*this)(2, 0) * c4 - (*this)(3, 0) * c3) * det;
@@ -137,9 +134,8 @@ template<>
 Math::Matrix<4, 4>    Math::Matrix<4, 4>::rotation(double a, double x, double y, double z)
 {
   Math::Matrix<4, 4>  matrix = Math::Matrix<4, 4>::identite();
-  double	      l;
-
-  l = std::sqrt(x * x + y * y + z * z);
+  
+  double	      l = std::sqrt(x * x + y * y + z * z);
 
 #ifdef _DEBUG
   // Should not happen
@@ -156,15 +152,15 @@ Math::Matrix<4, 4>    Math::Matrix<4, 4>::rotation(double a, double x, double y,
   a = Math::Utils::DegToRad(a);
 
   // Generate a rotation matrix
-  matrix(0, 0) = x * x * (1 - std::cos(a)) + std::cos(a);
-  matrix(1, 0) = x * y * (1 - std::cos(a)) + z * std::sin(a);
-  matrix(2, 0) = x * z * (1 - std::cos(a)) - y * std::sin(a);
-  matrix(0, 1) = y * x * (1 - std::cos(a)) - z * std::sin(a);
-  matrix(1, 1) = y * y * (1 - std::cos(a)) + std::cos(a);
-  matrix(2, 1) = y * z * (1 - std::cos(a)) + x * std::sin(a);
-  matrix(0, 2) = z * x * (1 - std::cos(a)) + y * std::sin(a);
-  matrix(1, 2) = z * y * (1 - std::cos(a)) - x * std::sin(a);
-  matrix(2, 2) = z * z * (1 - std::cos(a)) + std::cos(a);
+  matrix(0, 0) = x * x * (1.f - std::cos(a)) + std::cos(a);
+  matrix(1, 0) = x * y * (1.f - std::cos(a)) + z * std::sin(a);
+  matrix(2, 0) = x * z * (1.f - std::cos(a)) - y * std::sin(a);
+  matrix(0, 1) = y * x * (1.f - std::cos(a)) - z * std::sin(a);
+  matrix(1, 1) = y * y * (1.f - std::cos(a)) + std::cos(a);
+  matrix(2, 1) = y * z * (1.f - std::cos(a)) + x * std::sin(a);
+  matrix(0, 2) = z * x * (1.f - std::cos(a)) + y * std::sin(a);
+  matrix(1, 2) = z * y * (1.f - std::cos(a)) - x * std::sin(a);
+  matrix(2, 2) = z * z * (1.f - std::cos(a)) + std::cos(a);
 
   return matrix;
 }

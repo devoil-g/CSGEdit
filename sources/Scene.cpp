@@ -49,7 +49,7 @@ std::string		RT::Scene::dump() const
 
   // _config
   stream << "thread(" << _config.threadNumber << ");";
-  stream << "antialiasing(" << _config.liveAntiAliasing << ", " << _config.postAntiAliasing << ");";
+  stream << "antialiasing(" << _config.liveAntiAliasing - 1 << ", " << _config.postAntiAliasing << ");";
   stream << "light(" << _config.lightAmbient.dump() << ", " << _config.lightDiffuse.dump() << ", " << _config.lightSpecular.dump() << ");";
   stream << "deph_of_field(" << _config.dofAperture << ", " << _config.dofFocal << ", " << _config.dofQuality << ");";
   stream << "anaglyph_3d(" << _config.anaglyphOffset << ", " << _config.anaglyphFocal << ", " << _config.anaglyphMaskLeft.dump() << ", " << _config.anaglyphMaskRight.dump() << ");";
