@@ -36,11 +36,42 @@ color([225.0]);
 	translation([-50,+50,39+1]); scale([10.0]); rotation([0,0,30]) ; tangle(11.8); end(); end(); end();
 	translation([-50,-50,43+1]); rotation([45,0,-45]) ; torus(22,8); end(); end();
 	translation([-80,-180,20+1]); scale([0.56]); rotation([-45,0,-45]); import("pencil.scn"); end(); end(); end();
+	translation([-70,-135,30+1]); scale([1]); rotation([0,4,-40]); import("eyeglasses.scn"); end(); end(); end();
 end();
  
 // Troisieme rangee
 reflection(0.72);  translation([+50,+150,68+1]); sphere(28); end(); end();
-transparency(0.92, 1.21); translation([+50,+50,68+1]); sphere(28); end(); end();
+transparency(0.92, 1.1); translation([+50,+50,68+3]); sphere(28); end(); end();
+bounding();
+translation([+50,+50,40]); box(64,64,4, true); end();
+for (var x = 0; x < 4; ++x) {
+	for (var y = 0; y < 4; ++y) {
+		if ((x + y) % 2 != 0) {
+			color([255]);
+		}
+		else {
+			color([42]);
+		}
+		translation([+50-24+x*16,+50-24+y*16,40]); box(16,16,4, true); end();
+		end();
+	}
+}
+end();
+bounding();
+translation([+50+32,+50,+72]); box(4,64,64, true); end();
+for (var x = 0; x < 4; ++x) {
+	for (var y = 0; y < 4; ++y) {
+		if ((x + y) % 2 != 0) {
+			color([255]);
+		}
+		else {
+			color([42]);
+		}
+		translation([+50+32,+50-24+y*16,+72-24+x*16]); box(4,16,16, true); end();
+		end();
+	}
+}
+end();
 translation([+50,-50,62+1]); scale([4]); rotation([-45,0,-15]); import("dice.scn"); end(); end(); end();
 color([225.0]);
 	color([255, 105, 105]); translation([+50, -130, 66+1]); box(52,12,52, true); end(); end();

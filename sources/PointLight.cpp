@@ -68,7 +68,7 @@ RT::Color RT::PointLight::preview(RT::Scene const * scene, RT::Ray const & ray, 
 
 RT::Color RT::PointLight::render(RT::Scene const * scene, RT::Ray const & ray, RT::Ray const & normal, RT::Material const & material) const
 {
-  if ((scene->config().lightDiffuse == RT::Color(0.f) && scene->config().lightSpecular == RT::Color(0.f)) || (material.diffuse == 0.f && material.specular == 0.f) || material.transparency == 1.f || material.reflection == 1.f)
+  if ((scene->config().lightDiffuse == RT::Color(0.f) && scene->config().lightSpecular == RT::Color(0.f)) || (material.diffuse == 0.f && material.specular == 0.f))
     return RT::Color(0.f);
 
   // Inverse normal if necessary
@@ -153,7 +153,7 @@ RT::Color RT::PointLight::render(RT::Scene const * scene, RT::Ray const & ray, R
   }
 
   return diffuse / (double)rays.size() * scene->config().lightDiffuse * material.color * material.diffuse * (1.f - material.transparency) * (1.f - material.reflection)
-    + specular / (double)rays.size() * scene->config().lightSpecular * material.specular * (1.f - material.transparency) * (1.f - material.reflection);
+    + specular / (double)rays.size() * scene->config().lightSpecular * material.specular;
 }
 
 std::string		RT::PointLight::dump() const

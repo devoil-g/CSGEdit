@@ -46,7 +46,7 @@ RT::Color RT::DirectionalLight::preview(RT::Scene const * scene, RT::Ray const &
 
 RT::Color RT::DirectionalLight::render(RT::Scene const * scene, RT::Ray const & ray, RT::Ray const & normal, RT::Material const & material) const
 {
-  if ((scene->config().lightDiffuse == RT::Color(0.f) && scene->config().lightSpecular == RT::Color(0.f)) || (material.diffuse == 0.f && material.specular == 0.f) || material.transparency == 1.f || material.reflection == 1.f)
+  if ((scene->config().lightDiffuse == RT::Color(0.f) && scene->config().lightSpecular == RT::Color(0.f)) || (material.diffuse == 0.f && material.specular == 0.f))
     return RT::Color(0.f);
 
   // Inverse normal if necessary
@@ -121,7 +121,7 @@ RT::Color RT::DirectionalLight::render(RT::Scene const * scene, RT::Ray const & 
   }
 
   return diffuse / (double)rays.size() * scene->config().lightDiffuse * material.color * material.diffuse * (1.f - material.transparency) * (1.f - material.reflection)
-    + specular / (double)rays.size() * scene->config().lightSpecular * material.specular * (1.f - material.transparency) * (1.f - material.reflection);
+    + specular / (double)rays.size() * scene->config().lightSpecular * material.specular;
 }
 
 std::string		RT::DirectionalLight::dump() const
