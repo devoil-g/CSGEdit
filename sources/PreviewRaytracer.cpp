@@ -21,17 +21,13 @@ void	RT::PreviewRaytracer::load(RT::Scene * scene)
 
   _scene = scene;
 
-  if (_scene == nullptr)
+  // If not scene, no tree or no light, no render
+  if (_scene == nullptr || _scene->tree() == nullptr || _scene->light().empty())
   {
     _grid.resize(0);
   }
   else
   {
-    // Reset image
-    for (unsigned int y = 0; y < _scene->image().getSize().y; y++)
-      for (unsigned int x = 0; x < _scene->image().getSize().x; x++)
-	_scene->image().setPixel(x, y, RT::Color(0.084f).sfml());
-
     // Reset zone grid
     _grid.resize((_scene->image().getSize().x / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().x % RT::Config::Raytracer::BlockSize ? 1 : 0)) * (_scene->image().getSize().y / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().y % RT::Config::Raytracer::BlockSize ? 1 : 0)));
     for (unsigned int i = 0; i < _grid.size(); i++)
@@ -41,11 +37,12 @@ void	RT::PreviewRaytracer::load(RT::Scene * scene)
 
 void	RT::PreviewRaytracer::begin()
 {
-  std::list<std::thread>  threads;
-  
-  if (_scene == nullptr)
+  // If nothing to render, cancel
+  if (_grid.size() == 0)
     return;
 
+  std::list<std::thread>  threads;
+  
   // Launch rendering threads
   for (unsigned int i = 0; i < _scene->config().threadNumber; i++)
     threads.push_back(std::thread((void(RT::PreviewRaytracer::*)())(&RT::PreviewRaytracer::preview), this));

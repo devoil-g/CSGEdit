@@ -21,6 +21,7 @@
 #include "SphereLeaf.hpp"
 #include "TangleLeaf.hpp"
 #include "TorusLeaf.hpp"
+#include "TriangleLeaf.hpp"
 
 #include "DirectionalLight.hpp"
 #include "OcclusionLight.hpp"
@@ -61,7 +62,7 @@ RT::Scene *		RT::Parser::load(std::string const & path)
       _transformation.pop();
 
     delete _scene;
-    return nullptr;
+    return _scene;
   }
 
   // If no light, force basic configuration
@@ -393,6 +394,20 @@ void	RT::Parser::primitiveTangle(double c)
 void	RT::Parser::primitiveTorus(double r1, double r2)
 {
   primitivePush(new RT::TorusLeaf(r1, r2));
+}
+
+void	RT::Parser::primitiveTriangle(const std::vector<chaiscript::Boxed_Value> & p0, const std::vector<chaiscript::Boxed_Value> & p1, const std::vector<chaiscript::Boxed_Value> & p2)
+{
+  // If not in a mesh, error
+  if (dynamic_cast<RT::MeshNode *>(_scope.top()) == nullptr)
+    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+
+  std::vector<double> v0 = convertVector<double>(p0), v1 = convertVector<double>(p1), v2 = convertVector<double>(p2);
+
+  if (v0.size() != 3 || v1.size() != 3 || v2.size() != 3)
+    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+
+  primitivePush(new RT::TriangleLeaf(std::tuple<double, double, double>(v0[0], v0[1], v0[2]), std::tuple<double, double, double>(v1[0], v1[1], v1[2]), std::tuple<double, double, double>(v2[0], v2[1], v2[2])));
 }
 
 void	RT::Parser::primitiveMesh(std::string const & path)

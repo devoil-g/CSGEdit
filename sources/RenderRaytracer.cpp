@@ -1,6 +1,3 @@
-// TODO: diffuse reflexion
-// TODO: diffuse transparency
-
 #include <iostream>
 #include <list>
 
@@ -23,18 +20,17 @@ void	RT::RenderRaytracer::load(RT::Scene * scene)
 
   _scene = scene;
 
-  if (_scene == nullptr)
+  // Set status to first pass
+  _status = First;
+  _progress = 0;
+  
+  if (_scene == nullptr || _scene->tree() == nullptr || _scene->light().empty())
   {
     _grid.resize(0);
     _antialiasing.resize(0);
   }
   else
   {
-    // Reset image
-    for (unsigned int y = 0; y < _scene->image().getSize().y; y++)
-      for (unsigned int x = 0; x < _scene->image().getSize().x; x++)
-	_scene->image().setPixel(x, y, RT::Color(0.084f).sfml());
-
     // Reset zone grid
     _grid.resize((_scene->image().getSize().x / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().x % RT::Config::Raytracer::BlockSize ? 1 : 0)) * (_scene->image().getSize().y / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().y % RT::Config::Raytracer::BlockSize ? 1 : 0)));
     for (unsigned int i = 0; i < _grid.size(); i++)
@@ -44,15 +40,15 @@ void	RT::RenderRaytracer::load(RT::Scene * scene)
     _antialiasing.resize(_scene->image().getSize().x * _scene->image().getSize().y);
     for (unsigned int i = 0; i < _antialiasing.size(); i++)
       _antialiasing[i] = _scene->antialiasing().live;
-
-    // Set status to first pass
-    _status = First;
-    _progress = 0;
   }
 }
 
 void	RT::RenderRaytracer::begin()
 {
+  // If nothing to render, cancel
+  if (_grid.size() == 0)
+    return;
+
   std::list<std::thread>  threads;
 
   // Launch rendering threads
@@ -369,6 +365,7 @@ RT::Color RT::RenderRaytracer::renderRay(RT::Ray const & ray, unsigned int recur
     return RT::Color(0.f);
 }
 
+// TODO: diffuse reflexion
 RT::Color RT::RenderRaytracer::renderReflection(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite) const
 {
   if (intersection.material.reflection.intensity == 0.f || intersection.material.transparency.intensity == 1.f)
@@ -386,6 +383,7 @@ RT::Color RT::RenderRaytracer::renderReflection(RT::Ray const & ray, RT::Interse
   return renderRay(new_ray, recursivite + 1) * intersection.material.color * intersection.material.reflection.intensity * (1.f - intersection.material.transparency.intensity);
 }
 
+// TODO: diffuse transparency
 RT::Color RT::RenderRaytracer::renderTransparency(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite) const
 {
   if (intersection.material.transparency.intensity == 0.f)

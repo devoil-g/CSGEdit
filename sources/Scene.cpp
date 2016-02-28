@@ -6,7 +6,7 @@
 
 RT::Scene::Scene()
 {
-  _image.create(RT::Config::Window::Width, RT::Config::Window::Height);
+  _image.create(RT::Config::Window::Width, RT::Config::Window::Height, RT::Color(0.084f).sfml());
   _camera = Math::Matrix<4, 4>::identite();
   _tree = nullptr;
 

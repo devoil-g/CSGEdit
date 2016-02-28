@@ -48,12 +48,13 @@ namespace RT
     void	scopeEnd();			// Pop last scope in stack
 
     // Primitives
-    void	primitiveBox(double, double, double, bool);	// Push a box in top scope
-    void	primitiveCone(double, double, double, bool);	// Push a cone in top scope
-    void	primitiveSphere(double);			// Push a sphere in top scope
-    void	primitiveTangle(double);			// Push a tangle in top scope
-    void	primitiveTorus(double, double);			// Push a torus in top scope
-    void	primitiveMesh(std::string const &);		// Push a primitive in top scope
+    void	primitiveBox(double, double, double, bool);															// Push a box in top scope
+    void	primitiveCone(double, double, double, bool);															// Push a cone in top scope
+    void	primitiveSphere(double);																	// Push a sphere in top scope
+    void	primitiveTangle(double);																	// Push a tangle in top scope
+    void	primitiveTorus(double, double);																	// Push a torus in top scope
+    void	primitiveTriangle(const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &);	// Push a triangle in top scope (only if mesh node)
+    void	primitiveMesh(std::string const &);																// Push a primitive in top scope
     // Primitives utilities
     void	primitivePush(RT::AbstractTree *);	// Push a primitive in top scope
 

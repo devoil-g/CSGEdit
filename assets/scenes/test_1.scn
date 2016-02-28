@@ -13,10 +13,10 @@ light([255 * 0.4],[255 * 0.6],[255 * 0.2], 8.4);
 
  // Socles
 color([255,255,225]);
-	translation([0,0,-70]); box(420,420,100,true); end();
+	translation([0,0,-90]); box(420,620,100,true); end();
 	for (var x = 0; x < 4; ++x) {
-		for (var y = 0; y < 4; ++y) {
-			translation([-150 + 100 * x, -150 + 100 * y, -40 + 20 * x]); box(80, true); end();
+		for (var y = 0; y < 6; ++y) {
+			translation([-150 + 100 * x, -250 + 100 * y, -40 + 20 * x]); box(80, true); end();
 		}
 	}
 end();
