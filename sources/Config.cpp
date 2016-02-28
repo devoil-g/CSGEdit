@@ -55,10 +55,6 @@ void  RT::Config::initialize(int argc, char **argv)
     RT::Config::ThreadNumber = 1;
     std::cerr << "Error: failed to detect maximum of concurrency thread." << std::endl;
   }
-  // If only 1 thread...
-  else if (systemThread == 1)
-    RT::Config::ThreadNumber = 1;
-  // If +1 thread, keep one thread for display.
   else
-    RT::Config::ThreadNumber = systemThread - 1;
+    RT::Config::ThreadNumber = systemThread;
 }

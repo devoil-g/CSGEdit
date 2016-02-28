@@ -1,16 +1,17 @@
 #include "Material.hpp"
+#include "Math.hpp"
 #include "Exception.hpp"
 
 std::map<std::string, RT::Material> RT::Material::_material;
 
 RT::Material::Material()
-  : color(RT::Color(1.f)), ambient(RT::Color(1.f)), diffuse(RT::Color(1.f)), specular(RT::Color(1.f)), shine(1.f), reflection(0.f), refraction(1.f), transparency(0.f)
+  : color(RT::Color(1.f)), light(), transparency(), reflection()
 {}
 
 RT::Material::~Material()
 {}
 
-RT::Material const &  RT::Material::getMaterial(std::string const & name)
+RT::Material const &	RT::Material::getMaterial(std::string const & name)
 {
   // Check if material exist
   if (_material.find(name) != _material.end())
@@ -19,35 +20,76 @@ RT::Material const &  RT::Material::getMaterial(std::string const & name)
     throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
 }
 
-void  RT::Material::setMaterial(std::string const & name, RT::Material const & material)
+void			RT::Material::setMaterial(std::string const & name, RT::Material const & material)
 {
   _material[name] = material;
 }
 
-void  RT::Material::initialize()
+void			RT::Material::initialize()
 {
   // Set default materials here
 }
 
-RT::Material  RT::Material::operator*(RT::Material const & material) const
+RT::Material &		RT::Material::operator*=(RT::Material const & material)
 {
-  RT::Material	result;
-
   // Multiply two materials
-  result.color = this->color * material.color;
-  result.ambient = this->ambient * material.ambient;
-  result.diffuse = this->diffuse * material.diffuse;
-  result.specular = this->specular * material.specular;
-  result.shine = this->shine * material.shine;
-  result.reflection = 1.f - ((1.f - this->reflection) * (1.f - material.reflection));
-  result.refraction = this->refraction * material.refraction;
-  result.transparency = 1.f - ((1.f - this->transparency) * (1.f - material.transparency));
+  color *= material.color;
+  light *= material.light;
+  transparency *= material.transparency;
+  reflection *= material.reflection;
 
-  return result;
+  return *this;
 }
 
-RT::Material &	RT::Material::operator*=(RT::Material const & material)
+RT::Material		RT::Material::operator*(RT::Material const & material) const
 {
-  *this = *this * material;
+  return RT::Material(*this) *= material;
+}
+
+RT::Material::Light &	RT::Material::Light::operator*=(RT::Material::Light const & light)
+{
+  // Multiply two lights
+  ambient *= light.ambient;
+  diffuse *= light.diffuse;
+  specular *= light.specular;
+  shininess *= light.shininess;
+  quality = std::min(quality, light.quality);
+
   return *this;
+}
+
+RT::Material::Light	RT::Material::Light::operator*(RT::Material::Light const & light) const
+{
+  return RT::Material::Light(*this) *= light;
+}
+
+RT::Material::Transparency &	RT::Material::Transparency::operator*=(RT::Material::Transparency const & transparency)
+{
+  // Multiply two transparencies
+  intensity = intensity + transparency.intensity - intensity * transparency.intensity;
+  refraction *= transparency.refraction;
+  diffusion *= transparency.diffusion;
+  quality = std::min(quality, transparency.quality);
+
+  return *this;
+}
+
+RT::Material::Transparency	RT::Material::Transparency::operator*(RT::Material::Transparency const & transparency) const
+{
+  return RT::Material::Transparency(*this) *= transparency;
+}
+
+RT::Material::Reflection &	RT::Material::Reflection::operator*=(RT::Material::Reflection const & reflection)
+{
+  // Multiply two reflections
+  intensity = intensity + reflection.intensity - intensity * reflection.intensity;
+  diffusion *= reflection.diffusion;
+  quality = std::min(quality, reflection.quality);
+
+  return *this;
+}
+
+RT::Material::Reflection	RT::Material::Reflection::operator*(RT::Material::Reflection const & reflection) const
+{
+  return RT::Material::Reflection(*this) *= reflection;
 }

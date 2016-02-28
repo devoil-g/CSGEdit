@@ -12,16 +12,26 @@
 
 namespace RT
 {
+  namespace Config
+  {
+    namespace Window
+    {
+      std::string const		Title("CSGEdit");
+      std::string const		Icon("C:/project/CSG-Raytracer/assets/icons/icon16.png");
+      unsigned int const	Width(640);
+      unsigned int const	Height(360);
+    };
+  };
+
   class Window
   {
-  public:
+  private:
     struct Mouse
     {
       int	x, y;			// Cursor position
       bool	left, middle, right;	// Buttons pressed
     };
 
-  private:
     sf::RenderWindow			_window;		// SFML window
     RT::Window::Mouse			_mouse;			// Mouse position
     std::map<sf::Keyboard::Key, bool>	_pressed, _released;	// Maps of pressed/released key

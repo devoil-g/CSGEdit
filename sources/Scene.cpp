@@ -2,35 +2,31 @@
 
 #include "Config.hpp"
 #include "Scene.hpp"
+#include "Window.hpp"
 
 RT::Scene::Scene()
 {
-  _image.create(RT::Config::WindowWidth, RT::Config::WindowHeight);
+  _image.create(RT::Config::Window::Width, RT::Config::Window::Height);
   _camera = Math::Matrix<4, 4>::identite();
   _tree = nullptr;
 
   // Thread
-  _config.threadNumber = RT::Config::ThreadNumber;
+  _config.threadNumber = RT::Config::ThreadNumber - 1;
 
   // Antialiasing
-  _config.liveAntiAliasing = RT::Config::LiveAntiAliasing;
-  _config.postAntiAliasing = RT::Config::PostAntiAliasing;
-
-  // Global light multiplier
-  _config.lightAmbient = RT::Config::Light::Ambient;
-  _config.lightDiffuse = RT::Config::Light::Diffuse;
-  _config.lightSpecular = RT::Config::Light::Specular;
+  _antialiasing.live = RT::Config::AntiAliasing::Live;
+  _antialiasing.post = RT::Config::AntiAliasing::Post;
 
   // Deph of field
-  _config.dofAperture = RT::Config::DephOfField::Aperture;
-  _config.dofFocal = RT::Config::DephOfField::Focal;
-  _config.dofQuality = RT::Config::DephOfField::Quality;
+  _dof.aperture = RT::Config::DephOfField::Aperture;
+  _dof.focal = RT::Config::DephOfField::Focal;
+  _dof.quality = RT::Config::DephOfField::Quality;
 
   // 3D Anaglyph
-  _config.anaglyphOffset = RT::Config::Anaglyph3D::Offset;
-  _config.anaglyphFocal = RT::Config::Anaglyph3D::Focal;
-  _config.anaglyphMaskLeft = RT::Config::Anaglyph3D::MaskLeft;
-  _config.anaglyphMaskRight = RT::Config::Anaglyph3D::MaskRight;
+  _anaglyph.offset = RT::Config::Anaglyph3D::Offset;
+  _anaglyph.focal = RT::Config::Anaglyph3D::Focal;
+  _anaglyph.maskLeft = RT::Config::Anaglyph3D::MaskLeft;
+  _anaglyph.maskRight = RT::Config::Anaglyph3D::MaskRight;
 }
 
 RT::Scene::~Scene()
@@ -49,10 +45,9 @@ std::string		RT::Scene::dump() const
 
   // _config
   stream << "thread(" << _config.threadNumber << ");";
-  stream << "antialiasing(" << _config.liveAntiAliasing - 1 << ", " << _config.postAntiAliasing << ");";
-  stream << "light(" << _config.lightAmbient.dump() << ", " << _config.lightDiffuse.dump() << ", " << _config.lightSpecular.dump() << ");";
-  stream << "deph_of_field(" << _config.dofAperture << ", " << _config.dofFocal << ", " << _config.dofQuality << ");";
-  stream << "anaglyph_3d(" << _config.anaglyphOffset << ", " << _config.anaglyphFocal << ", " << _config.anaglyphMaskLeft.dump() << ", " << _config.anaglyphMaskRight.dump() << ");";
+  stream << "antialiasing(" << _antialiasing.live - 1 << ", " << _antialiasing.post << ");";
+  stream << "deph_of_field(" << _dof.aperture << ", " << _dof.focal << ", " << _dof.quality << ");";
+  stream << "anaglyph_3d(" << _anaglyph.offset << ", " << _anaglyph.focal << ", " << _anaglyph.maskLeft.dump() << ", " << _anaglyph.maskRight.dump() << ");";
 
   stream << "resolution(" << _image.getSize().x << ", " << _image.getSize().y << ");";
   stream << "transformation(" << _camera.dump() << ");camera();end();";

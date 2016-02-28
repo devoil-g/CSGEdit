@@ -8,28 +8,62 @@
 #include "AbstractLight.hpp"
 #include "AbstractTree.hpp"
 #include "Color.hpp"
+#include "Config.hpp"
 #include "Matrix.hpp"
 
 namespace RT
 {
+  namespace Config
+  {
+    namespace AntiAliasing
+    {
+      unsigned int const	Live(1);
+      unsigned int const	Post(2);
+    };
+
+    namespace Anaglyph3D
+    {
+      double const		Offset(0.f);
+      double const		Focal(0.f);
+      RT::Color const		MaskLeft(1.f, 0.f, 0.f);
+      RT::Color const		MaskRight(0.f, 1.f, 1.f);
+    };
+
+    namespace DephOfField
+    {
+      double const		Aperture(0.f);
+      double const		Focal(0.f);
+      unsigned int const	Quality(3);
+    };
+  };
+
   class Scene
   {
   private:
     struct Config
     {
-      unsigned int	threadNumber;		// Number of thread assigned to rendering
-      unsigned int	liveAntiAliasing;	// Live anti-aliasing level
-      unsigned int	postAntiAliasing;	// Post anti-aliasing level
-      RT::Color		lightAmbient;		// Global ambient light multiplier
-      RT::Color		lightDiffuse;		// Global diffuse light multiplier
-      RT::Color		lightSpecular;		// Global specular light multiplier
-      double		dofAperture;		// Deph of field aperture radius
-      double		dofFocal;		// Deph of field focal distance
-      unsigned int	dofQuality;		// Deph of field quality
-      double		anaglyphOffset;		// Anaglyph distance between eyes
-      double		anaglyphFocal;		// Anaglyph focal distance
-      RT::Color		anaglyphMaskLeft;	// Anaglyph color mask for left eye
-      RT::Color		anaglyphMaskRight;	// Anaglyph color mask for right eye
+      unsigned int	threadNumber = RT::Config::ThreadNumber - 1;	// Number of thread assigned to rendering
+    };
+
+    struct AntiAliasing
+    {
+      unsigned int	live = RT::Config::AntiAliasing::Live;	// Live anti-aliasing level
+      unsigned int	post = RT::Config::AntiAliasing::Post;	// Post anti-aliasing level
+    };
+
+    struct DephOfField
+    {
+      double		aperture = RT::Config::DephOfField::Aperture;	// Deph of field aperture radius
+      double		focal = RT::Config::DephOfField::Focal;		// Deph of field focal distance
+      unsigned int	quality = RT::Config::DephOfField::Quality;	// Deph of field quality
+    };
+
+    struct Anaglyph3D
+    {
+      double		offset = RT::Config::Anaglyph3D::Offset;	// Distance between eyes
+      double		focal = RT::Config::Anaglyph3D::Focal;		// Focal distance
+      RT::Color		maskLeft = RT::Config::Anaglyph3D::MaskLeft;	// Color mask for left eye
+      RT::Color		maskRight = RT::Config::Anaglyph3D::MaskRight;	// Color mask for right eye
     };
 
     sf::Image					_image;		// Rendered image of scene
@@ -37,7 +71,10 @@ namespace RT
     RT::AbstractTree const *			_tree;		// CSG tree
     std::list<RT::AbstractLight const *>	_light;		// List of light
     std::list<std::string>			_dependencies;	// List of dependencies of scene
-    Config					_config;
+    RT::Scene::Config				_config;
+    RT::Scene::AntiAliasing			_antialiasing;
+    RT::Scene::DephOfField			_dof;
+    RT::Scene::Anaglyph3D			_anaglyph;
 
   public:
     Scene();
@@ -50,6 +87,9 @@ namespace RT
     std::list<RT::AbstractLight const *> &		light() { return _light; };
     std::list<std::string> &				dependencies() { return _dependencies; };
     RT::Scene::Config &					config() { return _config; };
+    RT::Scene::AntiAliasing &				antialiasing() { return _antialiasing; };
+    RT::Scene::DephOfField &				dof() { return _dof; };
+    RT::Scene::Anaglyph3D &				anaglyph() { return _anaglyph; };
 
     // Const getter for all parameters
     sf::Image const &					image() const { return _image; };
@@ -58,6 +98,9 @@ namespace RT
     std::list<RT::AbstractLight const *> const &	light() const { return _light; };
     std::list<std::string> const &			dependencies() const { return _dependencies; };
     RT::Scene::Config const &				config() const { return _config; };
+    RT::Scene::AntiAliasing const &			antialiasing() const { return _antialiasing; };
+    RT::Scene::DephOfField const &			dof() const { return _dof; };
+    RT::Scene::Anaglyph3D const &			anaglyph() const { return _anaglyph; };
 
     std::string						dump() const;	// Return scene dump
   };

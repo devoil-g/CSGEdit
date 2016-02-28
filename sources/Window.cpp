@@ -6,7 +6,7 @@
 #include "Config.hpp"
 
 RT::Window::Window()
-  : _window(sf::VideoMode(RT::Config::WindowWidth, RT::Config::WindowHeight), std::string(RT::Config::WindowTitle), sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close), _focus(true)
+  : _window(sf::VideoMode(RT::Config::Window::Width, RT::Config::Window::Height), std::string(RT::Config::Window::Title), sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close), _focus(true)
 {
   // Activate V-sync (limit fps)
   _window.setVerticalSyncEnabled(true);
@@ -16,7 +16,7 @@ RT::Window::Window()
 
   // Set window icon
   sf::Image icon;
-  if (icon.loadFromFile(RT::Config::WindowIcon))
+  if (icon.loadFromFile(RT::Config::Window::Icon))
     _window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
   else
     throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
@@ -108,8 +108,8 @@ void  RT::Window::draw(sf::Image const & image)
   texture.loadFromImage(image);
   sprite.setTexture(texture);
 
-  scale_x = (float)RT::Config::WindowWidth / (float)_window.getSize().x;
-  scale_y = (float)RT::Config::WindowHeight / (float)_window.getSize().y;
+  scale_x = (float)RT::Config::Window::Width / (float)_window.getSize().x;
+  scale_y = (float)RT::Config::Window::Height / (float)_window.getSize().y;
 
   sprite.scale(sf::Vector2f(scale_x, scale_y));
 
@@ -122,8 +122,8 @@ void  RT::Window::draw(sf::Image const & image)
 
   sprite.scale(sf::Vector2f(scale, scale));
   
-  pos_x = (((float)_window.getSize().x - ((float)image.getSize().x * scale)) / ((float)_window.getSize().x * 2.f)) * RT::Config::WindowWidth;
-  pos_y = (((float)_window.getSize().y - ((float)image.getSize().y * scale)) / ((float)_window.getSize().y * 2.f)) * RT::Config::WindowHeight;
+  pos_x = (((float)_window.getSize().x - ((float)image.getSize().x * scale)) / ((float)_window.getSize().x * 2.f)) * RT::Config::Window::Width;
+  pos_y = (((float)_window.getSize().y - ((float)image.getSize().y * scale)) / ((float)_window.getSize().y * 2.f)) * RT::Config::Window::Height;
 
   sprite.setPosition(sf::Vector2f(pos_x, pos_y));
 

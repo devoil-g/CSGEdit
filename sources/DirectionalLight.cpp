@@ -2,16 +2,17 @@
 #include <sstream>
 
 #include "DirectionalLight.hpp"
+#include "Exception.hpp"
 #include "Math.hpp"
 #include "Scene.hpp"
 
-RT::DirectionalLight::DirectionalLight(Math::Matrix<4, 4> const & transformation, RT::Color const & color, double angle, unsigned int quality)
-  : _color(color), _angle(angle), _quality(quality)
+RT::DirectionalLight::DirectionalLight(Math::Matrix<4, 4> const & transformation, RT::Color const & color, double angle)
+  : _color(color), _angle(angle)
 {
   // Check values
-  _angle = _angle > 0.f ? _angle : 0.f;
-  _quality = _quality > 1 ? _quality : 1;
-
+  if (_angle < 0.f || _angle >= 90.f)
+    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+  
   // Calculate position from tranformation matrix
   _position.d().x() = 1.f;
   _position = (transformation * _position).normalize();
@@ -20,17 +21,17 @@ RT::DirectionalLight::DirectionalLight(Math::Matrix<4, 4> const & transformation
 RT::DirectionalLight::~DirectionalLight()
 {}
 
-RT::Color RT::DirectionalLight::preview(RT::Scene const * scene, RT::Ray const & ray, RT::Ray const & normal, RT::Material const & material) const
+RT::Color RT::DirectionalLight::preview(RT::Scene const * scene, RT::Ray const & ray, RT::Intersection const & intersection) const
 {
   // If no ambient light, stop
-  if (scene->config().lightDiffuse == 0.f || _color == RT::Color(0.f) || material.color == RT::Color(0.f) || material.diffuse == 0.f)
+  if (_color == 0.f || intersection.material.color == 0.f || intersection.material.light.diffuse == 0.f)
     return RT::Color(0.f);
 
   RT::Ray	light;
   
   // Inverse normal if necessary
-  RT::Ray	n = normal;
-  if (RT::Ray::cos(ray, normal) > 0)
+  RT::Ray	n = intersection.normal;
+  if (RT::Ray::cos(ray, intersection.normal) > 0)
     n.d() *= -1.f;
 
   // Set light ray from intersection to light origin
@@ -41,26 +42,25 @@ RT::Color RT::DirectionalLight::preview(RT::Scene const * scene, RT::Ray const &
   if (diffuse == 0.f)
     return RT::Color(0.f);
 
-  return material.color * material.diffuse * diffuse * _color * scene->config().lightDiffuse;
+  return intersection.material.color * intersection.material.light.diffuse * diffuse * _color;
 }
 
-RT::Color RT::DirectionalLight::render(RT::Scene const * scene, RT::Ray const & ray, RT::Ray const & normal, RT::Material const & material) const
+RT::Color RT::DirectionalLight::render(RT::Scene const * scene, RT::Ray const & ray, RT::Intersection const & intersection) const
 {
-  if ((scene->config().lightDiffuse == RT::Color(0.f) && scene->config().lightSpecular == RT::Color(0.f)) || (material.diffuse == 0.f && material.specular == 0.f))
+  if (intersection.material.light.diffuse == 0.f && intersection.material.light.specular == 0.f)
     return RT::Color(0.f);
 
   // Inverse normal if necessary
-  RT::Ray	n = normal;
-  if (RT::Ray::cos(ray, normal) > 0)
+  RT::Ray	n = intersection.normal;
+  if (RT::Ray::cos(ray, intersection.normal) > 0)
     n.d() *= -1.f;
   
   std::list<RT::Ray>	rays;
   RT::Ray		r;
-  RT::Color		diffuse, specular;
-
+  
   r.p() = n.p() + n.d() * Math::Shift;
   
-  if (_quality <= 1 || _angle == 0)
+  if (intersection.material.light.quality <= 1 || _angle == 0)
   {
     r.d() = _position.d() * -1.f;
     rays.push_back(r.normalize());
@@ -81,7 +81,7 @@ RT::Color RT::DirectionalLight::render(RT::Scene const * scene, RT::Ray const & 
     // Rotation matrix to get ray to light inverse direction
     Math::Matrix<4, 4>	matrix = Math::Matrix<4, 4>::rotation(0, Math::Utils::RadToDeg(ry), Math::Utils::RadToDeg(rz));
 
-    for (double a = Math::Random::rand(1.f / (_quality + 1)); a < 1.f; a += 1.f / (_quality + 1))
+    for (double a = Math::Random::rand(1.f / (intersection.material.light.quality + 1)); a < 1.f; a += 1.f / (intersection.material.light.quality + 1))
       for (double b = Math::Random::rand((2.f * Math::Pi) / (int)(2.f * a * Math::Pi + 1.f)); b < 2.f * Math::Pi; b += (2.f * Math::Pi) / (int)(2.f * a * Math::Pi + 1.f))
       {
 	r.d().x() = 1.f / std::tan(Math::Utils::DegToRad(_angle));
@@ -97,6 +97,7 @@ RT::Color RT::DirectionalLight::render(RT::Scene const * scene, RT::Ray const & 
   r.d() = n.p() - ray.p() - n.d() * 2.f * (n.d().x() * (n.p().x() - ray.p().x()) + n.d().y() * (n.p().y() - ray.p().y()) + n.d().z() * (n.p().z() - ray.p().z())) / (n.d().x() * n.d().x() + n.d().y() * n.d().y() + n.d().z() * n.d().z());
   
   // Render generated rays
+  RT::Color	diffuse, specular;
   for (std::list<RT::Ray>::const_iterator it = rays.begin(); it != rays.end(); it++)
   {
     std::list<RT::Intersection>	intersect = scene->tree()->render((*it));
@@ -109,7 +110,7 @@ RT::Color RT::DirectionalLight::render(RT::Scene const * scene, RT::Ray const & 
       intersect.pop_front();
     while (!intersect.empty() && light != RT::Color(0.f))
     {
-      light *= intersect.front().material.color * intersect.front().material.transparency;
+      light *= intersect.front().material.color * intersect.front().material.transparency.intensity;
       intersect.pop_front();
     }
 
@@ -117,17 +118,16 @@ RT::Color RT::DirectionalLight::render(RT::Scene const * scene, RT::Ray const & 
     diffuse += light * (cos_d > 0.f ? cos_d : -cos_d);
 
     // Apply light to specular component
-    specular += light * std::pow((cos_s > 0.f ? cos_s : 0.f), material.shine);
+    specular += light * std::pow((cos_s > 0.f ? cos_s : 0.f), intersection.material.light.shininess);
   }
 
-  return diffuse / (double)rays.size() * scene->config().lightDiffuse * material.color * material.diffuse * (1.f - material.transparency) * (1.f - material.reflection)
-    + specular / (double)rays.size() * scene->config().lightSpecular * material.specular;
+  return diffuse / (double)rays.size() * intersection.material.color * intersection.material.light.diffuse * (1.f - intersection.material.transparency.intensity) * (1.f - intersection.material.reflection.intensity)
+    + specular / (double)rays.size() * intersection.material.light.specular;
 }
 
 std::string		RT::DirectionalLight::dump() const
 {
   std::stringstream	stream;
-  Math::Matrix<4, 4>	transformation;
   double		ry, rz;
 
   // Calculate rotation angles of light
@@ -139,7 +139,7 @@ std::string		RT::DirectionalLight::dump() const
   else
     rz = 0;
 
-  stream << "transformation(" << Math::Matrix<4, 4>::rotation(0, Math::Utils::RadToDeg(ry), Math::Utils::RadToDeg(rz)).dump() << ");directional_light(" << _color.dump() << ", " << _angle << ", " << _quality << ");end();";
+  stream << "transformation(" << Math::Matrix<4, 4>::rotation(0, Math::Utils::RadToDeg(ry), Math::Utils::RadToDeg(rz)).dump() << ");directional_light(" << _color.dump() << ", " << _angle << ");end();";
 
   return stream.str();
 }

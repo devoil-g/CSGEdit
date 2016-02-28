@@ -35,13 +35,11 @@ namespace RT
     void	scopeScale(const std::vector<chaiscript::Boxed_Value> &);		// Push a scale in scope
     void	scopeShear(double, double, double, double, double, double);		// Push a shear in scope
     // Scope materials
-    void	scopeMaterial(std::string const &);					// Push a material in scope
-    void	scopeColor(const std::vector<chaiscript::Boxed_Value> &);		// Push a color material in scope
-    void	scopeAmbient(const std::vector<chaiscript::Boxed_Value> &);		// Push a ambient color material in scope
-    void	scopeDiffuse(const std::vector<chaiscript::Boxed_Value> &);		// Push a diffuse color material in scope
-    void	scopeSpecular(const std::vector<chaiscript::Boxed_Value> &, double);	// Push a specular color and shiness material in scope
-    void	scopeReflection(double);						// Push a reflection material in scope
-    void	scopeTransparency(double, double);					// Push a transparency and refraction material in scope
+    void	scopeMaterial(std::string const &);																		// Push a material in scope
+    void	scopeColor(const std::vector<chaiscript::Boxed_Value> &);															// Push a color material in scope
+    void	scopeLight(const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &, double, unsigned int);	// Push a light material in scope
+    void	scopeTransparency(double, double, double, unsigned int);															// Push a transparency material in scope
+    void	scopeReflection(double, double, unsigned int);																	// Push a reflection material in scope
     // Scope others
     void	scopeBounding();	// Push a bounding node in scope
     void	scopeMesh();		// Push a mesh node in scope
@@ -60,21 +58,20 @@ namespace RT
     void	primitivePush(RT::AbstractTree *);	// Push a primitive in top scope
 
     // Light
-    void	lightDirectional(const std::vector<chaiscript::Boxed_Value> &, double, unsigned int);			// Add a directional light
-    void	lightOcclusion(const std::vector<chaiscript::Boxed_Value> &, double, unsigned int);			// Add an occlusion light
-    void	lightPoint(const std::vector<chaiscript::Boxed_Value> &, double, double, double, double, unsigned int);	// Add a point light
+    void	lightDirectional(const std::vector<chaiscript::Boxed_Value> &, double);				// Add a directional light
+    void	lightOcclusion(const std::vector<chaiscript::Boxed_Value> &, double);				// Add an occlusion light
+    void	lightPoint(const std::vector<chaiscript::Boxed_Value> &, double, double, double, double);	// Add a point light
     // Light utilities
     void	lightPush(RT::AbstractLight *);	// Add a light in scene
 
     // Settings
-    void	settingCamera();																	// Set camera position for current scene
-    void	settingResolution(unsigned int, unsigned int);														// Set resolution of current scene
-    void	settingAntiAliasing(unsigned int, unsigned int);													// Set antialiasing level of current scene
-    void	settingLight(const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &);	// Set global light multiplier of current scene
-    void	settingDephOfField(double, double, unsigned int);													// Set deph of field parameters of current scene
-    void	settingAnaglyph3D(double, double, const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &);				// Set 3D anaglyph parameters of current scene
-    void	settingAnaglyph3D(double, double, RT::Color const &, RT::Color const &);										// Set 3D anaglyph parameters of current scene
-    void	settingThread(unsigned int);																// Set the number of thread for rendering
+    void	settingCamera();														// Set camera position for current scene
+    void	settingResolution(unsigned int, unsigned int);											// Set resolution of current scene
+    void	settingAntiAliasing(unsigned int, unsigned int);										// Set antialiasing level of current scene
+    void	settingDephOfField(double, double, unsigned int);										// Set deph of field parameters of current scene
+    void	settingAnaglyph3D(double, double, const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &);	// Set 3D anaglyph parameters of current scene
+    void	settingAnaglyph3D(double, double, RT::Color const &, RT::Color const &);							// Set 3D anaglyph parameters of current scene
+    void	settingThread(unsigned int);													// Set the number of thread for rendering
 
     // Utilities
     RT::AbstractTree *	import(std::string const &);	// Import file in current scope

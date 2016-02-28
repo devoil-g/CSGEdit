@@ -8,6 +8,15 @@
 
 namespace RT
 {
+  namespace Config
+  {
+    namespace Raytracer
+    {
+      unsigned int const	BlockSize(16);
+      unsigned int const	MaxRecursivite(3);
+    };
+  };
+
   class AbstractRaytracer
   {
   private:

@@ -3,17 +3,18 @@
 #include "PointLight.hpp"
 #include "Scene.hpp"
 
-RT::PointLight::PointLight(Math::Matrix<4, 4> const & transformation, RT::Color const & color, double radius, double intensity, double angle1, double angle2, unsigned int quality)
-  : _color(color), _radius(radius), _intensity(intensity), _angle1(angle1), _angle2(angle2), _quality(quality)
+RT::PointLight::PointLight(Math::Matrix<4, 4> const & transformation, RT::Color const & color, double radius, double intensity, double angle1, double angle2)
+  : _color(color), _radius(radius), _intensity(intensity), _angle1(angle1), _angle2(angle2 > angle1 ? angle2 : angle1)
 {
   // Check values
-  _radius = _radius > 0.f ? _radius : 0.f;
-  _intensity = _intensity > 0.f ? _intensity : 0.f;
-  _angle1 = _angle1 > 0.f ? _angle1 : 0.f;
-  _angle1 = _angle1 < 180.f ? _angle1 : 180.f;
-  _angle2 = _angle2 > _angle1 ? _angle2 : _angle1;
-  _angle2 = _angle2 < 180.f ? _angle2 : 180.f;
-  _quality = _quality > 1 ? _quality : 1;
+  if (_radius < 0.f)
+    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+  if (_intensity < 0.f)
+    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+  if (_angle1 < 0.f || _angle1 > 180.f)
+    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+  if (_angle2 < 0.f || _angle2 > 180.f)
+    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
 
   // Calculate position from tranformation matrix
   _position.d().x() = 1.f;
@@ -23,18 +24,18 @@ RT::PointLight::PointLight(Math::Matrix<4, 4> const & transformation, RT::Color 
 RT::PointLight::~PointLight()
 {}
 
-RT::Color RT::PointLight::preview(RT::Scene const * scene, RT::Ray const & ray, RT::Ray const & normal, RT::Material const & material) const
+RT::Color RT::PointLight::preview(RT::Scene const * scene, RT::Ray const & ray, RT::Intersection const & intersection) const
 {
-  // If no ambient light, stop
-  if (scene->config().lightDiffuse == 0.f || _color == RT::Color(0.f) || material.color == RT::Color(0.f) || material.diffuse == 0.f)
+  // If no diffuse light, stop
+  if (_color == 0.f || intersection.material.color == 0.f || intersection.material.light.diffuse == 0.f)
     return RT::Color(0.f);
 
   RT::Ray	light;
   
   // Inverse normal if necessary
-  RT::Ray	n = normal;
-  if (RT::Ray::cos(ray, normal) > 0)
-    n.d() = normal.d() * -1.f;
+  RT::Ray	n = intersection.normal;
+  if (RT::Ray::cos(ray, intersection.normal) > 0)
+    n.d() *= -1.f;
 
   // Calculate intensity level
   double	intensity;
@@ -52,29 +53,29 @@ RT::Color RT::PointLight::preview(RT::Scene const * scene, RT::Ray const & ray, 
     return RT::Color(0.f);
 
   if (_angle1 == 0.f && _angle2 == 0.f)
-    return material.color * material.diffuse * intensity * diffuse * _color * scene->config().lightDiffuse;
+    return intersection.material.color * intersection.material.light.diffuse * intensity * diffuse * _color;
   else
   {
     double	angle = Math::Utils::RadToDeg(std::acos(-RT::Ray::cos(light, _position)));
 
-    if (angle <= _angle1)
-      return material.color * material.diffuse * intensity * diffuse * _color * scene->config().lightDiffuse;
-    else if (_angle2 > _angle1 && angle < _angle2)
-      return RT::Color((_angle2 - angle) / (_angle2 - _angle1)) * material.color * material.diffuse * intensity * diffuse * _color * scene->config().lightDiffuse;
+    if (angle < _angle1)
+      return intersection.material.color * intersection.material.light.diffuse * intensity * diffuse * _color;
+    else if (angle < _angle2)
+      return RT::Color((_angle2 - angle) / (_angle2 - _angle1)) * intersection.material.color * intersection.material.light.diffuse * intensity * diffuse * _color;
     else
       return RT::Color(0.f);
   }
 }
 
-RT::Color RT::PointLight::render(RT::Scene const * scene, RT::Ray const & ray, RT::Ray const & normal, RT::Material const & material) const
+RT::Color RT::PointLight::render(RT::Scene const * scene, RT::Ray const & ray, RT::Intersection const & intersection) const
 {
-  if ((scene->config().lightDiffuse == RT::Color(0.f) && scene->config().lightSpecular == RT::Color(0.f)) || (material.diffuse == 0.f && material.specular == 0.f))
+  if (intersection.material.light.diffuse == 0.f && intersection.material.light.specular == 0.f)
     return RT::Color(0.f);
 
   // Inverse normal if necessary
-  RT::Ray	n = normal;
-  if (RT::Ray::cos(ray, normal) > 0)
-    n.d() = normal.d() * -1.f;
+  RT::Ray	n = intersection.normal;
+  if (RT::Ray::cos(ray, intersection.normal) > 0)
+    n.d() *= -1.f;
 
   std::list<RT::Ray>	rays;
   RT::Ray		r;
@@ -82,7 +83,7 @@ RT::Color RT::PointLight::render(RT::Scene const * scene, RT::Ray const & ray, R
 
   r.p() = n.p() + n.d() * Math::Shift;
   
-  if (_quality <= 1 || _radius == 0.f)
+  if (intersection.material.light.quality <= 1 || _radius == 0.f)
   {
     r.d() = _position.p() - r.p();
     rays.push_back(r);
@@ -92,9 +93,9 @@ RT::Color RT::PointLight::render(RT::Scene const * scene, RT::Ray const & ray, R
     // Random rotation matrix
     Math::Matrix<4, 4>	matrix = Math::Matrix<4, 4>::rotation(Math::Random::rand(180.f), Math::Random::rand(180.f), Math::Random::rand(180.f));
 
-    for (double a = Math::Random::rand(_radius / (_quality + 1)); a < _radius; a += _radius / (_quality + 1))
-      for (double b = Math::Random::rand(Math::Pi / (int)(a / _radius * _quality + 1)); b < Math::Pi; b += Math::Pi / (int)(a / _radius * _quality + 1))
-	for (double c = Math::Random::rand(2.f * Math::Pi / (std::sin(b) * a / _radius * _quality + 1)); c < 2.f * Math::Pi; c += 2.f * Math::Pi / (std::sin(b) * a / _radius * _quality + 1))
+    for (double a = Math::Random::rand(_radius / (intersection.material.light.quality + 1)); a < _radius; a += _radius / (intersection.material.light.quality + 1))
+      for (double b = Math::Random::rand(Math::Pi / (int)(a / _radius * intersection.material.light.quality + 1)); b < Math::Pi; b += Math::Pi / (int)(a / _radius * intersection.material.light.quality + 1))
+	for (double c = Math::Random::rand(2.f * Math::Pi / (std::sin(b) * a / _radius * intersection.material.light.quality + 1)); c < 2.f * Math::Pi; c += 2.f * Math::Pi / (std::sin(b) * a / _radius * intersection.material.light.quality + 1))
 	{
 	  Math::Vector<4>	sphere;
 
@@ -102,9 +103,7 @@ RT::Color RT::PointLight::render(RT::Scene const * scene, RT::Ray const & ray, R
 	  sphere(1) = std::cos(c) * std::sin(b) * a;
 	  sphere(2) = std::sin(c) * std::sin(b) * a;
 	  
-	  sphere = matrix * sphere;
-
-	  r.d() = _position.p() + sphere - r.p();
+	  r.d() = _position.p() + matrix * sphere - r.p();
 	  rays.push_back(r);
 	}
   }
@@ -141,7 +140,7 @@ RT::Color RT::PointLight::render(RT::Scene const * scene, RT::Ray const & ray, R
       intersect.pop_front();
     while (!intersect.empty() && intersect.front().distance < 1.f && light != RT::Color(0.f))
     {
-      light *= intersect.front().material.color * intersect.front().material.transparency;
+      light *= intersect.front().material.color * intersect.front().material.transparency.intensity;
       intersect.pop_front();
     }
 
@@ -149,11 +148,11 @@ RT::Color RT::PointLight::render(RT::Scene const * scene, RT::Ray const & ray, R
     diffuse += light * (cos_d > 0.f ? cos_d : -cos_d) * angle * intensity;
 
     // Apply light to specular component
-    specular += light * pow((cos_s > 0.f ? cos_s : 0.f), material.shine) * angle * intensity;
+    specular += light * pow((cos_s > 0.f ? cos_s : 0.f), intersection.material.light.shininess) * angle * intensity;
   }
 
-  return diffuse / (double)rays.size() * scene->config().lightDiffuse * material.color * material.diffuse * (1.f - material.transparency) * (1.f - material.reflection)
-    + specular / (double)rays.size() * scene->config().lightSpecular * material.specular;
+  return diffuse / (double)rays.size() * intersection.material.color * intersection.material.light.diffuse * (1.f - intersection.material.transparency.intensity) * (1.f - intersection.material.reflection.intensity)
+    + specular / (double)rays.size() * intersection.material.light.specular;
 }
 
 std::string		RT::PointLight::dump() const
@@ -171,7 +170,7 @@ std::string		RT::PointLight::dump() const
   else
     rz = 0;
 
-  stream << "transformation(" << (Math::Matrix<4, 4>::rotation(0, Math::Utils::RadToDeg(ry), Math::Utils::RadToDeg(rz)) * Math::Matrix<4, 4>::translation(_position.p().x(), _position.p().y(), _position.p().z())).dump() << ");point_light(" << _color.dump() << ", " << _radius << ", " << _intensity << ", " << _angle1 << ", " << _angle2 << ", " << _quality << ");end();";
+  stream << "transformation(" << (Math::Matrix<4, 4>::rotation(0, Math::Utils::RadToDeg(ry), Math::Utils::RadToDeg(rz)) * Math::Matrix<4, 4>::translation(_position.p().x(), _position.p().y(), _position.p().z())).dump() << ");point_light(" << _color.dump() << ", " << _radius << ", " << _intensity << ", " << _angle1 << ", " << _angle2 << ");end();";
 
   return stream.str();
 }

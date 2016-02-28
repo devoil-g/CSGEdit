@@ -1,3 +1,6 @@
+// TODO: diffuse reflexion
+// TODO: diffuse transparency
+
 #include <iostream>
 #include <list>
 
@@ -33,14 +36,14 @@ void	RT::RenderRaytracer::load(RT::Scene * scene)
 	_scene->image().setPixel(x, y, RT::Color(0.084f).sfml());
 
     // Reset zone grid
-    _grid.resize((_scene->image().getSize().x / RT::Config::BlockSize + (_scene->image().getSize().x % RT::Config::BlockSize ? 1 : 0)) * (_scene->image().getSize().y / RT::Config::BlockSize + (_scene->image().getSize().y % RT::Config::BlockSize ? 1 : 0)));
+    _grid.resize((_scene->image().getSize().x / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().x % RT::Config::Raytracer::BlockSize ? 1 : 0)) * (_scene->image().getSize().y / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().y % RT::Config::Raytracer::BlockSize ? 1 : 0)));
     for (unsigned int i = 0; i < _grid.size(); i++)
-      _grid[i] = RT::Config::BlockSize;
+      _grid[i] = RT::Config::Raytracer::BlockSize;
 
     // Reset antialiasing factor
     _antialiasing.resize(_scene->image().getSize().x * _scene->image().getSize().y);
     for (unsigned int i = 0; i < _antialiasing.size(); i++)
-      _antialiasing[i] = _scene->config().liveAntiAliasing;
+      _antialiasing[i] = _scene->antialiasing().live;
 
     // Set status to first pass
     _status = First;
@@ -173,13 +176,13 @@ void	RT::RenderRaytracer::antialiasing()
 
   // Set antialiasing to maximum for borders
   for (unsigned int i = 0; i < _antialiasing.size(); i++)
-    _antialiasing[i] = _scene->config().postAntiAliasing;
+    _antialiasing[i] = _scene->antialiasing().post;
 
   // Apply sobel to antialiasing image
-  for (int a = _scene->config().postAntiAliasing; a >= 0; a--)
+  for (int a = _scene->antialiasing().post; a >= 0; a--)
     for (unsigned int x = 1; x < _scene->image().getSize().x - 1; x++)
       for (unsigned int y = 1; y < _scene->image().getSize().y - 1; y++)
-	if ((sobel[x + y * _scene->image().getSize().x] - sobel_min) / (sobel_max - sobel_min) < std::pow(1.f / 6.4f, _scene->config().postAntiAliasing - a))
+	if ((sobel[x + y * _scene->image().getSize().x] - sobel_min) / (sobel_max - sobel_min) < std::pow(1.f / 6.4f, _scene->antialiasing().post - a))
 	  _antialiasing[x + y * _scene->image().getSize().x] = a;
 }
 
@@ -191,7 +194,7 @@ void	RT::RenderRaytracer::render()
     unsigned int  z = (unsigned int)_grid.size();
 
     // Find a zone to render
-    for (unsigned int a = RT::Config::BlockSize; a > 0 && z == _grid.size(); a /= 2)
+    for (unsigned int a = RT::Config::Raytracer::BlockSize; a > 0 && z == _grid.size(); a /= 2)
       for (unsigned int b = 0; b < _grid.size() && z == _grid.size(); b++)
 	if (_grid[(r + b) % _grid.size()] == a)
 	  z = (r + b) % _grid.size();
@@ -209,27 +212,27 @@ void	RT::RenderRaytracer::render(unsigned int zone)
   unsigned int	size = _grid[zone];
   
   // Lock grid zone
-  _grid[zone] = RT::Config::BlockSize + 1;
+  _grid[zone] = RT::Config::Raytracer::BlockSize + 1;
 
   // Calcul zone coordinates (x, y)
-  unsigned int	x = zone % (_scene->image().getSize().x / RT::Config::BlockSize + (_scene->image().getSize().x % RT::Config::BlockSize ? 1 : 0)) * RT::Config::BlockSize;
-  unsigned int	y = zone / (_scene->image().getSize().x / RT::Config::BlockSize + (_scene->image().getSize().x % RT::Config::BlockSize ? 1 : 0)) * RT::Config::BlockSize;
+  unsigned int	x = zone % (_scene->image().getSize().x / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().x % RT::Config::Raytracer::BlockSize ? 1 : 0)) * RT::Config::Raytracer::BlockSize;
+  unsigned int	y = zone / (_scene->image().getSize().x / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().x % RT::Config::Raytracer::BlockSize ? 1 : 0)) * RT::Config::Raytracer::BlockSize;
   
   // To count the number of pixels rendered
   unsigned int	p = 0;
 
   // Render zone
-  for (unsigned int a = 0; a < RT::Config::BlockSize && active(); a += size)
-    for (unsigned int b = 0; b < RT::Config::BlockSize && active(); b += size)
+  for (unsigned int a = 0; a < RT::Config::Raytracer::BlockSize && active(); a += size)
+    for (unsigned int b = 0; b < RT::Config::Raytracer::BlockSize && active(); b += size)
       if (x + a < _scene->image().getSize().x && y + b < _scene->image().getSize().y)
       {
 	if (_status == First)
 	{
-	  if ((size == RT::Config::BlockSize || a % (size * 2) != 0 || b % (size * 2) != 0))
+	  if ((size == RT::Config::Raytracer::BlockSize || a % (size * 2) != 0 || b % (size * 2) != 0))
 	  {
-	    RT::Color clr = renderAntialiasing(x + a, y + b, _scene->config().liveAntiAliasing);
+	    RT::Color clr = renderAntialiasing(x + a, y + b, _scene->antialiasing().live);
 
-	    p += _scene->config().liveAntiAliasing * _scene->config().liveAntiAliasing;
+	    p += _scene->antialiasing().live * _scene->antialiasing().live;
 	    for (unsigned int c = 0; c < size; c++)
 	      for (unsigned int d = 0; d < size; d++)
 		if (x + a + c < _scene->image().getSize().x && y + b + d < _scene->image().getSize().y)
@@ -240,8 +243,8 @@ void	RT::RenderRaytracer::render(unsigned int zone)
 	{
 	  if (_antialiasing[(x + a) + (y + b) * _scene->image().getSize().x] > 0)
 	  {
-	    _scene->image().setPixel(x + a, y + b, renderAntialiasing(x + a, y + b, _scene->config().liveAntiAliasing + _antialiasing[(x + a) + (y + b) * _scene->image().getSize().x]).sfml());
-	    p += (_scene->config().liveAntiAliasing + _antialiasing[(x + a) + (y + b) * _scene->image().getSize().x]) * (_scene->config().liveAntiAliasing + _antialiasing[(x + a) + (y + b) * _scene->image().getSize().x]);
+	    _scene->image().setPixel(x + a, y + b, renderAntialiasing(x + a, y + b, _scene->antialiasing().live + _antialiasing[(x + a) + (y + b) * _scene->image().getSize().x]).sfml());
+	    p += (_scene->antialiasing().live + _antialiasing[(x + a) + (y + b) * _scene->image().getSize().x]) * (_scene->antialiasing().live + _antialiasing[(x + a) + (y + b) * _scene->image().getSize().x]);
 	  }
 	}
       }
@@ -282,40 +285,40 @@ RT::Color RT::RenderRaytracer::renderAntialiasing(unsigned int x, unsigned int y
 RT::Color RT::RenderRaytracer::renderAnaglyph3D(RT::Ray const & ray) const
 {
   // If no offset between eyes, do not render anaglyph
-  if (_scene->config().anaglyphOffset == 0)
+  if (_scene->anaglyph().offset == 0)
     return renderDephOfField((_scene->camera() * ray).normalize());
 
   // Calculate focus angle
-  double		angle = Math::Utils::RadToDeg(Math::Pi / 2.f - std::atan(_scene->config().anaglyphFocal / (_scene->config().anaglyphOffset / 2.f)));
+  double		angle = Math::Utils::RadToDeg(Math::Pi / 2.f - std::atan(_scene->anaglyph().focal / (_scene->anaglyph().offset / 2.f)));
 
   // Calculate left/right eye ray accoding offset and focus angle
-  Math::Matrix<4, 4>	cam_left = _scene->camera() * Math::Matrix<4, 4>::translation(0.f, +_scene->config().anaglyphOffset / 2.f, 0.f) * Math::Matrix<4, 4>::rotation(0, 0, -angle);
-  Math::Matrix<4, 4>	cam_right = _scene->camera() * Math::Matrix<4, 4>::translation(0.f, -_scene->config().anaglyphOffset / 2.f, 0.f) * Math::Matrix<4, 4>::rotation(0, 0, +angle);
+  Math::Matrix<4, 4>	cam_left = _scene->camera() * Math::Matrix<4, 4>::translation(0.f, +_scene->anaglyph().offset / 2.f, 0.f) * Math::Matrix<4, 4>::rotation(0, 0, -angle);
+  Math::Matrix<4, 4>	cam_right = _scene->camera() * Math::Matrix<4, 4>::translation(0.f, -_scene->anaglyph().offset / 2.f, 0.f) * Math::Matrix<4, 4>::rotation(0, 0, +angle);
 
   // Render left/right colors
   RT::Color		clr_left = renderDephOfField((cam_left * ray).normalize());
   RT::Color		clr_right = renderDephOfField((cam_right * ray).normalize());
 
   // Return color using masks anaglyph MaskLeft/Right from scene configuration
-  return (clr_left * _scene->config().anaglyphMaskLeft) + (clr_right * _scene->config().anaglyphMaskRight);
+  return (clr_left * _scene->anaglyph().maskLeft) + (clr_right * _scene->anaglyph().maskRight);
 }
 
 RT::Color RT::RenderRaytracer::renderDephOfField(RT::Ray const & ray) const
 {
   // If no deph of field, just return rendered ray
-  if (_scene->config().dofQuality <= 1 || _scene->config().dofFocal == 0)
+  if (_scene->dof().quality <= 1 || _scene->dof().aperture == 0)
     return renderRay(ray);
 
   unsigned int	      nb_ray = 0;
   Math::Matrix<4, 4>  rot = Math::Matrix<4, 4>::rotation(Math::Random::rand(360.f), Math::Random::rand(360.f), Math::Random::rand(360.f));
-  RT::Ray	      pt = Math::Matrix<4, 4>::translation(ray.d().x() * _scene->config().dofFocal, ray.d().y() * _scene->config().dofFocal, ray.d().z() * _scene->config().dofFocal) * ray;
+  RT::Ray	      pt = Math::Matrix<4, 4>::translation(ray.d().x() * _scene->dof().focal, ray.d().y() * _scene->dof().focal, ray.d().z() * _scene->dof().focal) * ray;
   RT::Color	      clr;
 
   // Generate multiples ray inside aperture to simulate deph of field
-  for (double a = Math::Random::rand(_scene->config().dofAperture / _scene->config().dofQuality); a < _scene->config().dofAperture; a += _scene->config().dofAperture / _scene->config().dofQuality)
-    for (double b = Math::Random::rand(Math::Pi / (_scene->config().dofQuality * 2)) - Math::Pi / 2.f; b < Math::Pi / 2.f; b += Math::Pi / _scene->config().dofQuality)
+  for (double a = Math::Random::rand(_scene->dof().aperture / _scene->dof().quality); a < _scene->dof().aperture; a += _scene->dof().aperture / _scene->dof().quality)
+    for (double b = Math::Random::rand(Math::Pi / (_scene->dof().quality * 2)) - Math::Pi / 2.f; b < Math::Pi / 2.f; b += Math::Pi / _scene->dof().quality)
     {
-      int	nb = (int)(std::cos(b) * _scene->config().dofQuality * 2.f * (a / _scene->config().dofAperture));
+      int	nb = (int)(std::cos(b) * _scene->dof().quality * 2.f * (a / _scene->dof().aperture));
       if (nb > 0)
 	for (double c = Math::Random::rand(Math::Pi * 2.f / nb); c < Math::Pi * 2.f; c += Math::Pi * 2.f / nb)
 	{
@@ -346,7 +349,7 @@ RT::Color RT::RenderRaytracer::renderDephOfField(RT::Ray const & ray) const
 
 RT::Color RT::RenderRaytracer::renderRay(RT::Ray const & ray, unsigned int recursivite) const
 {
-  if (recursivite > RT::Config::MaxRecursivite)
+  if (recursivite > RT::Config::Raytracer::MaxRecursivite)
     return RT::Color(0.f);
 
   // Render intersections list with CSG tree
@@ -368,7 +371,7 @@ RT::Color RT::RenderRaytracer::renderRay(RT::Ray const & ray, unsigned int recur
 
 RT::Color RT::RenderRaytracer::renderReflection(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite) const
 {
-  if (intersection.material.reflection == 0.f || intersection.material.transparency == 1.f)
+  if (intersection.material.reflection.intensity == 0.f || intersection.material.transparency.intensity == 1.f)
     return RT::Color(0.f);
 
   // Reverse normal if necessary
@@ -380,17 +383,17 @@ RT::Color RT::RenderRaytracer::renderReflection(RT::Ray const & ray, RT::Interse
   new_ray.p() = normal.p() + normal.d() * Math::Shift;
   new_ray.d() = normal.p() - ray.p() - normal.d() * 2.f * (normal.d().x() * (normal.p().x() - ray.p().x()) + normal.d().y() * (normal.p().y() - ray.p().y()) + normal.d().z() * (normal.p().z() - ray.p().z())) / (normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z());
   
-  return renderRay(new_ray, recursivite + 1) * intersection.material.color * intersection.material.reflection * (1.f - intersection.material.transparency);
+  return renderRay(new_ray, recursivite + 1) * intersection.material.color * intersection.material.reflection.intensity * (1.f - intersection.material.transparency.intensity);
 }
 
 RT::Color RT::RenderRaytracer::renderTransparency(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite) const
 {
-  if (intersection.material.transparency == 0.f)
+  if (intersection.material.transparency.intensity == 0.f)
     return RT::Color(0.f);
   
   // Inverse normal and refraction if necessary
   RT::Ray	normal = intersection.normal;
-  double	refraction = intersection.material.refraction;
+  double	refraction = intersection.material.transparency.refraction;
   
   if (RT::Ray::cos(ray, intersection.normal) > 0.f)
   {
@@ -418,7 +421,7 @@ RT::Color RT::RenderRaytracer::renderTransparency(RT::Ray const & ray, RT::Inter
     new_ray.d() = ray.d() + normal.d() * result.front();
   }
 
-  return renderRay(new_ray, recursivite) * intersection.material.color * intersection.material.transparency;
+  return renderRay(new_ray, recursivite) * intersection.material.color * intersection.material.transparency.intensity;
 }
 
 RT::Color RT::RenderRaytracer::renderLight(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite) const
@@ -426,7 +429,7 @@ RT::Color RT::RenderRaytracer::renderLight(RT::Ray const & ray, RT::Intersection
   RT::Color light;
 
   for (std::list<RT::AbstractLight const *>::const_iterator it = _scene->light().begin(); it != _scene->light().end(); it++)
-    light += (*it)->render(_scene, ray, intersection.normal, intersection.material);
+    light += (*it)->render(_scene, ray, intersection);
 
   return light;
 }
@@ -442,9 +445,13 @@ double	  RT::RenderRaytracer::progress() const
 	total++;
 
     if (total == _grid.size())
-      return 0.99f;
+      return 0.999f;
     else
-      return (double)_progress / (double)(_scene->image().getSize().x * _scene->image().getSize().y * _scene->config().liveAntiAliasing * _scene->config().liveAntiAliasing);
+    {
+      double		progress = (double)_progress / (double)(_scene->image().getSize().x * _scene->image().getSize().y * _scene->antialiasing().live * _scene->antialiasing().live);
+
+      return progress == 1.f ? 0.999f : progress;
+    }
   }
   else
   {
@@ -461,8 +468,8 @@ double	  RT::RenderRaytracer::progress() const
     for (unsigned int x = 0; x < _scene->image().getSize().x; x++)
       for (unsigned int y = 0; y < _scene->image().getSize().y; y++)
 	if (_antialiasing[x + y * _scene->image().getSize().x] > 0)
-	  total += (_antialiasing[x + y * _scene->image().getSize().x] + _scene->config().liveAntiAliasing) * (_antialiasing[x + y * _scene->image().getSize().x] + _scene->config().liveAntiAliasing);
+	  total += (_antialiasing[x + y * _scene->image().getSize().x] + _scene->antialiasing().live) * (_antialiasing[x + y * _scene->image().getSize().x] + _scene->antialiasing().live);
 
-    return (double)((_scene->image().getSize().x * _scene->image().getSize().y * _scene->config().liveAntiAliasing * _scene->config().liveAntiAliasing) + _progress) / (double)((_scene->image().getSize().x * _scene->image().getSize().y * _scene->config().liveAntiAliasing * _scene->config().liveAntiAliasing) + total);
+    return (double)((_scene->image().getSize().x * _scene->image().getSize().y * _scene->antialiasing().live * _scene->antialiasing().live) + _progress) / (double)((_scene->image().getSize().x * _scene->image().getSize().y * _scene->antialiasing().live * _scene->antialiasing().live) + total);
   }
 }

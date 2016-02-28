@@ -8,7 +8,7 @@
 #include "Window.hpp"
 
 RT::RenderState::RenderState(RT::Scene * scene)
-  : _elapsed(), _render(), _scene(scene), _wait(RT::Config::WindowSleep)
+  : _elapsed(), _render(), _scene(scene), _wait(RT::Config::RenderState::Refresh)
 {
   if (_scene == nullptr)
     throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
@@ -56,7 +56,7 @@ bool  RT::RenderState::update(sf::Time elapsed)
 
   // Process wait timer
   if (_wait <= 0)
-    _wait = RT::Config::WindowSleep;
+    _wait = RT::Config::RenderState::Refresh;
   _wait -= elapsed.asSeconds();
 
   // If timer over, update display

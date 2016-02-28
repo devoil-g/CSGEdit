@@ -9,10 +9,9 @@ var g_ear = 8.0;
 bounding();
 translation([26,0,0]); box(56,55,22, true); end();
 
-specular([255], 11.6);
 rotation([0,90,0]);
 
-	specular([255], 1.5); color([255]);
+	light([255],[255],[255], 1.5); color([255]);
 	transparency(0.92, 1.36); reflection(0.92);
 		translation([0, +(g_radius + g_space / 2), 0]);
 			intersection();
@@ -84,6 +83,4 @@ rotation([0,90,0]);
 	
 	end();
 end();
-end();
-
 end();

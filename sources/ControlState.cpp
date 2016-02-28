@@ -4,12 +4,12 @@
 
 #include "Config.hpp"
 #include "ControlState.hpp"
-#include "RenderState.hpp"
-#include "StateMachine.hpp"
 #include "Exception.hpp"
 #include "Parser.hpp"
 #include "PreviewRaytracer.hpp"
 #include "RenderRaytracer.hpp"
+#include "RenderState.hpp"
+#include "StateMachine.hpp"
 #include "Window.hpp"
 
 RT::ControlState::ControlState(std::string const & file)
@@ -144,7 +144,7 @@ bool  RT::ControlState::update(sf::Time)
     {
       _file = std::string(path);
       _time.clear();
-      std::cout << "[" << RT::Config::WindowTitle << "] Opening file '" << _file << "'." << std::endl;
+      std::cout << "[" << RT::Config::Window::Title << "] Opening file '" << _file << "'." << std::endl;
     }
 #endif
   }

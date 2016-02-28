@@ -58,9 +58,7 @@ std::list<RT::Intersection> RT::MaterialNode::renderChildren(RT::Ray const & ray
 std::string	RT::MaterialNode::dump() const
 {
   std::stringstream stream;
-  unsigned int	    n;
-
-  n = 0;
+  unsigned int	    n = 0;
 
   // Search for non-default materials
   if (_material.color != 1.f)
@@ -68,29 +66,19 @@ std::string	RT::MaterialNode::dump() const
     stream << "color(" << _material.color.dump() << ");";
     n++;
   }
-  if (_material.ambient != 1.f)
+  if (_material.light.ambient != 1.f || _material.light.diffuse != 1.f || _material.light.specular != 1.f || _material.light.shininess != 1.f || _material.light.quality != RT::Config::Material::Quality)
   {
-    stream << "ambient(" << _material.ambient.dump() << ");";
+    stream << "light(" << _material.light.ambient.dump() << ", " << _material.light.diffuse.dump() << ", " << _material.light.specular.dump() << ", " << _material.light.shininess << ", " << _material.light.quality << ");";
     n++;
   }
-  if (_material.diffuse != 1.f)
+  if (_material.transparency.intensity != 0.f || _material.transparency.refraction != 1.f || _material.transparency.diffusion != 0.f || _material.transparency.quality != RT::Config::Material::Quality)
   {
-    stream << "diffuse(" << _material.diffuse.dump() << ");";
+    stream << "transparency(" << _material.transparency.intensity << ", " << _material.transparency.refraction << ", " << _material.transparency.diffusion << ", " << _material.transparency.quality << ");";
     n++;
   }
-  if (_material.specular != 1.f || _material.shine != 1.f)
+  if (_material.reflection.intensity != 0.f || _material.reflection.diffusion != 0.f || _material.reflection.quality != RT::Config::Material::Quality)
   {
-    stream << "specular(" << _material.specular.dump() << ", " << _material.shine << ");";
-    n++;
-  }
-  if (_material.reflection != 0.f)
-  {
-    stream << "reflection(" << _material.reflection << ");";
-    n++;
-  }
-  if (_material.transparency != 0.f || _material.refraction != 1.f)
-  {
-    stream << "transparency(" << _material.transparency << ", " << _material.refraction << ");";
+    stream << "reflection(" << _material.reflection.intensity << ", " << _material.reflection.diffusion << ", " << _material.reflection.quality << ");";
     n++;
   }
 

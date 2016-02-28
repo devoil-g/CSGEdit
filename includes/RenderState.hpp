@@ -9,6 +9,14 @@
 
 namespace RT
 {
+  namespace Config
+  {
+    namespace RenderState
+    {
+      double const	Refresh(0.2f);
+    };
+  };
+
   class RenderState : public AbstractState
   {
   private:
