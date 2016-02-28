@@ -1,5 +1,3 @@
-// TODO: preview cache, move camera using mouse
-
 #include <list>
 
 #include "Config.hpp"

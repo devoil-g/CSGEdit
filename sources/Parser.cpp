@@ -61,7 +61,13 @@ RT::Scene *		RT::Parser::load(std::string const & path)
     while (!_transformation.empty())
       _transformation.pop();
 
-    delete _scene;
+    // Clean lights
+    while (!_scene->light().empty())
+    {
+      delete _scene->light().back();
+      _scene->light().pop_back();
+    }
+    
     return _scene;
   }
 
@@ -96,9 +102,9 @@ RT::AbstractTree *		RT::Parser::import(std::string const & path)
   // Scope materials
   _script.top()->add(chaiscript::fun(&RT::Parser::scopeMaterial, this), "material");
   _script.top()->add(chaiscript::fun(&RT::Parser::scopeColor, this), "color");
-  _script.top()->add(chaiscript::fun(std::function<void(const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &)>(std::bind(&RT::Parser::scopeLight, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, 1.f, RT::Config::Material::Quality))), "light");
-  _script.top()->add(chaiscript::fun(std::function<void(const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &, double)>(std::bind(&RT::Parser::scopeLight, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, RT::Config::Material::Quality))), "light");
-  _script.top()->add(chaiscript::fun(std::function<void(const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &, double, unsigned int)>(std::bind(&RT::Parser::scopeLight, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5))), "light");
+  _script.top()->add(chaiscript::fun(std::function<void(std::vector<chaiscript::Boxed_Value> const &, std::vector<chaiscript::Boxed_Value> const &, std::vector<chaiscript::Boxed_Value> const &)>(std::bind(&RT::Parser::scopeLight, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, 1.f, RT::Config::Material::Quality))), "light");
+  _script.top()->add(chaiscript::fun(std::function<void(std::vector<chaiscript::Boxed_Value> const &, std::vector<chaiscript::Boxed_Value> const &, std::vector<chaiscript::Boxed_Value> const &, double)>(std::bind(&RT::Parser::scopeLight, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, RT::Config::Material::Quality))), "light");
+  _script.top()->add(chaiscript::fun(std::function<void(std::vector<chaiscript::Boxed_Value> const &, std::vector<chaiscript::Boxed_Value> const &, std::vector<chaiscript::Boxed_Value> const &, double, unsigned int)>(std::bind(&RT::Parser::scopeLight, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5))), "light");
   _script.top()->add(chaiscript::fun(std::function<void(double)>(std::bind(&RT::Parser::scopeTransparency, this, std::placeholders::_1, 1.f, 0.f, RT::Config::Material::Quality))), "transparency");
   _script.top()->add(chaiscript::fun(std::function<void(double, double)>(std::bind(&RT::Parser::scopeTransparency, this, std::placeholders::_1, std::placeholders::_2, 0.f, RT::Config::Material::Quality))), "transparency");
   _script.top()->add(chaiscript::fun(std::function<void(double, double, double)>(std::bind(&RT::Parser::scopeTransparency, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, RT::Config::Material::Quality))), "transparency");
@@ -135,16 +141,16 @@ RT::AbstractTree *		RT::Parser::import(std::string const & path)
   _script.top()->add(chaiscript::fun(std::function<void(double, double)>(std::bind(&RT::Parser::primitiveTorus, this, std::placeholders::_1, std::placeholders::_2))), "torus");
   _script.top()->add(chaiscript::fun(&RT::Parser::primitiveMesh, this), "mesh");  
   // Light
-  _script.top()->add(chaiscript::fun(std::function<void(const std::vector<chaiscript::Boxed_Value> &)>(std::bind(&RT::Parser::lightDirectional, this, std::placeholders::_1, 0.f))), "directional_light");
-  _script.top()->add(chaiscript::fun(std::function<void(const std::vector<chaiscript::Boxed_Value> &, double)>(std::bind(&RT::Parser::lightDirectional, this, std::placeholders::_1, std::placeholders::_2))), "directional_light");
-  _script.top()->add(chaiscript::fun(std::function<void(const std::vector<chaiscript::Boxed_Value> &)>(std::bind(&RT::Parser::lightOcclusion, this, std::placeholders::_1, 0.f))), "ambient_light");
-  _script.top()->add(chaiscript::fun(std::function<void(const std::vector<chaiscript::Boxed_Value> &)>(std::bind(&RT::Parser::lightOcclusion, this, std::placeholders::_1, 0.f))), "occlusion_light");
-  _script.top()->add(chaiscript::fun(std::function<void(const std::vector<chaiscript::Boxed_Value> &, double)>(std::bind(&RT::Parser::lightOcclusion, this, std::placeholders::_1, std::placeholders::_2))), "occlusion_light");
-  _script.top()->add(chaiscript::fun(std::function<void(const std::vector<chaiscript::Boxed_Value> &)>(std::bind(&RT::Parser::lightPoint, this, std::placeholders::_1, 0.f, 0.f, 0.f, 0.f))), "point_light");
-  _script.top()->add(chaiscript::fun(std::function<void(const std::vector<chaiscript::Boxed_Value> &, double)>(std::bind(&RT::Parser::lightPoint, this, std::placeholders::_1, std::placeholders::_2, 0.f, 0.f, 0.f))), "point_light");
-  _script.top()->add(chaiscript::fun(std::function<void(const std::vector<chaiscript::Boxed_Value> &, double, double)>(std::bind(&RT::Parser::lightPoint, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, 0.f, 0.f))), "point_light");
-  _script.top()->add(chaiscript::fun(std::function<void(const std::vector<chaiscript::Boxed_Value> &, double, double, double)>(std::bind(&RT::Parser::lightPoint, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_4))), "point_light");
-  _script.top()->add(chaiscript::fun(std::function<void(const std::vector<chaiscript::Boxed_Value> &, double, double, double, double)>(std::bind(&RT::Parser::lightPoint, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5))), "point_light");
+  _script.top()->add(chaiscript::fun(std::function<void(std::vector<chaiscript::Boxed_Value> const &)>(std::bind(&RT::Parser::lightDirectional, this, std::placeholders::_1, 0.f))), "directional_light");
+  _script.top()->add(chaiscript::fun(std::function<void(std::vector<chaiscript::Boxed_Value> const &, double)>(std::bind(&RT::Parser::lightDirectional, this, std::placeholders::_1, std::placeholders::_2))), "directional_light");
+  _script.top()->add(chaiscript::fun(std::function<void(std::vector<chaiscript::Boxed_Value> const &)>(std::bind(&RT::Parser::lightOcclusion, this, std::placeholders::_1, 0.f))), "ambient_light");
+  _script.top()->add(chaiscript::fun(std::function<void(std::vector<chaiscript::Boxed_Value> const &)>(std::bind(&RT::Parser::lightOcclusion, this, std::placeholders::_1, 0.f))), "occlusion_light");
+  _script.top()->add(chaiscript::fun(std::function<void(std::vector<chaiscript::Boxed_Value> const &, double)>(std::bind(&RT::Parser::lightOcclusion, this, std::placeholders::_1, std::placeholders::_2))), "occlusion_light");
+  _script.top()->add(chaiscript::fun(std::function<void(std::vector<chaiscript::Boxed_Value> const &)>(std::bind(&RT::Parser::lightPoint, this, std::placeholders::_1, 0.f, 0.f, 0.f, 0.f))), "point_light");
+  _script.top()->add(chaiscript::fun(std::function<void(std::vector<chaiscript::Boxed_Value> const &, double)>(std::bind(&RT::Parser::lightPoint, this, std::placeholders::_1, std::placeholders::_2, 0.f, 0.f, 0.f))), "point_light");
+  _script.top()->add(chaiscript::fun(std::function<void(std::vector<chaiscript::Boxed_Value> const &, double, double)>(std::bind(&RT::Parser::lightPoint, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, 0.f, 0.f))), "point_light");
+  _script.top()->add(chaiscript::fun(std::function<void(std::vector<chaiscript::Boxed_Value> const &, double, double, double)>(std::bind(&RT::Parser::lightPoint, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_4))), "point_light");
+  _script.top()->add(chaiscript::fun(std::function<void(std::vector<chaiscript::Boxed_Value> const &, double, double, double, double)>(std::bind(&RT::Parser::lightPoint, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5))), "point_light");
   // Settings
   _script.top()->add(chaiscript::fun(&RT::Parser::settingCamera, this), "camera");
   _script.top()->add(chaiscript::fun(&RT::Parser::settingResolution, this), "resolution");
@@ -152,7 +158,7 @@ RT::AbstractTree *		RT::Parser::import(std::string const & path)
   _script.top()->add(chaiscript::fun(std::function<void(unsigned int, unsigned int)>(std::bind(&RT::Parser::settingAntiAliasing, this, std::placeholders::_1, std::placeholders::_2))), "antialiasing");
   _script.top()->add(chaiscript::fun(std::function<void(double, double)>(std::bind(&RT::Parser::settingDephOfField, this, std::placeholders::_1, std::placeholders::_2, RT::Config::DephOfField::Quality))), "deph_of_field");
   _script.top()->add(chaiscript::fun(std::function<void(double, double)>(std::bind(static_cast<void(RT::Parser::*)(double, double, RT::Color const &, RT::Color const &)>(&RT::Parser::settingAnaglyph3D), this, std::placeholders::_1, std::placeholders::_2, RT::Config::Anaglyph3D::MaskLeft, RT::Config::Anaglyph3D::MaskRight))), "anaglyph_3d");
-  _script.top()->add(chaiscript::fun(std::function<void(double, double, const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &)>(std::bind(static_cast<void(RT::Parser::*)(double, double, const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &)>(&RT::Parser::settingAnaglyph3D), this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4))), "anaglyph_3d");
+  _script.top()->add(chaiscript::fun(std::function<void(double, double, std::vector<chaiscript::Boxed_Value> const &, std::vector<chaiscript::Boxed_Value> const &)>(std::bind(static_cast<void(RT::Parser::*)(double, double, std::vector<chaiscript::Boxed_Value> const &, std::vector<chaiscript::Boxed_Value> const &)>(&RT::Parser::settingAnaglyph3D), this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4))), "anaglyph_3d");
   _script.top()->add(chaiscript::fun(std::function<void(unsigned int)>(std::bind(&RT::Parser::settingThread, this, std::placeholders::_1))), "thread");
   // Others
   _script.top()->add(chaiscript::fun(&RT::Parser::import, this), "import");
@@ -214,7 +220,7 @@ void	RT::Parser::scopeUnion()
   scopeStart(new RT::UnionNode());
 }
 
-void	RT::Parser::scopeTransformation(const std::vector<chaiscript::Boxed_Value> & v)
+void	RT::Parser::scopeTransformation(std::vector<chaiscript::Boxed_Value> const & v)
 {
   Math::Matrix<4, 4>			matrix;
 
@@ -235,7 +241,7 @@ void	RT::Parser::scopeTransformation(const std::vector<chaiscript::Boxed_Value> 
   scopeStart(new RT::TransformationNode(matrix));
 }
 
-void	RT::Parser::scopeTranslation(const std::vector<chaiscript::Boxed_Value> & v)
+void	RT::Parser::scopeTranslation(std::vector<chaiscript::Boxed_Value> const & v)
 {
   std::vector<double> transformation = convertVector<double>(v);
   
@@ -245,7 +251,7 @@ void	RT::Parser::scopeTranslation(const std::vector<chaiscript::Boxed_Value> & v
   scopeStart(new RT::TransformationNode(Math::Matrix<4, 4>::translation(transformation[0], transformation[1], transformation[2])));
 }
 
-void	RT::Parser::scopeMirror(const std::vector<chaiscript::Boxed_Value> & v)
+void	RT::Parser::scopeMirror(std::vector<chaiscript::Boxed_Value> const & v)
 {
   std::vector<double> transformation = convertVector<double>(v);
   
@@ -255,7 +261,7 @@ void	RT::Parser::scopeMirror(const std::vector<chaiscript::Boxed_Value> & v)
   scopeStart(new RT::TransformationNode(Math::Matrix<4, 4>::reflection(transformation[0], transformation[1], transformation[2])));
 }
 
-void	RT::Parser::scopeRotation(const std::vector<chaiscript::Boxed_Value> & v)
+void	RT::Parser::scopeRotation(std::vector<chaiscript::Boxed_Value> const & v)
 {
   std::vector<double> transformation = convertVector<double>(v);
   
@@ -265,7 +271,7 @@ void	RT::Parser::scopeRotation(const std::vector<chaiscript::Boxed_Value> & v)
   scopeStart(new RT::TransformationNode(Math::Matrix<4, 4>::rotation(transformation[0], transformation[1], transformation[2])));
 }
 
-void	RT::Parser::scopeScale(const std::vector<chaiscript::Boxed_Value> & v)
+void	RT::Parser::scopeScale(std::vector<chaiscript::Boxed_Value> const & v)
 {
   std::vector<double> transformation = convertVector<double>(v);
   double	      x, y, z;
@@ -298,7 +304,7 @@ void	RT::Parser::scopeMaterial(std::string const & material)
   scopeStart(new RT::MaterialNode(RT::Material::getMaterial(material)));
 }
 
-void	RT::Parser::scopeColor(const std::vector<chaiscript::Boxed_Value> & v)
+void	RT::Parser::scopeColor(std::vector<chaiscript::Boxed_Value> const & v)
 {
   RT::Material	material;
 
@@ -306,7 +312,7 @@ void	RT::Parser::scopeColor(const std::vector<chaiscript::Boxed_Value> & v)
   scopeStart(new RT::MaterialNode(material));
 }
 
-void	RT::Parser::scopeLight(const std::vector<chaiscript::Boxed_Value> & ambient, const std::vector<chaiscript::Boxed_Value> & diffuse, const std::vector<chaiscript::Boxed_Value> & specular, double shininess, unsigned int quality)
+void	RT::Parser::scopeLight(std::vector<chaiscript::Boxed_Value> const & ambient, std::vector<chaiscript::Boxed_Value> const & diffuse, std::vector<chaiscript::Boxed_Value> const & specular, double shininess, unsigned int quality)
 {
   RT::Material	material;
 
@@ -396,7 +402,7 @@ void	RT::Parser::primitiveTorus(double r1, double r2)
   primitivePush(new RT::TorusLeaf(r1, r2));
 }
 
-void	RT::Parser::primitiveTriangle(const std::vector<chaiscript::Boxed_Value> & p0, const std::vector<chaiscript::Boxed_Value> & p1, const std::vector<chaiscript::Boxed_Value> & p2)
+void	RT::Parser::primitiveTriangle(std::vector<chaiscript::Boxed_Value> const & p0, std::vector<chaiscript::Boxed_Value> const & p1, std::vector<chaiscript::Boxed_Value> const & p2)
 {
   // If not in a mesh, error
   if (dynamic_cast<RT::MeshNode *>(_scope.top()) == nullptr)
@@ -423,17 +429,17 @@ void	RT::Parser::primitivePush(RT::AbstractTree * tree)
   _scope.top()->push(tree);
 }
 
-void	RT::Parser::lightDirectional(const std::vector<chaiscript::Boxed_Value> & v, double angle)
+void	RT::Parser::lightDirectional(std::vector<chaiscript::Boxed_Value> const & v, double angle)
 {
   lightPush(new RT::DirectionalLight(_transformation.top(), color(v), angle));
 }
 
-void	RT::Parser::lightOcclusion(const std::vector<chaiscript::Boxed_Value> & v, double radius)
+void	RT::Parser::lightOcclusion(std::vector<chaiscript::Boxed_Value> const & v, double radius)
 {
   lightPush(new RT::OcclusionLight(color(v), radius));
 }
 
-void	RT::Parser::lightPoint(const std::vector<chaiscript::Boxed_Value> & v, double radius, double intensity, double angle1, double angle2)
+void	RT::Parser::lightPoint(std::vector<chaiscript::Boxed_Value> const & v, double radius, double intensity, double angle1, double angle2)
 {
   lightPush(new RT::PointLight(_transformation.top(), color(v), radius, intensity, angle1, angle2));
 }
@@ -478,7 +484,7 @@ void	RT::Parser::settingDephOfField(double aperture, double focal, unsigned int 
   }
 }
 
-void	RT::Parser::settingAnaglyph3D(double offset, double focal, const std::vector<chaiscript::Boxed_Value> & left, const std::vector<chaiscript::Boxed_Value> & right)
+void	RT::Parser::settingAnaglyph3D(double offset, double focal, std::vector<chaiscript::Boxed_Value> const & left, std::vector<chaiscript::Boxed_Value> const & right)
 {
   settingAnaglyph3D(offset, focal, color(left), color(right));
 }
@@ -520,7 +526,7 @@ std::string	RT::Parser::directory(std::string const & file) const
 #endif
 }
 
-RT::Color	RT::Parser::color(const std::vector<chaiscript::Boxed_Value> & v) const
+RT::Color	RT::Parser::color(std::vector<chaiscript::Boxed_Value> const & v) const
 {
   std::vector<double>	clr = convertVector<double>(v);
 

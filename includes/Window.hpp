@@ -28,7 +28,8 @@ namespace RT
   private:
     struct Mouse
     {
-      int	x, y;			// Cursor position
+      int	x, rx, y, ry;		// Cursor position
+      int	wheel;			// Wheel ticks
       bool	left, middle, right;	// Buttons pressed
     };
 

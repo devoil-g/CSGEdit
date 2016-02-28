@@ -14,6 +14,7 @@
 #endif
 
 #include "AbstractState.hpp"
+#include "Matrix.hpp"
 #include "PreviewRaytracer.hpp"
 #include "Scene.hpp"
 
@@ -33,7 +34,7 @@ namespace RT
     RT::Scene *			_scene;		// Current scene loaded
     std::string			_file;		// Path to current scene file
     std::map<std::string, Time>	_time;		// Update time of associated file
-
+    Math::Matrix<4, 4>		_camera;	// Current position of camera
 
   private:
     bool  			updateFiles();				// Check if current file and dependencies have been modified

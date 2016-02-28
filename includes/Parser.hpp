@@ -28,16 +28,16 @@ namespace RT
     void	scopeIntersection();	// Push a CSG intersection in scope
     void	scopeUnion();		// Push a CSG union in scope
     // Scope transformations
-    void	scopeTransformation(const std::vector<chaiscript::Boxed_Value> &);	// Push a transformation in scope
-    void	scopeTranslation(const std::vector<chaiscript::Boxed_Value> &);		// Push a translation in scope
-    void	scopeMirror(const std::vector<chaiscript::Boxed_Value> &);		// Push a mirror in scope
-    void	scopeRotation(const std::vector<chaiscript::Boxed_Value> &);		// Push a rotation in scope
-    void	scopeScale(const std::vector<chaiscript::Boxed_Value> &);		// Push a scale in scope
+    void	scopeTransformation(std::vector<chaiscript::Boxed_Value> const &);	// Push a transformation in scope
+    void	scopeTranslation(std::vector<chaiscript::Boxed_Value> const &);		// Push a translation in scope
+    void	scopeMirror(std::vector<chaiscript::Boxed_Value> const &);		// Push a mirror in scope
+    void	scopeRotation(std::vector<chaiscript::Boxed_Value> const &);		// Push a rotation in scope
+    void	scopeScale(std::vector<chaiscript::Boxed_Value> const &);		// Push a scale in scope
     void	scopeShear(double, double, double, double, double, double);		// Push a shear in scope
     // Scope materials
     void	scopeMaterial(std::string const &);																		// Push a material in scope
-    void	scopeColor(const std::vector<chaiscript::Boxed_Value> &);															// Push a color material in scope
-    void	scopeLight(const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &, double, unsigned int);	// Push a light material in scope
+    void	scopeColor(std::vector<chaiscript::Boxed_Value> const &);															// Push a color material in scope
+    void	scopeLight(std::vector<chaiscript::Boxed_Value> const &, std::vector<chaiscript::Boxed_Value> const &, std::vector<chaiscript::Boxed_Value> const &, double, unsigned int);	// Push a light material in scope
     void	scopeTransparency(double, double, double, unsigned int);															// Push a transparency material in scope
     void	scopeReflection(double, double, unsigned int);																	// Push a reflection material in scope
     // Scope others
@@ -53,15 +53,15 @@ namespace RT
     void	primitiveSphere(double);																	// Push a sphere in top scope
     void	primitiveTangle(double);																	// Push a tangle in top scope
     void	primitiveTorus(double, double);																	// Push a torus in top scope
-    void	primitiveTriangle(const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &);	// Push a triangle in top scope (only if mesh node)
+    void	primitiveTriangle(std::vector<chaiscript::Boxed_Value> const &, std::vector<chaiscript::Boxed_Value> const &, std::vector<chaiscript::Boxed_Value> const &);	// Push a triangle in top scope (only if mesh node)
     void	primitiveMesh(std::string const &);																// Push a primitive in top scope
     // Primitives utilities
     void	primitivePush(RT::AbstractTree *);	// Push a primitive in top scope
 
     // Light
-    void	lightDirectional(const std::vector<chaiscript::Boxed_Value> &, double);				// Add a directional light
-    void	lightOcclusion(const std::vector<chaiscript::Boxed_Value> &, double);				// Add an occlusion light
-    void	lightPoint(const std::vector<chaiscript::Boxed_Value> &, double, double, double, double);	// Add a point light
+    void	lightDirectional(std::vector<chaiscript::Boxed_Value> const &, double);				// Add a directional light
+    void	lightOcclusion(std::vector<chaiscript::Boxed_Value> const &, double);				// Add an occlusion light
+    void	lightPoint(std::vector<chaiscript::Boxed_Value> const &, double, double, double, double);	// Add a point light
     // Light utilities
     void	lightPush(RT::AbstractLight *);	// Add a light in scene
 
@@ -70,7 +70,7 @@ namespace RT
     void	settingResolution(unsigned int, unsigned int);											// Set resolution of current scene
     void	settingAntiAliasing(unsigned int, unsigned int);										// Set antialiasing level of current scene
     void	settingDephOfField(double, double, unsigned int);										// Set deph of field parameters of current scene
-    void	settingAnaglyph3D(double, double, const std::vector<chaiscript::Boxed_Value> &, const std::vector<chaiscript::Boxed_Value> &);	// Set 3D anaglyph parameters of current scene
+    void	settingAnaglyph3D(double, double, std::vector<chaiscript::Boxed_Value> const &, std::vector<chaiscript::Boxed_Value> const &);	// Set 3D anaglyph parameters of current scene
     void	settingAnaglyph3D(double, double, RT::Color const &, RT::Color const &);							// Set 3D anaglyph parameters of current scene
     void	settingThread(unsigned int);													// Set the number of thread for rendering
 
@@ -79,16 +79,16 @@ namespace RT
     void		include(std::string const &);	// Include file in current scope
 
     template<typename X> 
-    std::vector<X>	convertVector(const std::vector<chaiscript::Boxed_Value> & v) const	// Convert ChaiScript vector to std::vector of type X
+    std::vector<X>	convertVector(std::vector<chaiscript::Boxed_Value> const & v) const	// Convert ChaiScript vector to std::vector of type X
     {
-      std::vector<X>  result;
+      std::vector<X>	result;
       
       std::transform(v.begin(), v.end(), std::back_inserter(result), [](const chaiscript::Boxed_Value &bv) { return chaiscript::Boxed_Number(bv).get_as<X>(); });
       return result;
     }
     
     std::string		directory(std::string const &) const;				// Return directory path of file (for relative import)
-    RT::Color		color(const std::vector<chaiscript::Boxed_Value> &) const;	// Convert the array to a RT::Color
+    RT::Color		color(std::vector<chaiscript::Boxed_Value> const &) const;	// Convert the array to a RT::Color
 
   public:
     Parser();

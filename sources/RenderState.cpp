@@ -55,12 +55,12 @@ bool  RT::RenderState::update(sf::Time elapsed)
   }
 
   // Process wait timer
-  if (_wait <= 0)
-    _wait = RT::Config::RenderState::Refresh;
+  while (_wait <= 0.f)
+    _wait += RT::Config::RenderState::Refresh;
   _wait -= elapsed.asSeconds();
 
   // If timer over, update display
-  if (_wait <= 0)
+  if (_wait <= 0.f)
   {
     unsigned int  remaining = (unsigned int)(_elapsed.asSeconds() / progress * (1.f - progress));
     std::cout << "[Render] " << (int)(progress * 100.f) << "." << ((int)(progress * 1000.f)) % 10 << " % (" << remaining / 3600 << "h " << remaining % 3600 / 60 << "m " << remaining % 60 << "s remaining).    \r" << std::flush;

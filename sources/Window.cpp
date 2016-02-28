@@ -32,7 +32,7 @@ RT::Window::Window()
 RT::Window::~Window()
 {}
 
-RT::Window &  RT::Window::Instance()
+RT::Window &			RT::Window::Instance()
 {
   static RT::Window singleton;
 
@@ -40,18 +40,21 @@ RT::Window &  RT::Window::Instance()
   return singleton;
 }
 
-sf::RenderWindow &  RT::Window::window()
+sf::RenderWindow &		RT::Window::window()
 {
   return _window;
 }
 
-bool  RT::Window::update()
+bool				RT::Window::update()
 {
   sf::Event event;
 
   // Clear pressed/released key maps
   _pressed.clear();
   _released.clear();
+
+  // Reset mouse wheel ticks
+  _mouse.wheel = 0;
 
   while (_window.pollEvent(event))
   {
@@ -70,12 +73,18 @@ bool  RT::Window::update()
       _pressed[event.key.code] = true;
     if (event.type == sf::Event::KeyReleased)
       _released[event.key.code] = true;
+
+    // Get mouse wheel movement
+    if (event.type == sf::Event::MouseWheelMoved)
+      _mouse.wheel += event.mouseWheel.delta;
   }
 
   // If mouse enabled, get mouse position/buttons status, and recenter cursor
   if (_focus)
   {
+    _mouse.rx = sf::Mouse::getPosition(_window).x - _mouse.x;
     _mouse.x = sf::Mouse::getPosition(_window).x;
+    _mouse.ry = sf::Mouse::getPosition(_window).y - _mouse.y;
     _mouse.y = sf::Mouse::getPosition(_window).y;
     _mouse.left = sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
     _mouse.right = sf::Mouse::isButtonPressed(sf::Mouse::Button::Right);
@@ -84,7 +93,10 @@ bool  RT::Window::update()
   else
   {
     _mouse.x = 0;
+    _mouse.rx = 0;
     _mouse.y = 0;
+    _mouse.ry = 0;
+    _mouse.wheel = 0;
     _mouse.left = false;
     _mouse.right = false;
     _mouse.middle = false;
@@ -93,12 +105,12 @@ bool  RT::Window::update()
   return false;
 }
 
-void  RT::Window::display()
+void				RT::Window::display()
 {
   _window.display();
 }
 
-void  RT::Window::draw(sf::Image const & image)
+void				RT::Window::draw(sf::Image const & image)
 {
   sf::Texture texture;
   sf::Sprite  sprite;
@@ -130,14 +142,14 @@ void  RT::Window::draw(sf::Image const & image)
   _window.draw(sprite);
 }
 
-void  RT::Window::setTaskbar(RT::Window::WindowFlag flag)
+void				RT::Window::setTaskbar(RT::Window::WindowFlag flag)
 {
 #ifdef _WIN32
   _taskbar->SetProgressState(_window.getSystemHandle(), (TBPFLAG)flag);
 #endif
 }
 
-void  RT::Window::setTaskbar(RT::Window::WindowFlag flag, double progress)
+void				RT::Window::setTaskbar(RT::Window::WindowFlag flag, double progress)
 {
   // Apply flag
   setTaskbar(flag);
@@ -153,17 +165,17 @@ void  RT::Window::setTaskbar(RT::Window::WindowFlag flag, double progress)
 #endif
 }
 
-RT::Window::Mouse const & RT::Window::mouse() const
+RT::Window::Mouse const &	RT::Window::mouse() const
 {
   return _mouse;
 }
 
-bool  RT::Window::focus() const
+bool	RT::Window::focus() const
 {
   return _focus;
 }
 
-bool  RT::Window::key(sf::Keyboard::Key key) const
+bool				RT::Window::key(sf::Keyboard::Key key) const
 {
   // Check key status only if window has focus
   if (focus())
@@ -172,7 +184,7 @@ bool  RT::Window::key(sf::Keyboard::Key key) const
     return false;
 }
 
-bool  RT::Window::keyPressed(sf::Keyboard::Key key) const
+bool				RT::Window::keyPressed(sf::Keyboard::Key key) const
 {
   // Check key status only if window has focus
   if (focus() && _pressed.find(key) != _pressed.end())
@@ -181,7 +193,7 @@ bool  RT::Window::keyPressed(sf::Keyboard::Key key) const
     return false;
 }
 
-bool  RT::Window::keyReleased(sf::Keyboard::Key key) const
+bool				RT::Window::keyReleased(sf::Keyboard::Key key) const
 {
   // Check key status only if window has focus
   if (focus() && _released.find(key) != _released.end())

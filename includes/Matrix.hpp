@@ -39,7 +39,21 @@ namespace Math
       std::memcpy(this->_matrix, cpy._matrix, sizeof(this->_matrix));
       return *this;
     }
-    
+
+    bool				operator==(Math::Matrix<cRow, cCol> const & m)		// Matrix comparison
+    {
+      for (unsigned int row = 0; row < cRow; row++)
+	for (unsigned int col = 0; col < cCol; col++)
+	  if ((*this)(row, col) != m(row, col))
+	    return false;
+      return true;
+    }
+
+    bool				operator!=(Math::Matrix<cRow, cCol> const & m)		// Matrix comparison
+    {
+      return !(*this == m);
+  }
+
     inline double &			operator()(unsigned int row, unsigned int col)		// Get matrix value
     {
 #ifdef _DEBUG
@@ -120,6 +134,13 @@ namespace Math
     Math::Matrix<cRow, cCol>		operator*(double v) const				// Matrix multiplication
     {
       return Math::Matrix<cRow, cCol>(*this) *= v;
+    }
+
+    template<unsigned int dRow, unsigned int dCol>
+    Math::Matrix<cRow, dCol> &		operator*=(Math::Matrix<dRow, dCol> const & m)		// Matrix multiplication
+    {
+      *this = *this * m;
+      return *this;
     }
 
     template<unsigned int dRow, unsigned int dCol>
