@@ -17,7 +17,6 @@ namespace RT
     namespace Window
     {
       std::string const		Title("CSGEdit");
-      std::string const		Icon("C:/project/CSG-Raytracer/assets/icons/icon16.png");
       unsigned int const	Width(640);
       unsigned int const	Height(360);
     };
