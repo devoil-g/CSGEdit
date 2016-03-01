@@ -15,14 +15,14 @@ namespace RT
     virtual std::list<RT::Intersection>	renderChildren(RT::Ray const &) const = 0;	// Render children
     
   protected:
-    std::list<RT::AbstractTree *>	_children;					// List of children CSG tree
+    std::list<RT::AbstractTree *>	_children;	// List of children CSG tree
 
   public:
     AbstractNode();
     virtual ~AbstractNode();
 
-    std::list<RT::Intersection>	render(RT::Ray const &) const;				// Render a list of intersection from the sub-tree according to ray
-    virtual void		push(RT::AbstractTree *);				// Add a CSG tree to sub-trees list
+    std::list<RT::Intersection>	render(RT::Ray const &) const;	// Render a list of intersection from the sub-tree according to ray
+    virtual void		push(RT::AbstractTree *);	// Add a CSG tree to sub-trees list
   };
 };
 

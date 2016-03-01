@@ -14,7 +14,7 @@ namespace RT
   class TransformationNode : public RT::AbstractNode
   {
   private:
-    Math::Matrix<4, 4>		_transformation;					// Transformation applied to sub-tree
+    Math::Matrix<4, 4>		_transformation;	// Transformation applied to sub-tree
     
     std::list<RT::Intersection>	renderChildren(RT::Ray const &) const override;	// Render sub-tree
 
@@ -22,8 +22,8 @@ namespace RT
     TransformationNode(Math::Matrix<4, 4> const &);
     ~TransformationNode();
 
-    std::string			dump() const override;					// Dump CSG tree
-    Math::Matrix<4, 4>		transformation() const;					// Return transformation matrix of node
+    std::string			dump() const override;	// Dump CSG tree
+    Math::Matrix<4, 4>		transformation() const;	// Return transformation matrix of node
   };
 };
 

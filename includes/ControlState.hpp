@@ -25,9 +25,9 @@ namespace RT
   private:
 
 #ifdef WIN32
-    typedef FILETIME Time;
+    typedef FILETIME Time;	// Time structure (Windows, contain creation, last access & last write data)
 #else
-    typedef time_t   Time;
+    typedef time_t   Time;	// Time structure (linux, time since Epoch in seconds)
 #endif
 
     RT::PreviewRaytracer	_preview;	// Raytracer for preview

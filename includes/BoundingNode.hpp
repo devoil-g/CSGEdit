@@ -20,7 +20,7 @@ namespace RT
     BoundingNode();
     ~BoundingNode();
 
-    std::string			dump() const override;					// Dump CSG tree
+    std::string			dump() const override;	// Dump CSG tree
   };
 };
 

@@ -16,9 +16,9 @@ namespace RT
   {
     namespace Window
     {
-      std::string const		Title("CSGEdit");
-      unsigned int const	Width(640);
-      unsigned int const	Height(360);
+      std::string const		Title("CSGEdit");	// Window title
+      unsigned int const	Width(640);		// Window width
+      unsigned int const	Height(360);		// Window height
     };
   };
 

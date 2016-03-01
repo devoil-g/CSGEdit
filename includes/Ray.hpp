@@ -9,7 +9,7 @@ namespace RT
   class Ray
   {
   private:
-    Math::Vector<4>		_p, _d;						// Coordonnées de l'origine et de vecteur direction
+    Math::Vector<4>		_p, _d;	// Coordonnées de l'origine et de vecteur direction
 
   public:
     Ray() { _p(3) = 1.f; }

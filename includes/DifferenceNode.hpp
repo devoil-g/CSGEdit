@@ -19,7 +19,7 @@ namespace RT
     DifferenceNode();
     ~DifferenceNode();
 
-    std::string			dump() const override;					// Dump CSG tree
+    std::string			dump() const override;	// Dump CSG tree
   };
 };
 

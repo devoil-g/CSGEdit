@@ -17,23 +17,23 @@ namespace RT
   {
     namespace AntiAliasing
     {
-      unsigned int const	Live(1);
-      unsigned int const	Post(2);
+      unsigned int const	Live(1);	// Live anti-aliasing default level
+      unsigned int const	Post(2);	// Post anti-aliasing default level
     };
 
     namespace Anaglyph3D
     {
-      double const		Offset(0.f);
-      double const		Focal(0.f);
-      RT::Color const		MaskLeft(1.f, 0.f, 0.f);
-      RT::Color const		MaskRight(0.f, 1.f, 1.f);
+      double const		Offset(0.f);			// Distance between the eyes
+      double const		Focal(0.f);			// Focal distance
+      RT::Color const		MaskLeft(1.f, 0.f, 0.f);	// Color mask for left eye
+      RT::Color const		MaskRight(0.f, 1.f, 1.f);	// Color mask for right eye
     };
 
     namespace DephOfField
     {
-      double const		Aperture(0.f);
-      double const		Focal(0.f);
-      unsigned int const	Quality(3);
+      double const		Aperture(0.f);	// Deph of field intensity
+      double const		Focal(0.f);	// Focal distance
+      unsigned int const	Quality(3);	// Quality of deph of field
     };
   };
 
@@ -71,10 +71,10 @@ namespace RT
     RT::AbstractTree const *			_tree;		// CSG tree
     std::list<RT::AbstractLight const *>	_light;		// List of light
     std::list<std::string>			_dependencies;	// List of dependencies of scene
-    RT::Scene::Config				_config;
-    RT::Scene::AntiAliasing			_antialiasing;
-    RT::Scene::DephOfField			_dof;
-    RT::Scene::Anaglyph3D			_anaglyph;
+    RT::Scene::Config				_config;	// System configuration
+    RT::Scene::AntiAliasing			_antialiasing;	// Anti-aliasing parameters
+    RT::Scene::DephOfField			_dof;		// Deph of field parameters
+    RT::Scene::Anaglyph3D			_anaglyph;	// Anaglyph3D parameters
 
   public:
     Scene();

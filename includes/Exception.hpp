@@ -9,7 +9,7 @@ namespace RT
   class Exception : public std::exception
   {
   private:
-    std::string const	_msg;			// Exception description
+    std::string const	_msg;	// Exception description
 
   public:
     Exception(std::string const &);
