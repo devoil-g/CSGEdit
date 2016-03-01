@@ -111,23 +111,19 @@ bool				RT::Window::update()
       _mouse.wheel += event.mouseWheel.delta;
   }
 
-  // If mouse enabled, get mouse position/buttons status, and recenter cursor
+  // Update mouse position/buttons
+  _mouse.rx = sf::Mouse::getPosition(_window).x - _mouse.x;
+  _mouse.x = sf::Mouse::getPosition(_window).x;
+  _mouse.ry = sf::Mouse::getPosition(_window).y - _mouse.y;
+  _mouse.y = sf::Mouse::getPosition(_window).y;
   if (_focus)
   {
-    _mouse.rx = sf::Mouse::getPosition(_window).x - _mouse.x;
-    _mouse.x = sf::Mouse::getPosition(_window).x;
-    _mouse.ry = sf::Mouse::getPosition(_window).y - _mouse.y;
-    _mouse.y = sf::Mouse::getPosition(_window).y;
     _mouse.left = sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
     _mouse.right = sf::Mouse::isButtonPressed(sf::Mouse::Button::Right);
     _mouse.middle = sf::Mouse::isButtonPressed(sf::Mouse::Button::Middle);
   }
   else
   {
-    _mouse.x = 0;
-    _mouse.rx = 0;
-    _mouse.y = 0;
-    _mouse.ry = 0;
     _mouse.wheel = 0;
     _mouse.left = false;
     _mouse.right = false;
