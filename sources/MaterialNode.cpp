@@ -71,14 +71,14 @@ std::string	RT::MaterialNode::dump() const
     stream << "light(" << _material.light.ambient.dump() << ", " << _material.light.diffuse.dump() << ", " << _material.light.specular.dump() << ", " << _material.light.shininess << ", " << _material.light.quality << ");";
     n++;
   }
-  if (_material.transparency.intensity != 0.f || _material.transparency.refraction != 1.f || _material.transparency.diffusion != 0.f || _material.transparency.quality != RT::Config::Material::Quality)
+  if (_material.transparency.intensity != 0.f || _material.transparency.refraction != 1.f || _material.transparency.glossiness != 0.f || _material.transparency.quality != RT::Config::Material::Quality)
   {
-    stream << "transparency(" << _material.transparency.intensity << ", " << _material.transparency.refraction << ", " << _material.transparency.diffusion << ", " << _material.transparency.quality << ");";
+    stream << "transparency(" << _material.transparency.intensity << ", " << _material.transparency.refraction << ", " << _material.transparency.glossiness << ", " << _material.transparency.quality << ");";
     n++;
   }
-  if (_material.reflection.intensity != 0.f || _material.reflection.diffusion != 0.f || _material.reflection.quality != RT::Config::Material::Quality)
+  if (_material.reflection.intensity != 0.f || _material.reflection.glossiness != 0.f || _material.reflection.quality != RT::Config::Material::Quality)
   {
-    stream << "reflection(" << _material.reflection.intensity << ", " << _material.reflection.diffusion << ", " << _material.reflection.quality << ");";
+    stream << "reflection(" << _material.reflection.intensity << ", " << _material.reflection.glossiness << ", " << _material.reflection.quality << ");";
     n++;
   }
 

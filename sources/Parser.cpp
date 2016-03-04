@@ -74,8 +74,9 @@ RT::Scene *		RT::Parser::load(std::string const & path)
   // If no light, force basic configuration
   if (_scene->light().empty())
   {
-    _scene->light().push_back(new RT::OcclusionLight(RT::Color(1.f), 0));
-    _scene->light().push_back(new RT::DirectionalLight(Math::Matrix<4, 4>::rotation(0, 60, 30), RT::Color(1.f), 0));
+    std::cout << "zizi" << std::endl;
+    _scene->light().push_back(new RT::OcclusionLight(RT::Color(0.4f), 0));
+    _scene->light().push_back(new RT::DirectionalLight(Math::Matrix<4, 4>::rotation(0, 60, 30), RT::Color(0.6f), 0));
   }
 
   _transformation.pop();
@@ -85,6 +86,10 @@ RT::Scene *		RT::Parser::load(std::string const & path)
 
 RT::AbstractTree *		RT::Parser::import(std::string const & path)
 {
+  // Fail if maximum include/import deph reached
+  if (_files.size() > RT::Config::Parser::MaxFileDeph)
+    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+
   _script.push(new chaiscript::ChaiScript(chaiscript::Std_Lib::library()));
   
   // Set up script parser
@@ -196,6 +201,10 @@ RT::AbstractTree *		RT::Parser::import(std::string const & path)
 
 void	RT::Parser::include(std::string const & path)
 {
+  // Fail if maximum include/import deph reached
+  if (_files.size() > RT::Config::Parser::MaxFileDeph)
+    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+
   _files.push(_files.empty() ? path : directory(_files.top()).append(path));
   _scene->dependencies().push_back(_files.top());
 
@@ -324,23 +333,23 @@ void	RT::Parser::scopeLight(std::vector<chaiscript::Boxed_Value> const & ambient
   scopeStart(new RT::MaterialNode(material));
 }
 
-void	RT::Parser::scopeTransparency(double t, double r, double d, unsigned int q)
+void	RT::Parser::scopeTransparency(double t, double r, double g, unsigned int q)
 {
   RT::Material	material;
 
   material.transparency.intensity = t;
   material.transparency.refraction = r;
-  material.transparency.diffusion = d;
+  material.transparency.glossiness = g;
   material.transparency.quality = q;
   scopeStart(new RT::MaterialNode(material));
 }
 
-void	RT::Parser::scopeReflection(double r, double d, unsigned int q)
+void	RT::Parser::scopeReflection(double r, double g, unsigned int q)
 {
   RT::Material	material;
 
   material.reflection.intensity = r;
-  material.reflection.diffusion = d;
+  material.reflection.glossiness = g;
   material.reflection.quality = q;
   scopeStart(new RT::MaterialNode(material));
 }

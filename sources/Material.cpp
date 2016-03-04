@@ -68,7 +68,7 @@ RT::Material::Transparency &	RT::Material::Transparency::operator*=(RT::Material
   // Multiply two transparencies
   intensity = intensity + transparency.intensity - intensity * transparency.intensity;
   refraction *= transparency.refraction;
-  diffusion *= transparency.diffusion;
+  glossiness *= transparency.glossiness;
   quality = std::min(quality, transparency.quality);
 
   return *this;
@@ -83,7 +83,7 @@ RT::Material::Reflection &	RT::Material::Reflection::operator*=(RT::Material::Re
 {
   // Multiply two reflections
   intensity = intensity + reflection.intensity - intensity * reflection.intensity;
-  diffusion *= reflection.diffusion;
+  glossiness *= reflection.glossiness;
   quality = std::min(quality, reflection.quality);
 
   return *this;

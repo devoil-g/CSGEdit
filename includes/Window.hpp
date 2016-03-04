@@ -40,7 +40,7 @@ namespace RT
 #ifdef _WIN32
     ITaskbarList3 *			_taskbar;		// Windows 7+ window handler
 #else
-    void *				_taskbar;
+    void *				_taskbar;		// Not supported on Linux for now
 #endif
 
     Window();
@@ -64,7 +64,7 @@ namespace RT
       Paused = TBPF_PAUSED			// Orange progress bar
     };
 #else
-    enum WindowFlag
+    enum WindowFlag	// Not supported on Linux for now
     {
       NoProgress,
       Indeterminate,

@@ -14,6 +14,14 @@
 
 namespace RT
 {
+  namespace Config
+  {
+    namespace Parser
+    {
+      unsigned int const	MaxFileDeph(8);	// Maximum deph of included/imported files
+    };
+  };
+
   class Parser
   {
   private:
