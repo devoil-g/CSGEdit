@@ -3,7 +3,7 @@ translation([-570, 68, 470]); rotation([0, 39.8, -7.2]); camera(); end(); end();
 resolution(640, 360);
 antialiasing(0,2);
 //anaglyph_3d(64, 680);
-//thread(4);
+//thread(1);
 
 // Lights
 rotation([0, 60, 30]); directional_light([255], 4.2); end();
@@ -11,7 +11,7 @@ occlusion_light([255], 32);
 
 light([255 * 0.4],[255 * 0.6],[255 * 0.2], 8.4);
 
- // Socles
+// Socles
 color([255,255,225]);
 	translation([0,0,-70]); box(420,620,100,true); end();
 	for (var x = 0; x < 4; ++x) {
@@ -53,17 +53,16 @@ color([225.0]);
 	end();
 end();
 
-// Objets composés
-color([225.0]); translation([-75,+150,19+1]); scale([0.64]); rotation([0,0,-30]) ; mesh("../models/bunny.stl"); end(); end(); end(); end();
-translation([+20,+120,40+1]); scale([0.56]); rotation([-45,0,-45]); import("pencil.scn"); end(); end(); end();
-translation([+30,+165,50+1]); scale([1]); rotation([0,4,-40]); import("eyeglasses.scn"); end(); end(); end();
-translation([+150,+150,82+1]); scale([4]); rotation([-45,0,-15]); import("dice.scn"); end(); end(); end();
+// Meshs
+color([225.0]); translation([-50-25,+150+10,19+1]); scale([0.64]); rotation([0,0,-30]) ; mesh("../models/bunny.stl"); end(); end(); end(); end();
+color([225.0]); translation([+50-10,+150-10,40+1]); scale([0.32]); rotation([0,0,-50]) ; mesh("../models/mask.stl"); end(); end(); end(); end();
+color([225.0]); translation([+150+22,+150+86,60+1]); scale([1.4]); rotation([0,0,30]) ; mesh("../models/tardis.stl"); end(); end(); end(); end();
 
 // Reflection
-light([255],[255],[255],8.4);
+light([255],[255],[255*5],8.4);
 	translation([-50,+50,48+1]); reflection(0.84, 0); sphere(28); end(); end();
-	translation([+50,+50,68+1]); reflection(0.84, 0.04); sphere(28); end(); end();
-	translation([+150,+50,88+1]); reflection(0.84, 0.21); sphere(28); end(); end();
+	translation([+50,+50,68+1]); reflection(0.84, 6.2); sphere(28); end(); end();
+	translation([+150,+50,88+1]); reflection(0.84, 16.21); sphere(28); end(); end();
 end();
 
 // Transparence
@@ -104,25 +103,71 @@ def transparency_background()
 
 translation([-50,-50,20]);
 	transparency_background();
-	transparency(0.92, 1.1, 0);
-		translation([0,0,32]); scale([10]); tangle(11.8); end(); end();
-	end();
+	transparency(0.92, 1.12, 0); light([255],[255],[255*5],8.4);
+		translation([0,0,32]); sphere(25); end();
+	end(); end();
 end();
 translation([+50,-50,40]);
 	transparency_background();
-	transparency(0.92, 1.1, 0.04);
-		translation([0,0,32]); scale([10]); tangle(11.8); end(); end();
-	end();
+	transparency(0.92, 1.12, 2.1); light([255],[255],[255*5],8.4);
+		translation([0,0,32]); sphere(25); end();
+	end(); end();
 end();
 translation([+150,-50,60]);
 	transparency_background();
-	transparency(0.92, 1.1, 0.21);
-		translation([0,0,32]); scale([10]); tangle(11.8); end(); end();
-	end();
+	transparency(0.92, 1.12, 4.2); light([255],[255],[255*5],8.4);
+		translation([0,0,32]); sphere(25); end();
+	end(); end();
 end();
 
 // Others
-color([225.0]); translation([-50,-150,+20]);
+
+def fractal_cube(x)
+{
+	if (x < 1) {
+		box(1, true);
+		return;
+	}
+	
+	bounding();
+		sphere(1.2);
+		
+		box(1, true);
+		scale([0.5]);
+			translation([0,0,1.5]); fractal_cube(x - 1); end();
+			rotation([90,0,0]); translation([0,0,1.5]); fractal_cube(x - 1); end(); end();
+			rotation([90,0,90]); translation([0,0,1.5]); fractal_cube(x - 1); end(); end();
+			rotation([90,0,180]); translation([0,0,1.5]); fractal_cube(x - 1); end(); end();
+			rotation([90,0,270]); translation([0,0,1.5]); fractal_cube(x - 1); end(); end();
+		end();
+	end();
+}
+
+def fractal()
+{
+	var x = 7;
+	
+	bounding();
+		sphere(1.5);
+		
+		box(1, true);
+		scale([0.5]);
+			translation([0,0,1.5]); fractal_cube(x - 1); end();
+			rotation([90,0,0]); translation([0,0,1.5]); fractal_cube(x - 1); end(); end();
+			rotation([90,0,90]); translation([0,0,1.5]); fractal_cube(x - 1); end(); end();
+			rotation([90,0,180]); translation([0,0,1.5]); fractal_cube(x - 1); end(); end();
+			rotation([90,0,270]); translation([0,0,1.5]); fractal_cube(x - 1); end(); end();
+			rotation([180,0,0]); translation([0,0,1.5]); fractal_cube(x - 1); end(); end();
+		end();
+	end();
+}
+
+translation([+50,-150,+40 + 25]); scale([25]); rotation([45,0,45]); fractal(); end(); end(); end();
+translation([-50,-150,42+1]); scale([4]); rotation([-45,0,-15]); import("dice.scn"); end(); end(); end();
+translation([-80,-280,20+1]); scale([0.56]); rotation([-45,0,-45]); import("pencil.scn"); end(); end(); end();
+translation([-70,-235,30+1]); scale([1]); rotation([0,4,-40]); import("eyeglasses.scn"); end(); end(); end();
+
+color([225.0]); translation([+50,-250,+40]);
 	color([255, 105, 105]); translation([0, +20, 26+1]); box(52,12,52, true); end(); end();
 	color([105, 255, 105]); translation([0, 0, 26+1]); box(52,12,52, true); end(); end();
 	color([105, 105, 255]); translation([0, -20, 26+1]); box(52,12,52, true); end(); end();

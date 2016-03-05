@@ -37,7 +37,7 @@ namespace RT
     {
       double		intensity = 0.f;				// Intensity of transparency [0.f-1.f]
       double		refraction = 1.f;				// Index of refraction [0.f-inf]
-      double		glossiness = 0.f;				// Glossiness of transparency [0.f-inf]
+      double		glossiness = 1.f;				// Angle of glossiness [0.f-90.f]
       unsigned int	quality = RT::Config::Material::Quality;	// Quality of transparency
       
       RT::Material::Transparency &	operator*=(RT::Material::Transparency const &);		// Transparency properties multiplication
@@ -47,7 +47,7 @@ namespace RT
     struct Reflection
     {
       double		intensity = 0.f;				// Intensity of reflection [0.f-1.f]
-      double		glossiness = 1.f;				// Glossiness of reflection [0.f-inf]
+      double		glossiness = 1.f;				// Angle of glossiness [0.f-90.f]
       unsigned int	quality = RT::Config::Material::Quality;	// Quality of transparency
 
       RT::Material::Reflection &	operator*=(RT::Material::Reflection const &);		// Reflection properties multiplication

@@ -73,9 +73,13 @@ RT::Color RT::PointLight::render(RT::Scene const * scene, RT::Ray const & ray, R
     return RT::Color(0.f);
 
   // Inverse normal if necessary
+  bool		inside = false;
   RT::Ray	n = intersection.normal;
   if (RT::Ray::cos(ray, intersection.normal) > 0)
+  {
     n.d() *= -1.f;
+    inside = true;
+  }
 
   std::list<RT::Ray>	rays;
   RT::Ray		r;
@@ -116,8 +120,6 @@ RT::Color RT::PointLight::render(RT::Scene const * scene, RT::Ray const & ray, R
   {
     std::list<RT::Intersection>	intersect;
     RT::Color			light = RT::Color(_color);
-    double			cos_d = RT::Ray::cos(n, *it);
-    double			cos_s = RT::Ray::cos(r, *it);
     double			angle, intensity;
 
     if ((_angle1 == 0.f && _angle2 == 0.f) || (angle = acos(-RT::Ray::cos(_position, *it))) <= _angle1)
@@ -145,10 +147,15 @@ RT::Color RT::PointLight::render(RT::Scene const * scene, RT::Ray const & ray, R
     }
 
     // Apply light to diffuse component
+    double	cos_d = RT::Ray::cos(n, *it);
     diffuse += light * (cos_d > 0.f ? cos_d : -cos_d) * angle * intensity;
 
     // Apply light to specular component
-    specular += light * pow((cos_s > 0.f ? cos_s : 0.f), intersection.material.light.shininess) * angle * intensity;
+    if (inside == false)
+    {
+      double	cos_s = RT::Ray::cos(r, *it);
+      specular += light * pow((cos_s > 0.f ? cos_s : 0.f), intersection.material.light.shininess) * angle * intensity;
+    }
   }
 
   return diffuse / (double)rays.size() * intersection.material.color * intersection.material.light.diffuse * (1.f - intersection.material.transparency.intensity) * (1.f - intersection.material.reflection.intensity)
