@@ -74,7 +74,6 @@ RT::Scene *		RT::Parser::load(std::string const & path)
   // If no light, force basic configuration
   if (_scene->light().empty())
   {
-    std::cout << "zizi" << std::endl;
     _scene->light().push_back(new RT::OcclusionLight(RT::Color(0.4f), 0));
     _scene->light().push_back(new RT::DirectionalLight(Math::Matrix<4, 4>::rotation(0, 60, 30), RT::Color(0.6f), 0));
   }
@@ -144,7 +143,8 @@ RT::AbstractTree *		RT::Parser::import(std::string const & path)
   _script.top()->add(chaiscript::fun(std::function<void()>(std::bind(&RT::Parser::primitiveTorus, this, 1.f, 0.25f))), "torus");
   _script.top()->add(chaiscript::fun(std::function<void(double)>(std::bind(&RT::Parser::primitiveTorus, this, std::placeholders::_1, 0.25f))), "torus");
   _script.top()->add(chaiscript::fun(std::function<void(double, double)>(std::bind(&RT::Parser::primitiveTorus, this, std::placeholders::_1, std::placeholders::_2))), "torus");
-  _script.top()->add(chaiscript::fun(&RT::Parser::primitiveMesh, this), "mesh");  
+  _script.top()->add(chaiscript::fun(&RT::Parser::primitiveMesh, this), "mesh");
+  _script.top()->add(chaiscript::fun(&RT::Parser::primitiveTriangle, this), "triangle");
   // Light
   _script.top()->add(chaiscript::fun(std::function<void(std::vector<chaiscript::Boxed_Value> const &)>(std::bind(&RT::Parser::lightDirectional, this, std::placeholders::_1, 0.f))), "directional_light");
   _script.top()->add(chaiscript::fun(std::function<void(std::vector<chaiscript::Boxed_Value> const &, double)>(std::bind(&RT::Parser::lightDirectional, this, std::placeholders::_1, std::placeholders::_2))), "directional_light");
@@ -168,6 +168,20 @@ RT::AbstractTree *		RT::Parser::import(std::string const & path)
   // Others
   _script.top()->add(chaiscript::fun(&RT::Parser::import, this), "import");
   _script.top()->add(chaiscript::fun(&RT::Parser::include, this), "include");
+  // Math functions
+  _script.top()->add(chaiscript::fun((double(*)(double))(&std::cos)), "cos");
+  _script.top()->add(chaiscript::fun((double(*)(double))(&std::sin)), "sin");
+  _script.top()->add(chaiscript::fun((double(*)(double))(&std::tan)), "tan");
+  _script.top()->add(chaiscript::fun((double(*)(double))(&std::acos)), "acos");
+  _script.top()->add(chaiscript::fun((double(*)(double))(&std::asin)), "asin");
+  _script.top()->add(chaiscript::fun((double(*)(double))(&std::atan)), "atan");
+  _script.top()->add(chaiscript::fun((double(*)(double))(&std::exp)), "exp");
+  _script.top()->add(chaiscript::fun((double(*)(double))(&std::log)), "log");
+  _script.top()->add(chaiscript::fun((double(*)(double))(&std::log10)), "log10");
+  _script.top()->add(chaiscript::fun((double(*)(double))(&std::sqrt)), "sqrt");
+  _script.top()->add(chaiscript::fun((double(*)(double))(&std::cbrt)), "cbrt");
+  _script.top()->add(chaiscript::fun((double(*)(double, double))(&std::pow)), "pow");
+  _script.top()->add(chaiscript::var(Math::Pi), "pi");
 
   // Initailize scope
   RT::UnionNode *	topNode;

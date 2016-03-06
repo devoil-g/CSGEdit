@@ -32,23 +32,18 @@ RT::Color RT::PointLight::preview(RT::Scene const * scene, RT::Ray const & ray, 
 
   RT::Ray	light;
   
-  // Inverse normal if necessary
-  RT::Ray	n = intersection.normal;
-  if (RT::Ray::cos(ray, intersection.normal) > 0)
-    n.d() *= -1.f;
-
   // Calculate intensity level
   double	intensity;
   if (_intensity == 0.f)
     intensity = 1.f;
   else
-    intensity = (_intensity * _intensity) / ((_position.p().x() - n.p().x()) * (_position.p().x() - n.p().x()) + (_position.p().y() - n.p().y()) * (_position.p().y() - n.p().y()) + (_position.p().z() - n.p().z()) * (_position.p().z() - n.p().z()));
+    intensity = (_intensity * _intensity) / ((_position.p().x() - intersection.normal.p().x()) * (_position.p().x() - intersection.normal.p().x()) + (_position.p().y() - intersection.normal.p().y()) * (_position.p().y() - intersection.normal.p().y()) + (_position.p().z() - intersection.normal.p().z()) * (_position.p().z() - intersection.normal.p().z()));
   
   // Set light ray from intersection to light origin
-  light.d() = _position.p() - n.p();
+  light.d() = _position.p() - intersection.normal.p();
   
   // Calculate normal cosinus with light ray
-  double	diffuse = std::fmax(RT::Ray::cos(n, light), 0.f);
+  double	diffuse = std::fmax(RT::Ray::cos(intersection.normal, light), 0.f);
   if (diffuse == 0.f)
     return RT::Color(0.f);
 

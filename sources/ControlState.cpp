@@ -80,12 +80,14 @@ bool	RT::ControlState::update(sf::Time)
     if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::R))
       _camera = Math::Matrix<4, 4>::identite();
 
+    RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Indeterminate);
+
     // Reload scene
     _preview.stop();
     delete _scene;
     _scene = parser.load(_file);
     updateFiles();
-
+    
     // Set/get camera position
     if (_scene && _camera == Math::Matrix<4, 4>::identite())
       _camera = _scene->camera();
@@ -96,6 +98,8 @@ bool	RT::ControlState::update(sf::Time)
     _preview.load(_scene);
     _preview.start();
     
+    RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::NoProgress);
+
     return false;
   }
 

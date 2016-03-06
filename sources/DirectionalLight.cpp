@@ -29,16 +29,11 @@ RT::Color RT::DirectionalLight::preview(RT::Scene const * scene, RT::Ray const &
 
   RT::Ray	light;
   
-  // Inverse normal if necessary
-  RT::Ray	n = intersection.normal;
-  if (RT::Ray::cos(ray, intersection.normal) > 0)
-    n.d() *= -1.f;
-
   // Set light ray from intersection to light origin
   light.d() = _position.d() * -1.f;
   
   // Calculate normal cosinus with light ray
-  double	diffuse = std::fmax(RT::Ray::cos(n, light), 0.f);
+  double	diffuse = std::fmax(RT::Ray::cos(intersection.normal, light), 0.f);
   if (diffuse == 0.f)
     return RT::Color(0.f);
 

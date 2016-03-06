@@ -1,7 +1,12 @@
 #include <iostream>
 #include <list>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include "Config.hpp"
+#include "Exception.hpp"
 #include "Math.hpp"
 #include "RenderRaytracer.hpp"
 
@@ -49,6 +54,12 @@ void	RT::RenderRaytracer::begin()
   if (_grid.size() == 0)
     return;
 
+#ifdef _WIN32
+  // Prevent the system to hibernate (Vista+ & XP requests)
+  if (SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED) == NULL && SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED) == NULL)
+    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+#endif
+
   std::list<std::thread>  threads;
 
   // Launch rendering threads
@@ -87,8 +98,8 @@ void	RT::RenderRaytracer::begin()
 void	RT::RenderRaytracer::antialiasing()
 {
   std::vector<double> sobel;
-  double	      sobel_min = +std::numeric_limits<double>::max();
-  double	      sobel_max = -std::numeric_limits<double>::max();
+  double	      sobel_min = +(std::numeric_limits<double>::max)();
+  double	      sobel_max = -(std::numeric_limits<double>::max)();
 
   sobel.resize(_scene->image().getSize().x * _scene->image().getSize().y);
   for (unsigned int x = 1; x < _scene->image().getSize().x - 1; x++)
@@ -385,9 +396,10 @@ RT::Color RT::RenderRaytracer::renderReflection(RT::Ray const & ray, RT::Interse
   r.d() = normal.p() - ray.p() - normal.d() * 2.f * (normal.d().x() * (normal.p().x() - ray.p().x()) + normal.d().y() * (normal.p().y() - ray.p().y()) + normal.d().z() * (normal.p().z() - ray.p().z())) / (normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z());
   r = r.normalize();
 
-  std::list<RT::Ray>  rays;
-  
-  if (inside == true || intersection.material.reflection.glossiness == 0.f || intersection.material.reflection.quality <= 1)
+  std::list<RT::Ray>	rays;
+  unsigned int		quality = intersection.material.reflection.quality > recursivite ? intersection.material.reflection.quality - recursivite : 0;
+
+  if (inside == true || intersection.material.reflection.glossiness == 0.f || quality <= 1)
     rays.push_back(r);
   else
   {
@@ -403,7 +415,7 @@ RT::Color RT::RenderRaytracer::renderReflection(RT::Ray const & ray, RT::Interse
     // Rotation matrix to get ray to point of view
     Math::Matrix<4, 4>  matrix = Math::Matrix<4, 4>::rotation(0, Math::Utils::RadToDeg(ry), Math::Utils::RadToDeg(rz));
 
-    for (double a = Math::Random::rand(1.f / (intersection.material.reflection.quality + 1)); a < 1.f; a += 1.f / (intersection.material.reflection.quality + 1))
+    for (double a = Math::Random::rand(1.f / (quality + 1)); a < 1.f; a += 1.f / (quality + 1))
       for (double b = Math::Random::rand((2.f * Math::Pi) / (int)(2.f * a * Math::Pi + 1.f)); b < 2.f * Math::Pi; b += (2.f * Math::Pi) / (int)(2.f * a * Math::Pi + 1.f))
       {
 	// Calculate ray according to point on the hemisphere
@@ -469,11 +481,14 @@ RT::Color RT::RenderRaytracer::renderTransparency(RT::Ray const & ray, RT::Inter
   r = r.normalize();
 
   std::list<RT::Ray>	rays;
+  unsigned int		quality = intersection.material.transparency.quality > recursivite ? intersection.material.transparency.quality - recursivite : 0;
 
-  if (inside == true || intersection.material.transparency.glossiness == 0.f || intersection.material.transparency.quality <= 1.f)
+  if (inside == true || intersection.material.transparency.glossiness == 0.f || quality <= 1.f)
     rays.push_back(r);
   else
   {
+    recursivite += 1;
+
     // Calculate rotation angles of normal
     double	ry = -std::asin(r.d().z());
     double	rz = 0;
@@ -486,7 +501,7 @@ RT::Color RT::RenderRaytracer::renderTransparency(RT::Ray const & ray, RT::Inter
     // Rotation matrix to get ray to point of view
     Math::Matrix<4, 4>  matrix = Math::Matrix<4, 4>::rotation(0, Math::Utils::RadToDeg(ry), Math::Utils::RadToDeg(rz));
     
-    for (double a = Math::Random::rand(1.f / (intersection.material.transparency.quality + 1)); a < 1.f; a += 1.f / (intersection.material.transparency.quality + 1))
+    for (double a = Math::Random::rand(1.f / (quality + 1)); a < 1.f; a += 1.f / (quality + 1))
       for (double b = Math::Random::rand((2.f * Math::Pi) / (int)(2.f * a * Math::Pi + 1.f)); b < 2.f * Math::Pi; b += (2.f * Math::Pi) / (int)(2.f * a * Math::Pi + 1.f))
       {
 	// Calculate ray according to point on the hemisphere

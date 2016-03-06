@@ -54,16 +54,16 @@ color([225.0]);
 end();
 
 // Meshs
-color([225.0]); translation([-50-25,+150+10,19+1]); scale([0.64]); rotation([0,0,-30]) ; mesh("../models/bunny.stl"); end(); end(); end(); end();
-color([225.0]); translation([+50-10,+150-10,40+1]); scale([0.32]); rotation([0,0,-50]) ; mesh("../models/mask.stl"); end(); end(); end(); end();
-color([225.0]); translation([+150+22,+150+86,60+1]); scale([1.4]); rotation([0,0,30]) ; mesh("../models/tardis.stl"); end(); end(); end(); end();
+color([225.0]);
+	translation([-50-25,+150+10,19+1]); scale([0.64]); rotation([0,0,-30]) ; mesh("../models/bunny.stl"); end(); end(); end();
+	translation([+50-10,+150-10,40+1]); scale([0.32]); rotation([0,0,-50]) ; mesh("../models/mask.stl"); end(); end(); end();
+	translation([+150+22,+150+86,60+1]); scale([1.4]); rotation([0,0,30]) ; mesh("../models/tardis.stl"); end(); end(); end();
+end();
 
 // Reflection
-light([255],[255],[255*5],8.4);
-	translation([-50,+50,48+1]); reflection(0.84, 0); sphere(28); end(); end();
-	translation([+50,+50,68+1]); reflection(0.84, 6.2); sphere(28); end(); end();
-	translation([+150,+50,88+1]); reflection(0.84, 16.21); sphere(28); end(); end();
-end();
+light([255],[255],[255*5],8.4); translation([-50,+50,48+1]); reflection(0.84, 0); sphere(28); end(); end(); end();
+light([255],[255],[255*2],2.21); translation([+50,+50,68+1]); reflection(0.84, 7.2); sphere(28); end(); end(); end();
+light([255],[255],[255*1],1); translation([+150,+50,88+1]); reflection(0.84, 19.21); sphere(28); end(); end(); end();
 
 // Transparence
 def transparency_background()
@@ -109,13 +109,13 @@ translation([-50,-50,20]);
 end();
 translation([+50,-50,40]);
 	transparency_background();
-	transparency(0.92, 1.12, 2.1); light([255],[255],[255*5],8.4);
+	transparency(0.92, 1.12, 2.3); light([255],[255],[255*2],2.21);
 		translation([0,0,32]); sphere(25); end();
 	end(); end();
 end();
 translation([+150,-50,60]);
 	transparency_background();
-	transparency(0.92, 1.12, 4.2); light([255],[255],[255*5],8.4);
+	transparency(0.92, 1.12, 5.2); light([255],[255],[255],1);
 		translation([0,0,32]); sphere(25); end();
 	end(); end();
 end();
@@ -162,12 +162,122 @@ def fractal()
 	end();
 }
 
-translation([+50,-150,+40 + 25]); scale([25]); rotation([45,0,45]); fractal(); end(); end(); end();
 translation([-50,-150,42+1]); scale([4]); rotation([-45,0,-15]); import("dice.scn"); end(); end(); end();
 translation([-80,-280,20+1]); scale([0.56]); rotation([-45,0,-45]); import("pencil.scn"); end(); end(); end();
 translation([-70,-235,30+1]); scale([1]); rotation([0,4,-40]); import("eyeglasses.scn"); end(); end(); end();
+translation([+50,-150,+40 + 25]); scale([25]); rotation([45,0,45]); fractal(); end(); end(); end();
 
-color([225.0]); translation([+50,-250,+40]);
+translation([+50,-250,40+1]);
+transparency(0.72,1.21,6.3,2);
+	translation([+20,0,0]); color([255,155,155]); mesh();
+		triangle([-2,+30,0],[+2,+30,0],[-2,-30,0]);
+		triangle([+2,-30,0],[-2,-30,0],[+2,+30,0]);
+		triangle([-2,+30,0],[+2,+30,40],[+2,+30,0]);
+		triangle([-2,+30,0],[-2,+30,40],[+2,+30,40]);
+		triangle([-2,-30,0],[+2,-30,0],[+2,-30,20]);
+		triangle([-2,-30,0],[+2,-30,20],[-2,-30,20]);
+		
+		var x = 0;
+		while (x < 30) {
+			var m = cos((x + 0.0) / 30.0 * pi) * 10;
+			var n = cos((x + 1.0) / 30.0 * pi) * 10;
+			
+			triangle([+2,+30-2*x,30+m],[-2,+30-2*x,30+m],[-2,+30-2*(x+1),30+n]);
+			triangle([+2,+30-2*x,30+m],[-2,+30-2*(x+1),30+n],[+2,+30-2*(x+1),30+n]);
+			triangle([-2,+30-2*x,0],[-2,+30-2*(x+1),0],[-2,+30-2*x,30+m]);
+			triangle([-2,+30-2*(x+1),30+n],[-2,+30-2*x,30+m],[-2,+30-2*(x+1),0]);
+			triangle([+2,+30-2*(x+1),0],[+2,+30-2*x,0],[+2,+30-2*x,30+m]);
+			triangle([+2,+30-2*x,30+m],[+2,+30-2*(x+1),30+n],[+2,+30-2*(x+1),0]);
+			
+			x += 1;
+		}
+	end(); end(); end();
+	translation([0,0,0]); color([155,255,155]); mesh();
+		triangle([-2,+30,0],[+2,+30,0],[-2,-30,0]);
+		triangle([+2,-30,0],[-2,-30,0],[+2,+30,0]);
+		triangle([-2,+30,0],[+2,+30,30],[+2,+30,0]);
+		triangle([-2,+30,0],[-2,+30,30],[+2,+30,30]);
+		triangle([-2,-30,0],[+2,-30,0],[+2,-30,30]);
+		triangle([-2,-30,0],[+2,-30,30],[-2,-30,30]);
+		
+		var y = 0;
+		while (y < 30) {
+			var m = sin((y + 0.0) / 30.0 * pi) * 10;
+			var n = sin((y + 1.0) / 30.0 * pi) * 10;
+			
+			triangle([+2,+30-2*y,30+m],[-2,+30-2*y,30+m],[-2,+30-2*(y+1),30+n]);
+			triangle([+2,+30-2*y,30+m],[-2,+30-2*(y+1),30+n],[+2,+30-2*(y+1),30+n]);
+			triangle([-2,+30-2*y,0],[-2,+30-2*(y+1),0],[-2,+30-2*y,30+m]);
+			triangle([-2,+30-2*(y+1),30+n],[-2,+30-2*y,30+m],[-2,+30-2*(y+1),0]);
+			triangle([+2,+30-2*(y+1),0],[+2,+30-2*y,0],[+2,+30-2*y,30+m]);
+			triangle([+2,+30-2*y,30+m],[+2,+30-2*(y+1),30+n],[+2,+30-2*(y+1),0]);
+			
+			y += 1;
+		}
+	end(); end(); end();
+	translation([-20,0,0]); color([155,155,255]); mesh();
+		triangle([-2,+30,0],[+2,+30,0],[-2,-30,0]);
+		triangle([+2,-30,0],[-2,-30,0],[+2,+30,0]);
+		triangle([-2,+30,0],[+2,+30,20],[+2,+30,0]);
+		triangle([-2,+30,0],[-2,+30,20],[+2,+30,20]);
+		triangle([-2,-30,0],[+2,-30,0],[+2,-30,40]);
+		triangle([-2,-30,0],[+2,-30,40],[-2,-30,40]);
+		
+		var z = 0;
+		while (z < 30) {
+			var m = cos((z + 0.0) / 30.0 * pi) * -10;
+			var n = cos((z + 1.0) / 30.0 * pi) * -10;
+			
+			triangle([+2,+30-2*z,30+m],[-2,+30-2*z,30+m],[-2,+30-2*(z+1),30+n]);
+			triangle([+2,+30-2*z,30+m],[-2,+30-2*(z+1),30+n],[+2,+30-2*(z+1),30+n]);
+			triangle([-2,+30-2*z,0],[-2,+30-2*(z+1),0],[-2,+30-2*z,30+m]);
+			triangle([-2,+30-2*(z+1),30+n],[-2,+30-2*z,30+m],[-2,+30-2*(z+1),0]);
+			triangle([+2,+30-2*(z+1),0],[+2,+30-2*z,0],[+2,+30-2*z,30+m]);
+			triangle([+2,+30-2*z,30+m],[+2,+30-2*(z+1),30+n],[+2,+30-2*(z+1),0]);
+			
+			z += 1;
+		}
+	end(); end(); end();
+end();
+end();
+
+translation([+150,-150,+60+1]); scale([1.1]); reflection(0.18, 2.1);
+	bounding();
+		translation([0,0,30]); box(67,67,60, true); end();
+		
+		translation([-2.0*80.0/6.0-5,-2.0*80.0/6.0-5,0]); box(10, 10, 5 + 2 * 5); end();
+		translation([-1.0*80.0/6.0-5,-2.0*80.0/6.0-5,0]); box(10, 10, 5 + 3 * 5); end();
+		translation([+0.0*80.0/6.0-5,-2.0*80.0/6.0-5,0]); box(10, 10, 5 + 1 * 5); end();
+		translation([+1.0*80.0/6.0-5,-2.0*80.0/6.0-5,0]); box(10, 10, 5 + 3 * 5); end();
+		translation([+2.0*80.0/6.0-5,-2.0*80.0/6.0-5,0]); box(10, 10, 5 + 6 * 5); end();
+		
+		translation([-2.0*80.0/6.0-5,-1.0*80.0/6.0-5,0]); box(10, 10, 5 + 0 * 5); end();
+		translation([-1.0*80.0/6.0-5,-1.0*80.0/6.0-5,0]); box(10, 10, 5 + 2 * 5); end();
+		translation([+0.0*80.0/6.0-5,-1.0*80.0/6.0-5,0]); box(10, 10, 5 + 6 * 5); end();
+		translation([+1.0*80.0/6.0-5,-1.0*80.0/6.0-5,0]); box(10, 10, 5 + 3 * 5); end();
+		translation([+2.0*80.0/6.0-5,-1.0*80.0/6.0-5,0]); box(10, 10, 5 + 3 * 5); end();
+		
+		translation([-2.0*80.0/6.0-5,+0.0*80.0/6.0-5,0]); box(10, 10, 5 + 1 * 5); end();
+		translation([-1.0*80.0/6.0-5,+0.0*80.0/6.0-5,0]); box(10, 10, 5 + 4 * 5); end();
+		translation([+0.0*80.0/6.0-5,+0.0*80.0/6.0-5,0]); box(10, 10, 5 + 12 * 5); end();
+		translation([+1.0*80.0/6.0-5,+0.0*80.0/6.0-5,0]); box(10, 10, 5 + 4 * 5); end();
+		translation([+2.0*80.0/6.0-5,+0.0*80.0/6.0-5,0]); box(10, 10, 5 + 2 * 5); end();
+		
+		translation([-2.0*80.0/6.0-5,+1.0*80.0/6.0-5,0]); box(10, 10, 5 + 2 * 5); end();
+		translation([-1.0*80.0/6.0-5,+1.0*80.0/6.0-5,0]); box(10, 10, 5 + 1 * 5); end();
+		translation([+0.0*80.0/6.0-5,+1.0*80.0/6.0-5,0]); box(10, 10, 5 + 5 * 5); end();
+		translation([+1.0*80.0/6.0-5,+1.0*80.0/6.0-5,0]); box(10, 10, 5 + 3 * 5); end();
+		translation([+2.0*80.0/6.0-5,+1.0*80.0/6.0-5,0]); box(10, 10, 5 + 2 * 5); end();
+		
+		translation([-2.0*80.0/6.0-5,+2.0*80.0/6.0-5,0]); box(10, 10, 5 + 1 * 5); end();
+		translation([-1.0*80.0/6.0-5,+2.0*80.0/6.0-5,0]); box(10, 10, 5 + 0 * 5); end();
+		translation([+0.0*80.0/6.0-5,+2.0*80.0/6.0-5,0]); box(10, 10, 5 + 1 * 5); end();
+		translation([+1.0*80.0/6.0-5,+2.0*80.0/6.0-5,0]); box(10, 10, 5 + 1 * 5); end();
+		translation([+2.0*80.0/6.0-5,+2.0*80.0/6.0-5,0]); box(10, 10, 5 + 0 * 5); end();
+	end();
+end(); end(); end();
+
+color([225.0]); translation([+150,-250,+60]);
 	color([255, 105, 105]); translation([0, +20, 26+1]); box(52,12,52, true); end(); end();
 	color([105, 255, 105]); translation([0, 0, 26+1]); box(52,12,52, true); end(); end();
 	color([105, 105, 255]); translation([0, -20, 26+1]); box(52,12,52, true); end(); end();
