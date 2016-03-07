@@ -6,7 +6,17 @@
 
 #include "Config.hpp"
 #include "Exception.hpp"
+#include "Mesh.hpp"
 #include "Parser.hpp"
+
+#include "ExternTree.hpp"
+
+#include "BoxLeaf.hpp"
+#include "ConeLeaf.hpp"
+#include "SphereLeaf.hpp"
+#include "TangleLeaf.hpp"
+#include "TorusLeaf.hpp"
+#include "TriangleLeaf.hpp"
 
 #include "BoundingNode.hpp"
 #include "DifferenceNode.hpp"
@@ -15,13 +25,6 @@
 #include "MeshNode.hpp"
 #include "TransformationNode.hpp"
 #include "UnionNode.hpp"
-
-#include "BoxLeaf.hpp"
-#include "ConeLeaf.hpp"
-#include "SphereLeaf.hpp"
-#include "TangleLeaf.hpp"
-#include "TorusLeaf.hpp"
-#include "TriangleLeaf.hpp"
 
 #include "DirectionalLight.hpp"
 #include "OcclusionLight.hpp"
@@ -444,7 +447,7 @@ void	RT::Parser::primitiveMesh(std::string const & path)
   std::string file = directory(_files.top()).append(path);
 
   _scene->dependencies().push_back(file);
-  primitivePush(new RT::MeshNode(file));
+  primitivePush(new RT::ExternTree(RT::Mesh::Instance().get(file)));
 }
 
 void	RT::Parser::primitivePush(RT::AbstractTree * tree)

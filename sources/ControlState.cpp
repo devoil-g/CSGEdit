@@ -13,8 +13,25 @@
 #include "Window.hpp"
 
 RT::ControlState::ControlState(std::string const & file)
-  : _preview(), _scene(nullptr), _file(file), _time(), _camera(Math::Matrix<4, 4>::identite())
-{}
+  : _preview(), _scene(nullptr), _file(file), _camera(Math::Matrix<4, 4>::identite())
+{
+  RT::Parser	parser;
+
+  RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Indeterminate);
+
+  // Load scene
+  _scene = parser.load(_file.file());
+
+  // Get camera
+  if (_scene)
+    _camera = _scene->camera();
+
+  // Start preview rendering
+  _preview.load(_scene);
+  _preview.start();
+
+  RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::NoProgress);
+}
 
 RT::ControlState::~ControlState()
 {
@@ -24,46 +41,13 @@ RT::ControlState::~ControlState()
 
 bool	RT::ControlState::updateFiles()
 {
-  bool	result = updateFile(_file);
+  bool	result = _file.update();
 
   if (_scene != nullptr)
-    for (std::list<std::string>::const_iterator it = _scene->dependencies().begin(); it != _scene->dependencies().end(); it++)
-      result |= updateFile(*it);
+    for (std::list<RT::FileTime>::iterator it = _scene->dependencies().begin(); it != _scene->dependencies().end(); it++)
+      result |= it->update();
 
   return result;
-}
-
-bool	RT::ControlState::updateFile(std::string const & file)
-{
-#ifdef WIN32
-  FILETIME  creation, lastaccess, lastwrite;
-  HANDLE    f = CreateFileA(file.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-
-  if (f == NULL)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
-  
-  GetFileTime(f, &creation, &lastaccess, &lastwrite);
-  CloseHandle(f);
-
-  if (lastwrite.dwHighDateTime > _time[file].dwHighDateTime || (lastwrite.dwHighDateTime == _time[file].dwHighDateTime && lastwrite.dwLowDateTime > _time[file].dwLowDateTime))
-  {
-    _time[file] = lastwrite;
-    return true;
-  }
-#else
-  struct stat	st;
-  
-  if (stat(_file.c_str(), &st) < 0)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
-  
-  if (st.st_mtime > _time[file])
-  {
-    _time[file] = st.st_mtime;
-    return true;
-  }
-#endif
-
-  return false;
 }
 
 bool	RT::ControlState::update(sf::Time)
@@ -85,8 +69,7 @@ bool	RT::ControlState::update(sf::Time)
     // Reload scene
     _preview.stop();
     delete _scene;
-    _scene = parser.load(_file);
-    updateFiles();
+    _scene = parser.load(_file.file());
     
     // Set/get camera position
     if (_scene && _camera == Math::Matrix<4, 4>::identite())
@@ -185,9 +168,8 @@ bool	RT::ControlState::update(sf::Time)
 
     if (GetOpenFileName(&fileinfo))
     {
-      _file = std::string(path);
-      _time.clear();
-      std::cout << "[" << RT::Config::Window::Title << "] Opening file '" << _file << "'." << std::endl;
+      _file = RT::FileTime(std::string(path));
+      std::cout << "[" << RT::Config::Window::Title << "] Opening file '" << _file.file() << "'." << std::endl;
     }
 #endif
   }

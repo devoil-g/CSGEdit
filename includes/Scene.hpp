@@ -9,6 +9,7 @@
 #include "AbstractTree.hpp"
 #include "Color.hpp"
 #include "Config.hpp"
+#include "FileTime.hpp"
 #include "Matrix.hpp"
 
 namespace RT
@@ -70,7 +71,7 @@ namespace RT
     Math::Matrix<4, 4>				_camera;	// Matrix camera
     RT::AbstractTree const *			_tree;		// CSG tree
     std::list<RT::AbstractLight const *>	_light;		// List of light
-    std::list<std::string>			_dependencies;	// List of dependencies of scene
+    std::list<RT::FileTime>			_dependencies;	// List of dependencies of scene
     RT::Scene::Config				_config;	// System configuration
     RT::Scene::AntiAliasing			_antialiasing;	// Anti-aliasing parameters
     RT::Scene::DephOfField			_dof;		// Deph of field parameters
@@ -85,7 +86,7 @@ namespace RT
     Math::Matrix<4, 4> &				camera() { return _camera; };
     RT::AbstractTree const * &				tree() { return _tree; };
     std::list<RT::AbstractLight const *> &		light() { return _light; };
-    std::list<std::string> &				dependencies() { return _dependencies; };
+    std::list<RT::FileTime> &				dependencies() { return _dependencies; };
     RT::Scene::Config &					config() { return _config; };
     RT::Scene::AntiAliasing &				antialiasing() { return _antialiasing; };
     RT::Scene::DephOfField &				dof() { return _dof; };
@@ -96,7 +97,7 @@ namespace RT
     Math::Matrix<4, 4> const &				camera() const { return _camera; };
     RT::AbstractTree const * const &			tree() const { return _tree; };
     std::list<RT::AbstractLight const *> const &	light() const { return _light; };
-    std::list<std::string> const &			dependencies() const { return _dependencies; };
+    std::list<RT::FileTime> const &			dependencies() const { return _dependencies; };
     RT::Scene::Config const &				config() const { return _config; };
     RT::Scene::AntiAliasing const &			antialiasing() const { return _antialiasing; };
     RT::Scene::DephOfField const &			dof() const { return _dof; };

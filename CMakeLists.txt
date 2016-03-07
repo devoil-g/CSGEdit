@@ -7,6 +7,8 @@ SET(SAMPLE_SRCS
 	./sources/AbstractNode.cpp
 	./sources/AbstractTree.cpp
 
+	./sources/ExternTree.cpp
+
 	./sources/BoxLeaf.cpp
 	./sources/ConeLeaf.cpp
 	./sources/SphereLeaf.cpp
@@ -34,11 +36,13 @@ SET(SAMPLE_SRCS
 	./sources/Color.cpp
 	./sources/Intersection.cpp
 	./sources/Material.cpp
+	./sources/Mesh.cpp
 	./sources/Parser.cpp
 	./sources/Scene.cpp
 
 	./sources/Config.cpp
 	./sources/Exception.cpp
+	./sources/FileTime.cpp
 	./sources/Math.cpp
 	./sources/Matrix.cpp
 	./sources/Ray.cpp
@@ -58,6 +62,8 @@ SET(SAMPLE_HDRS
 	./includes/AbstractLeaf.hpp
 	./includes/AbstractNode.hpp
 	./includes/AbstractTree.hpp
+
+	./includes/ExternTree.hpp
 
 	./includes/BoxLeaf.hpp
 	./includes/ConeLeaf.hpp
@@ -86,11 +92,13 @@ SET(SAMPLE_HDRS
 	./includes/Color.hpp
 	./includes/Intersection.hpp
 	./includes/Material.hpp
+	./includes/Mesh.hpp
 	./includes/Parser.hpp
 	./includes/Scene.hpp
 
 	./includes/Config.hpp
 	./includes/Exception.hpp
+	./includes/FileTime.hpp
 	./includes/Math.hpp
 	./includes/Matrix.hpp
 	./includes/Ray.hpp
