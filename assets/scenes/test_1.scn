@@ -1,9 +1,9 @@
 // Camera set-up
 translation([-570, 68, 470]); rotation([0, 39.8, -7.2]); camera(); end(); end();
-resolution(640, 360);
+resolution(960, 540);
 antialiasing(0,2);
 //anaglyph_3d(64, 680);
-//thread(1);
+//thread(4);
 
 // Lights
 rotation([0, 60, 30]); directional_light([255], 4.2); end();
@@ -130,7 +130,7 @@ def fractal_cube(x)
 	}
 	
 	bounding();
-		sphere(1.2);
+		sphere(1.5);
 		
 		box(1, true);
 		scale([0.5]);
@@ -143,10 +143,8 @@ def fractal_cube(x)
 	end();
 }
 
-def fractal()
+def fractal(x)
 {
-	var x = 7;
-	
 	bounding();
 		sphere(1.5);
 		
@@ -165,7 +163,7 @@ def fractal()
 translation([-50,-150,42+1]); scale([4]); rotation([-45,0,-15]); import("dice.scn"); end(); end(); end();
 translation([-80,-280,20+1]); scale([0.56]); rotation([-45,0,-45]); import("pencil.scn"); end(); end(); end();
 translation([-70,-235,30+1]); scale([1]); rotation([0,4,-40]); import("eyeglasses.scn"); end(); end(); end();
-translation([+50,-150,+40 + 25]); scale([25]); rotation([45,0,45]); fractal(); end(); end(); end();
+translation([+50,-150,+40+1]); scale([25]); rotation([0,0,45]); translation([0,0,1.5]); fractal(6); end(); end(); end(); end();
 
 translation([+50,-250,40+1]);
 transparency(0.72,1.21,6.3,2);
