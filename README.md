@@ -1,4 +1,4 @@
-# CSG-Raytracer
+# CSGEdit
 
 ![Alt text](/assets/screenshots/test_1.png "Example")
 
