@@ -18,9 +18,9 @@ namespace RT
   private:
 
 #ifdef _WIN32
-    typedef FILETIME	Time;	// Time structure (Windows, contain creation, last access & last write data)
+    typedef FILETIME	Time;		// Time structure (Windows, contain creation, last access & last write data)
 #else
-    typedef time_t	Time;	// Time structure (linux, time since Epoch in seconds)
+    typedef time_t	Time;		// Time structure (linux, time since Epoch in seconds)
 #endif
 
     Time		_time;		// Last time status of file

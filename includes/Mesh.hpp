@@ -13,7 +13,7 @@ namespace RT
   class Mesh
   {
   private:
-    std::map<std::string, std::pair<RT::FileTime, RT::AbstractTree *>>	_library;
+    std::map<std::string, std::pair<RT::FileTime, RT::AbstractTree *>>	_library;	// Cache of loaded
     
     Mesh();
     ~Mesh();
@@ -22,6 +22,7 @@ namespace RT
     static RT::Mesh &			Instance();			// Get instance (singleton)
 
     RT::AbstractTree const * const &	get(std::string const &);	// Get/update a mesh
+    void				clear();			// Clear cache
   };
 };
 

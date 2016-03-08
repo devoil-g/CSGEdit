@@ -17,7 +17,7 @@ namespace RT
     };
   };
 
-  class RenderState : public AbstractState
+  class RenderState : public RT::AbstractState
   {
   private:
     sf::Time		_elapsed;	// Elapsed time to calculate remaining time

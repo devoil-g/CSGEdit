@@ -11,7 +11,7 @@ namespace RT
   class Intersection
   {
   public:
-    Intersection(RT::Ray const &, double);
+    Intersection(RT::AbstractTree const *, RT::Ray const &, double);
     ~Intersection();
 
     RT::AbstractTree const *	node;		// Sub-tree containing intersection object

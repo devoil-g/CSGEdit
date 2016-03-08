@@ -5,7 +5,9 @@ RT::Mesh::Mesh()
 {}
 
 RT::Mesh::~Mesh()
-{}
+{
+  clear();
+}
 
 RT::Mesh &	RT::Mesh::Instance()
 {
@@ -30,4 +32,14 @@ RT::AbstractTree const * const &  RT::Mesh::get(std::string const & file)
 
   // Return mesh
   return _library[file].second;
+}
+
+void	RT::Mesh::clear()
+{
+  // Delete every mesh loaded in library
+  for (std::map<std::string, std::pair<RT::FileTime, RT::AbstractTree *>>::iterator it = _library.begin(); it != _library.end(); it++)
+    delete it->second.second;
+
+  // Reset library
+  _library.clear();
 }

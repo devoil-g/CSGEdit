@@ -11,7 +11,7 @@ namespace RT
   class StateMachine
   {
   private:
-    class DefaultState : public AbstractState
+    class DefaultState : public RT::AbstractState
     {
     public:
       DefaultState();

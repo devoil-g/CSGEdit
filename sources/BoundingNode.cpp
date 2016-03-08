@@ -11,7 +11,7 @@ RT::BoundingNode::~BoundingNode()
 std::list<RT::Intersection>	RT::BoundingNode::renderChildren(RT::Ray const & ray) const
 {
   // Stop if no intersection with bounding tree
-  if (_children.empty() || _children.front()->render(ray).empty())
+  if (_children.front()->render(ray).empty())
     return std::list<RT::Intersection>();
  
   std::map<RT::AbstractTree const *, bool>	inside;
@@ -20,33 +20,22 @@ std::list<RT::Intersection>	RT::BoundingNode::renderChildren(RT::Ray const & ray
 
   // Iterate through sub-tree to get intersections
   for (std::list<RT::AbstractTree *>::const_iterator it = std::next(_children.begin()); it != _children.end(); it++)
-  {
-    std::list<RT::Intersection> node = (*it)->render(ray);
-
-    // Atribute intersections to children
-    for (std::list<RT::Intersection>::iterator it_node = node.begin(); it_node != node.end(); it_node++)
-      it_node->node = *it;
-
-    intersect.merge(node);
-  }
+    intersect.merge((*it)->render(ray));
 
   // Iterate through intersections
-  for (std::list<RT::Intersection>::iterator iter = intersect.begin(); iter != intersect.end(); iter++)
+  for (RT::Intersection const & it : intersect)
   {
     // If currently outside, push intersection
     if (state == 0)
-      result.push_back(*iter);
+      result.push_back(it);
 
     // Increment deepness if getting inside an object, decrement if getting outside
-    if (inside[iter->node])
-      state--;
-    else
-      state++;
-    inside[iter->node] = !(inside[iter->node]);
+    state += inside[it.node] ? -1 : +1;
+    inside[it.node] = !(inside[it.node]);
 
     // If currently outside, push intersection
     if (state == 0)
-      result.push_back(*iter);
+      result.push_back(it);
   }
 
   return result;

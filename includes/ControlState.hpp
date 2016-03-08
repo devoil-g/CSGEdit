@@ -13,7 +13,7 @@
 
 namespace RT
 {
-  class ControlState : public AbstractState
+  class ControlState : public RT::AbstractState
   {
   private:
 

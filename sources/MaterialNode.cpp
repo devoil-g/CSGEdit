@@ -9,48 +9,35 @@ RT::MaterialNode::~MaterialNode()
 
 std::list<RT::Intersection> RT::MaterialNode::renderChildren(RT::Ray const & ray) const
 {
-  if (_children.empty())
-    return std::list<RT::Intersection>();
-
   std::list<RT::Intersection> intersect;
 
   // Iterate through sub-tree to get intersections
-  for (std::list<RT::AbstractTree *>::const_iterator it = _children.begin(); it != _children.end(); it++)
-  {
-    std::list<RT::Intersection>	node = (*it)->render(ray);
-
-    // Atribute intersections and apply material to children
-    for (std::list<RT::Intersection>::iterator it_node = node.begin(); it_node != node.end(); it_node++)
-    {
-      it_node->node = *it;
-      it_node->material = it_node->material * _material;
-    }
-
-    intersect.merge(node);
-  }
+  for (RT::AbstractTree const * it : _children)
+    intersect.merge(it->render(ray));
 
   std::map<RT::AbstractTree const *, bool>  inside;
   std::list<RT::Intersection>		    result;
   unsigned int				    state = 0;
 
   // Iterate through intersections
-  for (std::list<RT::Intersection>::const_iterator iter = intersect.begin(); iter != intersect.end(); iter++)
+  for (RT::Intersection const & it : intersect)
   {
     // If currently outside, push intersection
     if (state == 0)
-      result.push_back(*iter);
+      result.push_back(it);
 
     // Increment deepness if getting inside an object, decrement if getting outside
-    if (inside[iter->node])
-      state--;
-    else
-      state++;
-    inside[iter->node] = !(inside[iter->node]);
+    state += inside[it.node] ? -1 : +1;
+    inside[it.node] = !(inside[it.node]);
 
     // If currently outside, push intersection
     if (state == 0)
-      result.push_back(*iter);
+      result.push_back(it);
   }
+
+  // Atribute intersections and apply material to children
+  for (RT::Intersection & it : result)
+    it.material *= _material;
 
   return result;
 }
@@ -89,8 +76,8 @@ std::string	RT::MaterialNode::dump() const
     n++;
   }
 
-  for (std::list<RT::AbstractTree *>::const_iterator it = _children.begin(); it != _children.end(); it++)
-    stream << (*it)->dump();
+  for (RT::AbstractTree const * it : _children)
+    stream << it->dump();
 
   for (unsigned int i = 0; i < n; i++)
     stream << "end();";

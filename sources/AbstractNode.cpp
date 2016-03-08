@@ -15,11 +15,14 @@ RT::AbstractNode::~AbstractNode()
 
 std::list<RT::Intersection>	RT::AbstractNode::render(RT::Ray const & ray) const
 {
+  if (_children.empty())
+    return std::list<RT::Intersection>();
+
   std::list<RT::Intersection>	result = renderChildren(ray);
 
   // Attribute top node
-  for (std::list<RT::Intersection>::iterator it = result.begin(); it != result.end(); it++)
-    (*it).node = this;
+  for (RT::Intersection & it : result)
+    it.node = this;
 
   return result;
 }

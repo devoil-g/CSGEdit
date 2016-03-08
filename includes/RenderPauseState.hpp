@@ -10,7 +10,7 @@
 
 namespace RT
 {
-  class RenderPauseState : public AbstractState
+  class RenderPauseState : public RT::AbstractState
   {
   private:
     sf::Image			_image;		// Copy of raytracer image

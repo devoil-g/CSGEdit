@@ -10,21 +10,21 @@
 
 namespace RT
 {
-  class DirectionalLight : public AbstractLight
+  class DirectionalLight : public RT::AbstractLight
   {
   private:
-    RT::Ray		_position;	// Light position and direction.
-    RT::Color		_color;		// Color of the light.
-    double		_angle;		// Light diffusion angle.
+    RT::Ray	_position;	// Light position and direction.
+    RT::Color	_color;		// Color of the light.
+    double	_angle;		// Light diffusion angle.
     
   public:
     DirectionalLight(Math::Matrix<4, 4> const &, RT::Color const & = RT::Color(1.f), double = 0.f);
     ~DirectionalLight();
 
-    RT::Color		preview(RT::Scene const *, RT::Ray const &, RT::Intersection const &) const override;	// Render preview mode
-    RT::Color		render(RT::Scene const *, RT::Ray const &, RT::Intersection const &) const override;	// Render complete light
+    RT::Color	preview(RT::Scene const *, RT::Ray const &, RT::Intersection const &) const override;	// Render preview mode
+    RT::Color	render(RT::Scene const *, RT::Ray const &, RT::Intersection const &) const override;	// Render complete light
 
-    std::string		dump() const override;	// Dump light in string
+    std::string	dump() const override;	// Dump light in string
   };
 };
 

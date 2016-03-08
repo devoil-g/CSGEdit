@@ -44,8 +44,8 @@ bool	RT::ControlState::updateFiles()
   bool	result = _file.update();
 
   if (_scene != nullptr)
-    for (std::list<RT::FileTime>::iterator it = _scene->dependencies().begin(); it != _scene->dependencies().end(); it++)
-      result |= it->update();
+    for (RT::FileTime & it : _scene->dependencies())
+      result |= it.update();
 
   return result;
 }

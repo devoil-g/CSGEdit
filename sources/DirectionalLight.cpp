@@ -97,9 +97,9 @@ RT::Color RT::DirectionalLight::render(RT::Scene const * scene, RT::Ray const & 
   
   // Render generated rays
   RT::Color	diffuse, specular;
-  for (std::list<RT::Ray>::const_iterator it = rays.begin(); it != rays.end(); it++)
+  for (RT::Ray const & it : rays)
   {
-    std::list<RT::Intersection>	intersect = scene->tree()->render((*it));
+    std::list<RT::Intersection>	intersect = scene->tree()->render(it);
     RT::Color			light = RT::Color(_color);
     
     // Render light
@@ -112,13 +112,13 @@ RT::Color RT::DirectionalLight::render(RT::Scene const * scene, RT::Ray const & 
     }
 
     // Apply light to diffuse component
-    double	cos_d = RT::Ray::cos(n, *it);
+    double	cos_d = RT::Ray::cos(n, it);
     diffuse += light * (cos_d > 0.f ? cos_d : -cos_d);
 
     // Apply light to specular component
     if (inside == false)
     {
-      double	cos_s = RT::Ray::cos(r, *it);
+      double	cos_s = RT::Ray::cos(r, it);
       specular += light * std::pow((cos_s > 0.f ? cos_s : 0.f), intersection.material.light.shininess);
     }
   }

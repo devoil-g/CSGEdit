@@ -12,7 +12,7 @@ namespace RT
     Math::Vector<4>		_p, _d;	// Coordonnées de l'origine et de vecteur direction
 
   public:
-    Ray() { _p(3) = 1.f; }
+    Ray() { _p(3) = 1.f; };
     ~Ray() {};
 
     inline Math::Vector<4> &	p() { return _p; };				// Return point of origin matrix

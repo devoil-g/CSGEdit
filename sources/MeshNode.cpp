@@ -36,8 +36,8 @@ std::list<RT::Intersection>	RT::MeshNode::renderChildren(RT::Ray const & ray) co
   std::list<RT::Intersection>	intersect;
 
   // Iterate through triangles to get intersections
-  for (std::list<RT::AbstractTree *>::const_iterator it = _children.begin(); it != _children.end(); it++)
-    intersect.merge((*it)->render(ray));
+  for (RT::AbstractTree const * it : _children)
+    intersect.merge(it->render(ray));
 
   return intersect;
 }
@@ -86,8 +86,8 @@ std::string	RT::MeshNode::dump() const
 
   stream << "mesh();";
 
-  for (std::list<RT::AbstractTree *>::const_iterator it = _children.begin(); it != _children.end(); it++)
-    stream << (*it)->dump();
+  for (RT::AbstractTree const * it : _children)
+    stream << it->dump();
 
   stream << "end();";
 
@@ -103,9 +103,9 @@ void		RT::MeshNode::push(RT::AbstractTree * node)
 
   std::vector<std::tuple<double, double, double>> pts;
 
-  for (std::list<RT::AbstractTree *>::const_iterator it = _children.begin(); it != _children.end(); it++)
+  for (RT::AbstractTree const * it : _children)
   {
-    std::vector<std::tuple<double, double, double>> pt = dynamic_cast<RT::TriangleLeaf const *>(*it)->points();
+    std::vector<std::tuple<double, double, double>> pt = dynamic_cast<RT::TriangleLeaf const *>(it)->points();
     
     pts.insert(pts.end(), pt.begin(), pt.end());
   }

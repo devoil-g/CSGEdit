@@ -47,14 +47,12 @@ void  RT::Config::initialize(int argc, char **argv)
 #endif
 
   // Using C++11 to detect maximum of thread concurrency.
-  unsigned int	systemThread = std::thread::hardware_concurrency();
+  RT::Config::ThreadNumber = std::thread::hardware_concurrency();
 
   // If failed...
-  if (systemThread == 0)
+  if (RT::Config::ThreadNumber == 0)
   {
     RT::Config::ThreadNumber = 1;
     std::cerr << "Error: failed to detect maximum of concurrency thread." << std::endl;
   }
-  else
-    RT::Config::ThreadNumber = systemThread;
 }

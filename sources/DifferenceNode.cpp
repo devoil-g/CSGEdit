@@ -10,9 +10,6 @@ RT::DifferenceNode::~DifferenceNode()
 
 std::list<RT::Intersection>	RT::DifferenceNode::renderChildren(RT::Ray const & ray) const
 {
-  if (_children.empty())
-    return std::list<RT::Intersection>();
-
   std::list<RT::Intersection>			uni = _children.front()->render(ray);
 
   if (uni.empty())
@@ -27,11 +24,7 @@ std::list<RT::Intersection>	RT::DifferenceNode::renderChildren(RT::Ray const & r
 
     // Atribute intersections to children
     for (std::list<RT::Intersection>::iterator it_node = node.begin(); it_node != node.end(); it_node++)
-    {
-      // Reverse normal (for refraction)
       it_node->normal.d() *= -1.f;
-      it_node->node = *it;
-    }
 
     dif.merge(node);
   }
@@ -65,10 +58,7 @@ std::list<RT::Intersection>	RT::DifferenceNode::renderChildren(RT::Ray const & r
 	result.push_back(*it_dif);
 
       // Increment deepness if getting inside an object, decrement if getting outside
-      if (inside[it_dif->node])
-	state_dif--;
-      else
-	state_dif++;
+      state_dif += inside[it_dif->node] ? -1 : +1;
       inside[it_dif->node] = !(inside[it_dif->node]);
 
       // If inside positive object and outside negative object
@@ -88,8 +78,8 @@ std::string	RT::DifferenceNode::dump() const
 
   stream << "difference();";
 
-  for (std::list<RT::AbstractTree *>::const_iterator it = _children.begin(); it != _children.end(); it++)
-    stream << (*it)->dump();
+  for (RT::AbstractTree const * it : _children)
+    stream << it->dump();
 
   stream << "end();";
 
