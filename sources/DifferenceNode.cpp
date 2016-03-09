@@ -19,15 +19,7 @@ std::list<RT::Intersection>	RT::DifferenceNode::renderChildren(RT::Ray const & r
 
   // Iterate through sub-tree to get intersections
   for (std::list<RT::AbstractTree *>::const_iterator it = std::next(_children.begin()); it != _children.end(); it++)
-  {
-    std::list<RT::Intersection> node = (*it)->render(ray);
-
-    // Atribute intersections to children
-    for (std::list<RT::Intersection>::iterator it_node = node.begin(); it_node != node.end(); it_node++)
-      it_node->normal.d() *= -1.f;
-
-    dif.merge(node);
-  }
+    dif.merge((*it)->render(ray));
 
   std::map<RT::AbstractTree const *, bool>	inside;
   std::list<RT::Intersection>			result;
@@ -68,6 +60,11 @@ std::list<RT::Intersection>	RT::DifferenceNode::renderChildren(RT::Ray const & r
       it_dif++;
     }
   }
+
+  // Reverse normal of negative objects
+  for (RT::Intersection & it : result)
+    if (it.node != _children.front())
+      it.normal.d() *= -1.f;
 
   return result;
 }

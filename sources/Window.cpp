@@ -140,10 +140,10 @@ void				RT::Window::display()
 
 void				RT::Window::draw(sf::Image const & image)
 {
-  sf::Texture texture;
-  sf::Sprite  sprite;
-  float	      scale, scale_x, scale_y;
-  float	      pos_x, pos_y;
+  sf::Texture	texture;
+  sf::Sprite	sprite;
+  float		scale, scale_x, scale_y;
+  float		pos_x, pos_y;
 
   texture.loadFromImage(image);
   sprite.setTexture(texture);
