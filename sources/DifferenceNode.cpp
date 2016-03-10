@@ -1,4 +1,4 @@
-#include <map>
+#include <unordered_map>
 
 #include "DifferenceNode.hpp"
 
@@ -21,9 +21,9 @@ std::list<RT::Intersection>	RT::DifferenceNode::renderChildren(RT::Ray const & r
   for (std::list<RT::AbstractTree *>::const_iterator it = std::next(_children.begin()); it != _children.end(); it++)
     dif.merge((*it)->render(ray));
 
-  std::map<RT::AbstractTree const *, bool>	inside;
-  std::list<RT::Intersection>			result;
-  unsigned int					state_uni = 0, state_dif = 0;
+  std::unordered_map<RT::AbstractTree const *, bool>	inside;
+  std::list<RT::Intersection>				result;
+  unsigned int						state_uni = 0, state_dif = 0;
 
   std::list<RT::Intersection>::iterator		it_uni = uni.begin(), it_dif = dif.begin();
 

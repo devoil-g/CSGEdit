@@ -33,7 +33,7 @@ RT::Color RT::DirectionalLight::preview(RT::Scene const * scene, RT::Ray const &
   light.d() = _position.d() * -1.f;
   
   // Calculate normal cosinus with light ray
-  double	diffuse = std::fmax(RT::Ray::cos(intersection.normal, light), 0.f);
+  double	diffuse = std::fmax(RT::Ray::cos(intersection.normal.d(), light.d()), 0.f);
   if (diffuse == 0.f)
     return RT::Color(0.f);
 
@@ -46,18 +46,18 @@ RT::Color RT::DirectionalLight::render(RT::Scene const * scene, RT::Ray const & 
     return RT::Color(0.f);
 
   // Inverse normal if necessary
-  bool		inside = false;
-  RT::Ray	n = intersection.normal;
-  if (RT::Ray::cos(ray, intersection.normal) > 0)
+  bool			inside = false;
+  Math::Vector<4>	n = intersection.normal.d();
+  if (RT::Ray::cos(ray.d(), intersection.normal.d()) > 0)
   {
-    n.d() *= -1.f;
+    n *= -1.f;
     inside = true;
   }
   
   std::list<RT::Ray>	rays;
   RT::Ray		r;
   
-  r.p() = n.p() + n.d() * Math::Shift;
+  r.p() = intersection.normal.p() + n * Math::Shift;
   
   if (intersection.material.light.quality <= 1 || _angle == 0)
   {
@@ -93,7 +93,7 @@ RT::Color RT::DirectionalLight::render(RT::Scene const * scene, RT::Ray const & 
   }
 
   // Calculate reflection ray
-  r.d() = n.p() - ray.p() - n.d() * 2.f * (n.d().x() * (n.p().x() - ray.p().x()) + n.d().y() * (n.p().y() - ray.p().y()) + n.d().z() * (n.p().z() - ray.p().z())) / (n.d().x() * n.d().x() + n.d().y() * n.d().y() + n.d().z() * n.d().z());
+  r.d() = intersection.normal.p() - ray.p() - n * 2.f * (n.x() * (intersection.normal.p().x() - ray.p().x()) + n.y() * (intersection.normal.p().y() - ray.p().y()) + n.z() * (intersection.normal.p().z() - ray.p().z())) / (n.x() * n.x() + n.y() * n.y() + n.z() * n.z());
   
   // Render generated rays
   RT::Color	diffuse, specular;
@@ -112,13 +112,13 @@ RT::Color RT::DirectionalLight::render(RT::Scene const * scene, RT::Ray const & 
     }
 
     // Apply light to diffuse component
-    double	cos_d = RT::Ray::cos(n, it);
+    double	cos_d = RT::Ray::cos(n, it.d());
     diffuse += light * (cos_d > 0.f ? cos_d : -cos_d);
 
     // Apply light to specular component
     if (inside == false)
     {
-      double	cos_s = RT::Ray::cos(r, it);
+      double	cos_s = RT::Ray::cos(r.d(), it.d());
       specular += light * std::pow((cos_s > 0.f ? cos_s : 0.f), intersection.material.light.shininess);
     }
   }

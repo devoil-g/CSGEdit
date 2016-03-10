@@ -29,13 +29,11 @@ std::vector<double>	Math::Utils::solve(double a, double b, double c)
   if (d >= 0)
     return { (-b - std::sqrt(d)) / (2.f * a), (-b + std::sqrt(d)) / (2.f * a) };
   else
-    return std::vector<double>();
+    return {};
 }
 
 std::vector<double>	Math::Utils::solve(double a, double b, double c, double d, double e)
 {
-  std::vector<double>   result;
-  
 #ifdef _DEBUG
   // Check for invalid parameter
   if (a == 0)
@@ -64,33 +62,25 @@ std::vector<double>	Math::Utils::solve(double a, double b, double c, double d, d
   double  m = std::sqrt(std::pow(k / 2.f, 2.f) - h);
   double  n = -b / (4.f * a);
 
-  delta = l * l - 2.f * k - 4.f * m;
-  if (delta >= 0)
-  {
-    double  x1 = -l / 2.f;
-    if (g > 0)
-      x1 = -x1;
-    
-    double  x2 = std::sqrt(delta) / 2.f;
-
-    result.push_back(x1 + x2 + n);
-    result.push_back(x1 - x2 + n);
-  }
-
   delta = l * l - 2.f * k + 4.f * m;
-  if (delta >= 0)
-  {
-    double  x1 = l / 2.f;
-    if (g > 0)
-      x1 = -x1;
+  if (delta < 0.f)
+    return {};
 
-    double  x2 = std::sqrt(delta) / 2.f;
+  double  x1 = l / 2.f;
+  double  x2 = std::sqrt(delta) / 2.f;
+  if (g > 0)
+    x1 *= -1.f;
 
-    result.push_back(x1 + x2 + n);
-    result.push_back(x1 - x2 + n);
-  }
+  delta = l * l - 2.f * k - 4.f * m;
+  if (delta < 0.f)
+    return { x1 - x2 + n, x1 + x2 + n };
 
-  return result;
+  double  y1 = -l / 2.f;
+  double  y2 = std::sqrt(delta) / 2.f;
+  if (g > 0)
+    y1 *= -1.f;
+
+  return { x1 - x2 + n, x1 + x2 + n, y1 - y2 + n, y1 + y2 + n };
 }
 
 RT::AbstractTree const *  Math::Utils::BoundingSphere(std::vector<std::tuple<double, double, double> > const & pts)

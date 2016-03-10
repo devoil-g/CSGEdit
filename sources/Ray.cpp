@@ -1,11 +1,11 @@
 #include "Math.hpp"
 #include "Ray.hpp"
 
-double		RT::Ray::cos(RT::Ray const & A, RT::Ray const & B)
+double		RT::Ray::cos(Math::Vector<4> const & A, Math::Vector<4> const & B)
 {
   // Get squared vector lenght
-  double	v1 = A.d().x() * A.d().x() + A.d().y() * A.d().y() + A.d().z() * A.d().z();
-  double	v2 = B.d().x() * B.d().x() + B.d().y() * B.d().y() + B.d().z() * B.d().z();
+  double	v1 = A.x() * A.x() + A.y() * A.y() + A.z() * A.z();
+  double	v2 = B.x() * B.x() + B.y() * B.y() + B.z() * B.z();
 
 #ifdef _DEBUG
   // Should not happen
@@ -14,34 +14,34 @@ double		RT::Ray::cos(RT::Ray const & A, RT::Ray const & B)
 #endif
 
   // Get lenght of A+B
-  double	v12 = (A.d().x() + B.d().x()) * (A.d().x() + B.d().x())
-    + (A.d().y() + B.d().y()) * (A.d().y() + B.d().y())
-    + (A.d().z() + B.d().z()) * (A.d().z() + B.d().z());
+  double	v12 = (A.x() + B.x()) * (A.x() + B.x())
+    + (A.y() + B.y()) * (A.y() + B.y())
+    + (A.z() + B.z()) * (A.z() + B.z());
 
   return (v12 - (v1 + v2)) / (2.f * std::sqrt(v1 * v2));
 }
 
-double		RT::Ray::angle(RT::Ray const & A, RT::Ray const & B)
+double		RT::Ray::angle(Math::Vector<4> const & A, Math::Vector<4> const & B)
 {
   return std::acos(RT::Ray::cos(A, B));
 }
 
-double		RT::Ray::scalaire(RT::Ray const & A, RT::Ray const & B)
+double		RT::Ray::scalaire(Math::Vector<4> const & A, Math::Vector<4> const & B)
 {
-  return ((A.d().x() * A.d().x() + A.d().y() * A.d().y() + A.d().z() * A.d().z())
-    + (B.d().x() * B.d().x() + B.d().y() * B.d().y() + B.d().z() * B.d().z())
-    - ((A.d().x() - B.d().x()) * (A.d().x() - B.d().x()) + (A.d().y() - B.d().y()) * (A.d().y() - B.d().y()) + (A.d().z() - B.d().z()) * (A.d().z() - B.d().z())))
+  return ((A.x() * A.x() + A.y() * A.y() + A.z() * A.z())
+    + (B.x() * B.x() + B.y() * B.y() + B.z() * B.z())
+    - ((A.x() - B.x()) * (A.x() - B.x()) + (A.y() - B.y()) * (A.y() - B.y()) + (A.z() - B.z()) * (A.z() - B.z())))
     / 2.f;
 }
 
-RT::Ray		RT::Ray::vectoriel(RT::Ray const & A, RT::Ray const & B)
+Math::Vector<4>	RT::Ray::vectoriel(Math::Vector<4> const & A, Math::Vector<4> const & B)
 {
-  RT::Ray	ray;
+  Math::Vector<4>	ray;
 
   // Apply cross product
-  ray.d().x() = A.d().y() * B.d().z() - A.d().z() * B.d().y();
-  ray.d().y() = A.d().z() * B.d().x() - A.d().x() * B.d().z();
-  ray.d().z() = A.d().x() * B.d().y() - A.d().y() * B.d().x();
+  ray.x() = A.y() * B.z() - A.z() * B.y();
+  ray.y() = A.z() * B.x() - A.x() * B.z();
+  ray.z() = A.x() * B.y() - A.y() * B.x();
 
   return ray;
 }

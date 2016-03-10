@@ -69,8 +69,8 @@ namespace RT
 
     sf::Image					_image;		// Rendered image of scene
     Math::Matrix<4, 4>				_camera;	// Matrix camera
-    RT::AbstractTree const *			_tree;		// CSG tree
-    std::list<RT::AbstractLight const *>	_light;		// List of light
+    RT::AbstractTree *				_tree;		// CSG tree
+    std::list<RT::AbstractLight *>		_light;		// List of light
     std::list<RT::FileTime>			_dependencies;	// List of dependencies of scene
     RT::Scene::Config				_config;	// System configuration
     RT::Scene::AntiAliasing			_antialiasing;	// Anti-aliasing parameters
@@ -84,8 +84,8 @@ namespace RT
     // Getter and setter for all parameters
     sf::Image &						image() { return _image; };
     Math::Matrix<4, 4> &				camera() { return _camera; };
-    RT::AbstractTree const * &				tree() { return _tree; };
-    std::list<RT::AbstractLight const *> &		light() { return _light; };
+    RT::AbstractTree * &				tree() { return _tree; };
+    std::list<RT::AbstractLight *> &			light() { return _light; };
     std::list<RT::FileTime> &				dependencies() { return _dependencies; };
     RT::Scene::Config &					config() { return _config; };
     RT::Scene::AntiAliasing &				antialiasing() { return _antialiasing; };
@@ -96,7 +96,7 @@ namespace RT
     sf::Image const &					image() const { return _image; };
     Math::Matrix<4, 4> const &				camera() const { return _camera; };
     RT::AbstractTree const * const &			tree() const { return _tree; };
-    std::list<RT::AbstractLight const *> const &	light() const { return _light; };
+    std::list<RT::AbstractLight *> const &		light() const { return _light; };
     std::list<RT::FileTime> const &			dependencies() const { return _dependencies; };
     RT::Scene::Config const &				config() const { return _config; };
     RT::Scene::AntiAliasing const &			antialiasing() const { return _antialiasing; };

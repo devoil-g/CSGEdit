@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <sstream>
 
 #include "Math.hpp"
@@ -24,14 +25,9 @@ std::vector<double>	RT::TorusLeaf::intersection(RT::Ray const & ray) const
   // If torus overlap on himself, delete inside intersections
   if (_h > _r && result.size() == 4)
   {
-    std::list<double>	list;
-    
-    for (unsigned int i = 0; i < 4; i++)
-      list.push_back(result[i]);
-    list.sort();
-
-    if (std::abs(ray.p().z() + ray.d().z() * (*std::next(list.begin()))) < std::sqrt(1 - ((_r * _r) / (_h * _h))) * _h)
-      return { list.front(), list.back() };
+    std::sort(result.begin(), result.end());
+    if (std::abs(ray.p().z() + ray.d().z() * result[1]) < std::sqrt(1 - ((_r * _r) / (_h * _h))) * _h)
+      return { result[0], result[3] };
   }
 
   return result;

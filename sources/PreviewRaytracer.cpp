@@ -122,11 +122,11 @@ RT::Color	RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
     intersect.pop_front();
 
   // Calcul intersection color if it exist, otherwise return black
-  if (!intersect.empty() && RT::Ray::cos(ray, intersect.front().normal) < 0.f)
+  if (!intersect.empty() && RT::Ray::cos(ray.d(), intersect.front().normal.d()) < 0.f)
   {
     RT::Color light;
 
-    for (std::list<RT::AbstractLight const *>::const_iterator it = _scene->light().begin(); it != _scene->light().end(); it++)
+    for (std::list<RT::AbstractLight *>::const_iterator it = _scene->light().begin(); it != _scene->light().end(); it++)
       light += (*it)->preview(_scene, ray, intersect.front());
 
     return light;

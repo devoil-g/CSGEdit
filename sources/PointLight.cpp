@@ -43,7 +43,7 @@ RT::Color RT::PointLight::preview(RT::Scene const * scene, RT::Ray const & ray, 
   light.d() = _position.p() - intersection.normal.p();
   
   // Calculate normal cosinus with light ray
-  double	diffuse = std::fmax(RT::Ray::cos(intersection.normal, light), 0.f);
+  double	diffuse = std::fmax(RT::Ray::cos(intersection.normal.d(), light.d()), 0.f);
   if (diffuse == 0.f)
     return RT::Color(0.f);
 
@@ -51,7 +51,7 @@ RT::Color RT::PointLight::preview(RT::Scene const * scene, RT::Ray const & ray, 
     return intersection.material.color * intersection.material.light.diffuse * intensity * diffuse * _color;
   else
   {
-    double	angle = Math::Utils::RadToDeg(std::acos(-RT::Ray::cos(light, _position)));
+    double	angle = Math::Utils::RadToDeg(std::acos(-RT::Ray::cos(light.d(), _position.d())));
 
     if (angle < _angle1)
       return intersection.material.color * intersection.material.light.diffuse * intensity * diffuse * _color;
@@ -68,11 +68,11 @@ RT::Color RT::PointLight::render(RT::Scene const * scene, RT::Ray const & ray, R
     return RT::Color(0.f);
 
   // Inverse normal if necessary
-  bool		inside = false;
-  RT::Ray	n = intersection.normal;
-  if (RT::Ray::cos(ray, intersection.normal) > 0)
+  bool			inside = false;
+  Math::Vector<4>	n = intersection.normal.d();
+  if (RT::Ray::cos(ray.d(), intersection.normal.d()) > 0)
   {
-    n.d() *= -1.f;
+    n *= -1.f;
     inside = true;
   }
 
@@ -80,7 +80,7 @@ RT::Color RT::PointLight::render(RT::Scene const * scene, RT::Ray const & ray, R
   RT::Ray		r;
   RT::Color		diffuse, specular;
 
-  r.p() = n.p() + n.d() * Math::Shift;
+  r.p() = intersection.normal.p() + n * Math::Shift;
   
   if (intersection.material.light.quality <= 1 || _radius == 0.f)
   {
@@ -108,7 +108,7 @@ RT::Color RT::PointLight::render(RT::Scene const * scene, RT::Ray const & ray, R
   }
 
   // Calculate reflection ray
-  r.d() = n.p() - ray.p() - n.d() * 2.f * (n.d().x() * (n.p().x() - ray.p().x()) + n.d().y() * (n.p().y() - ray.p().y()) + n.d().z() * (n.p().z() - ray.p().z())) / (n.d().x() * n.d().x() + n.d().y() * n.d().y() + n.d().z() * n.d().z());
+  r.d() = intersection.normal.p() - ray.p() - n * 2.f * (n.x() * (intersection.normal.p().x() - ray.p().x()) + n.y() * (intersection.normal.p().y() - ray.p().y()) + n.z() * (intersection.normal.p().z() - ray.p().z())) / (n.x() * n.x() + n.y() * n.y() + n.z() * n.z());
   
   // Render generated rays
   for (std::list<RT::Ray>::const_iterator it = rays.begin(); it != rays.end(); it++)
@@ -117,7 +117,7 @@ RT::Color RT::PointLight::render(RT::Scene const * scene, RT::Ray const & ray, R
     RT::Color			light = RT::Color(_color);
     double			angle, intensity;
 
-    if ((_angle1 == 0.f && _angle2 == 0.f) || (angle = acos(-RT::Ray::cos(_position, *it))) <= _angle1)
+    if ((_angle1 == 0.f && _angle2 == 0.f) || (angle = acos(-RT::Ray::cos(_position.d(), it->d()))) <= _angle1)
       angle = 1.f;
     else if (_angle2 > _angle1 && angle < _angle2)
       angle = (_angle2 - angle) / (_angle2 - _angle1);
@@ -142,13 +142,13 @@ RT::Color RT::PointLight::render(RT::Scene const * scene, RT::Ray const & ray, R
     }
 
     // Apply light to diffuse component
-    double	cos_d = RT::Ray::cos(n, *it);
+    double	cos_d = RT::Ray::cos(n, it->d());
     diffuse += light * (cos_d > 0.f ? cos_d : -cos_d) * angle * intensity;
 
     // Apply light to specular component
     if (inside == false)
     {
-      double	cos_s = RT::Ray::cos(r, *it);
+      double	cos_s = RT::Ray::cos(r.d(), it->d());
       specular += light * pow((cos_s > 0.f ? cos_s : 0.f), intersection.material.light.shininess) * angle * intensity;
     }
   }

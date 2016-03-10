@@ -53,7 +53,7 @@ std::string		RT::Scene::dump() const
   stream << "transformation(" << _camera.dump() << ");camera();end();";
   stream << _tree->dump();
   
-  for (std::list<RT::AbstractLight const *>::const_iterator it = _light.begin(); it != _light.end(); it++)
+  for (std::list<RT::AbstractLight *>::const_iterator it = _light.begin(); it != _light.end(); it++)
     stream << (*it)->dump();
 
   return stream.str();

@@ -1,4 +1,4 @@
-#include <map>
+#include <unordered_map>
 
 #include "UnionNode.hpp"
 
@@ -10,9 +10,9 @@ RT::UnionNode::~UnionNode()
 
 std::list<RT::Intersection>	RT::UnionNode::renderChildren(RT::Ray const & ray) const
 {
-  std::list<RT::Intersection>			intersect, result;
-  std::map<RT::AbstractTree const *, bool>	inside;
-  unsigned int					state = 0;
+  std::list<RT::Intersection>				intersect, result;
+  std::unordered_map<RT::AbstractTree const *, bool>	inside;
+  unsigned int						state = 0;
 
   // Iterate through sub-tree to get intersections
   for (RT::AbstractTree const * it : _children)

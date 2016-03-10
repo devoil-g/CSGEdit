@@ -13,8 +13,10 @@ namespace RT
   class Mesh
   {
   private:
-    std::map<std::string, std::pair<RT::FileTime, RT::AbstractTree *>>	_library;	// Cache of loaded
+    std::map<std::string, std::pair<RT::FileTime, RT::AbstractTree *>>	_library;	// Cache of mesh loaded
     
+    RT::AbstractTree *	load(std::string const &) const;	// Load a mesh
+
     Mesh();
     ~Mesh();
 

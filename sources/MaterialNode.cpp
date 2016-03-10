@@ -1,3 +1,5 @@
+#include <unordered_map>
+
 #include "MaterialNode.hpp"
 
 RT::MaterialNode::MaterialNode(RT::Material const & material)
@@ -15,9 +17,9 @@ std::list<RT::Intersection> RT::MaterialNode::renderChildren(RT::Ray const & ray
   for (RT::AbstractTree const * it : _children)
     intersect.merge(it->render(ray));
 
-  std::map<RT::AbstractTree const *, bool>  inside;
-  std::list<RT::Intersection>		    result;
-  unsigned int				    state = 0;
+  std::unordered_map<RT::AbstractTree const *, bool>	inside;
+  std::list<RT::Intersection>				result;
+  unsigned int						state = 0;
 
   // Iterate through intersections
   for (RT::Intersection const & it : intersect)

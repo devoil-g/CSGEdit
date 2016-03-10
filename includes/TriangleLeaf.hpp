@@ -15,7 +15,7 @@ namespace RT
   {
   private:
     std::tuple<double, double, double> const		_p0, _p1, _p2;		// Description of the three points of the triangle
-    RT::Ray						_v0, _v1, _normal;	// Pre-computed value for acceleration
+    Math::Vector<4>					_v0, _v1, _normal;	// Pre-computed value for acceleration
 
     std::vector<double>					intersection(RT::Ray const &) const override;	// Render intersection distance according to ray
     Math::Vector<4>					normal(Math::Vector<4> const &) const override;	// Calculate normal from intersection point

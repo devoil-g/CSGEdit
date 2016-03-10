@@ -31,8 +31,12 @@ bool  RT::RenderState::update(sf::Time elapsed)
   // If rendering completed, stop, save image and pop state, getting back to control state
   if (progress == 1.f)
   {
+    _render.stop();
     std::cout << "[Render] Completed in " << (int)_elapsed.asSeconds() / 3600 << "h " << (int)_elapsed.asSeconds() % 3600 / 60 << "m " << (int)_elapsed.asSeconds() % 60 << "s.        " << std::endl;
-    _scene->image().saveToFile("screenshots/screenshot_" + std::to_string(std::time(nullptr)) + ".png");
+
+    // Save image
+    _scene->image().saveToFile(RT::Config::ExecutablePath + "screenshot_" + std::to_string(std::time(nullptr)) + ".png");
+
     RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Normal, 1.f);
     RT::StateMachine::Instance().pop();
     return false;

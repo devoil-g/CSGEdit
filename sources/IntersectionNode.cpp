@@ -1,4 +1,4 @@
-#include <map>
+#include <unordered_map>
 
 #include "IntersectionNode.hpp"
 
@@ -24,9 +24,9 @@ std::list<RT::Intersection>	RT::IntersectionNode::renderChildren(RT::Ray const &
     intersect.merge(node);
   }
 
-  std::map<RT::AbstractTree const *, bool>	inside;
-  std::list<RT::Intersection>			result;
-  unsigned int					state = 0;
+  std::unordered_map<RT::AbstractTree const *, bool>	inside;
+  std::list<RT::Intersection>				result;
+  unsigned int						state = 0;
 
   // Iterate through intersections
   for (RT::Intersection const & it : intersect)

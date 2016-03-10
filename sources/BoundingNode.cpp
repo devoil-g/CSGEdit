@@ -1,4 +1,4 @@
-#include <map>
+#include <unordered_map>
 
 #include "BoundingNode.hpp"
 
@@ -14,9 +14,9 @@ std::list<RT::Intersection>	RT::BoundingNode::renderChildren(RT::Ray const & ray
   if (_children.front()->render(ray).empty())
     return std::list<RT::Intersection>();
  
-  std::map<RT::AbstractTree const *, bool>	inside;
-  std::list<RT::Intersection>			intersect, result;
-  unsigned int					state = 0;
+  std::unordered_map<RT::AbstractTree const *, bool>	inside;
+  std::list<RT::Intersection>				intersect, result;
+  unsigned int						state = 0;
 
   // Iterate through sub-tree to get intersections
   for (std::list<RT::AbstractTree *>::const_iterator it = std::next(_children.begin()); it != _children.end(); it++)

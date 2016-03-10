@@ -15,8 +15,10 @@ RT::AbstractNode::~AbstractNode()
 
 std::list<RT::Intersection>	RT::AbstractNode::render(RT::Ray const & ray) const
 {
+#ifdef _DEBUG
   if (_children.empty())
-    return std::list<RT::Intersection>();
+    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+#endif
 
   std::list<RT::Intersection>	result = renderChildren(ray);
 

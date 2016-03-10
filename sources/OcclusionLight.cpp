@@ -31,18 +31,18 @@ RT::Color RT::OcclusionLight::render(RT::Scene const * scene, RT::Ray const & ra
     return intersection.material.color * intersection.material.light.ambient * (1.f - intersection.material.transparency.intensity) * (1.f - intersection.material.reflection.intensity);
 
   // Inverse normal if necessary
-  RT::Ray	n = intersection.normal;
-  if (RT::Ray::cos(ray, intersection.normal) > 0)
-    n.d() *= -1;
+  Math::Vector<4>	n = intersection.normal.d();
+  if (RT::Ray::cos(ray.d(), intersection.normal.d()) > 0)
+    n *= -1;
 
   // Calculate rotation angles of normal
-  double	ry = -std::asin(n.d().z());
+  double	ry = -std::asin(n.z());
   double	rz = 0;
 
-  if (n.d().x() != 0 || n.d().y() != 0)
-    rz = n.d().y() > 0 ?
-    +std::acos(n.d().x() / std::sqrt(n.d().x() * n.d().x() + n.d().y() * n.d().y())) :
-    -std::acos(n.d().x() / std::sqrt(n.d().x() * n.d().x() + n.d().y() * n.d().y()));
+  if (n.x() != 0 || n.y() != 0)
+    rz = n.y() > 0 ?
+    +std::acos(n.x() / std::sqrt(n.x() * n.x() + n.y() * n.y())) :
+    -std::acos(n.x() / std::sqrt(n.x() * n.x() + n.y() * n.y()));
   
   // Rotation matrix to get ray to point of view
   Math::Matrix<4, 4>  matrix = Math::Matrix<4, 4>::rotation(0, Math::Utils::RadToDeg(ry), Math::Utils::RadToDeg(rz));
@@ -50,7 +50,7 @@ RT::Color RT::OcclusionLight::render(RT::Scene const * scene, RT::Ray const & ra
   // Point origin right above intersection
   RT::Ray	occ;
   
-  occ.p() = n.p() + n.d() * Math::Shift;
+  occ.p() = intersection.normal.p() + n * Math::Shift;
   
   // Generate and render occlusion rays
   unsigned int	nb_ray = 0;

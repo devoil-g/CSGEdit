@@ -15,17 +15,17 @@ namespace RT
     Ray() { _p(3) = 1.f; };
     ~Ray() {};
 
-    inline Math::Vector<4> &	p() { return _p; };				// Return point of origin matrix
-    inline Math::Vector<4> &	d() { return _d; };				// Return direction vector matrix
-    inline Math::Vector<4>	p() const { return _p; };			// Return point of origin matrix
-    inline Math::Vector<4>	d() const { return _d; };			// Return direction vector matrix
+    inline Math::Vector<4> &	p() { return _p; };		// Return point of origin matrix
+    inline Math::Vector<4> &	d() { return _d; };		// Return direction vector matrix
+    inline Math::Vector<4>	p() const { return _p; };	// Return point of origin matrix
+    inline Math::Vector<4>	d() const { return _d; };	// Return direction vector matrix
 
-    RT::Ray			normalize() const;				// Return a normalized ray
+    RT::Ray			normalize() const;	// Return a normalized ray
 
-    static double		cos(RT::Ray const &, RT::Ray const &);		// Calculate cosinus between two rays
-    static double		angle(RT::Ray const &, RT::Ray const &);	// Calculate angle (radian) between two rays
-    static double		scalaire(RT::Ray const &, RT::Ray const &);	// Apply scalaire to rays
-    static RT::Ray		vectoriel(RT::Ray const &, RT::Ray const &);	// Apply vectoriel to rays
+    static double		cos(Math::Vector<4> const &, Math::Vector<4> const &);		// Calculate cosinus between two rays
+    static double		angle(Math::Vector<4> const &, Math::Vector<4> const &);	// Calculate angle (radian) between two rays
+    static double		scalaire(Math::Vector<4> const &, Math::Vector<4> const &);	// Apply scalaire to rays
+    static Math::Vector<4>	vectoriel(Math::Vector<4> const &, Math::Vector<4> const &);	// Apply vectoriel to rays
   };
 };
 

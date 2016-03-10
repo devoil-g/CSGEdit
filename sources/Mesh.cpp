@@ -17,17 +17,26 @@ RT::Mesh &	RT::Mesh::Instance()
   return singleton;
 }
 
+RT::AbstractTree *	RT::Mesh::load(std::string const & file) const
+{
+  return new RT::MeshNode(file);
+}
+
 RT::AbstractTree const * const &  RT::Mesh::get(std::string const & file)
 {
   // If mesh not in library, load it
   if (_library.find(file) == _library.end())
-    _library[file] = std::pair<RT::FileTime, RT::AbstractTree *>(RT::FileTime(file), new RT::MeshNode(file));
+  {
+    // Create key before loading mesh to avoid infinite recursion
+    _library[file] = std::pair<RT::FileTime, RT::AbstractTree *>(RT::FileTime(file), nullptr);
+    _library[file].second = load(file);
+  }
 
   // If mesh has been modified, reload it
   if (_library[file].first.update())
   {
     delete _library[file].second;
-    _library[file].second = new RT::MeshNode(file);
+    _library[file].second = load(file);
   }
 
   // Return mesh

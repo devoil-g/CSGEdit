@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "AbstractLeaf.hpp"
 
 RT::AbstractLeaf::AbstractLeaf()
@@ -15,6 +17,9 @@ std::list<RT::Intersection>	RT::AbstractLeaf::render(RT::Ray const & ray) const
   if (dist.empty())
     return std::list<RT::Intersection>();
 
+  // Sort intersection according to distance
+  std::sort(dist.begin(), dist.end());
+
   // Get normal for each intersection
   std::list<RT::Intersection>	result;
   for (double it : dist)
@@ -26,11 +31,8 @@ std::list<RT::Intersection>	RT::AbstractLeaf::render(RT::Ray const & ray) const
     norm.d() = normal(norm.p());
     
     // Push intersection data to intersections list
-    result.push_back(RT::Intersection(this, norm.normalize(), it));
+    result.push_back(RT::Intersection(this, norm, it));
   }
-
-  // Sort intersection according to distance
-  result.sort();
 
   return result;
 }

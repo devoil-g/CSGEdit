@@ -9,7 +9,8 @@ antialiasing(0,2);
 rotation([0, 60, 30]); directional_light([255], 4.2); end();
 occlusion_light([255], 32);
 
-light([255 * 0.4],[255 * 0.6],[255 * 0.2], 8.4);
+light([0],[0],[255], 8.4);
+//light([255 * 0.4],[255 * 0.6],[255 * 0.2], 8.4);
 
 // Socles
 color([255,255,225]);
