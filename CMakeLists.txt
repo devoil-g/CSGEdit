@@ -3,31 +3,39 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 PROJECT(CSGEdit)
 
 SET(SAMPLE_SRCS
-	./sources/AbstractLeaf.cpp
-	./sources/AbstractNode.cpp
-	./sources/AbstractTree.cpp
+	./sources/AbstractCsgTree.cpp
+	./sources/EmptyCsgTree.cpp
+	./sources/ExternCsgTree.cpp
 
-	./sources/ExternTree.cpp
-
-	./sources/BoxLeaf.cpp
-	./sources/ConeLeaf.cpp
-	./sources/SphereLeaf.cpp
-	./sources/TangleLeaf.cpp
-	./sources/TorusLeaf.cpp
-	./sources/TriangleLeaf.cpp
-
-	./sources/BoundingNode.cpp
-	./sources/DifferenceNode.cpp
-	./sources/IntersectionNode.cpp
-	./sources/MaterialNode.cpp
-	./sources/MeshNode.cpp
-	./sources/TransformationNode.cpp
-	./sources/UnionNode.cpp
+	./sources/AbstractCsgNode.cpp
+	./sources/BoundingCsgNode.cpp
+	./sources/DifferenceCsgNode.cpp
+	./sources/IntersectionCsgNode.cpp
+	./sources/MaterialCsgNode.cpp
+	./sources/MeshCsgNode.cpp
+	./sources/TransformationCsgNode.cpp
+	./sources/UnionCsgNode.cpp
 	
-	./sources/AbstractLight.cpp
-	./sources/DirectionalLight.cpp
-	./sources/OcclusionLight.cpp
-	./sources/PointLight.cpp
+	./sources/AbstractCsgLeaf.cpp
+	./sources/BoxCsgLeaf.cpp
+	./sources/ConeCsgLeaf.cpp
+	./sources/SphereCsgLeaf.cpp
+	./sources/TangleCsgLeaf.cpp
+	./sources/TorusCsgLeaf.cpp
+	./sources/TriangleCsgLeaf.cpp
+
+	./sources/AbstractLightTree.cpp
+	./sources/EmptyLightTree.cpp
+	./sources/ExternLightTree.cpp
+
+	./sources/AbstractLightNode.cpp
+	./sources/TransformationLightNode.cpp
+	./sources/UnionLightNode.cpp
+
+	./sources/AbstractLightLeaf.cpp
+	./sources/DirectionalLightLeaf.cpp
+	./sources/OcclusionLightLeaf.cpp
+	./sources/PointLightLeaf.cpp
 	
 	./sources/AbstractRaytracer.cpp
 	./sources/PreviewRaytracer.cpp
@@ -36,13 +44,12 @@ SET(SAMPLE_SRCS
 	./sources/Color.cpp
 	./sources/Intersection.cpp
 	./sources/Material.cpp
-	./sources/Mesh.cpp
 	./sources/Parser.cpp
 	./sources/Scene.cpp
+	./sources/SceneLibrary.cpp
 
 	./sources/Config.cpp
 	./sources/Exception.cpp
-	./sources/FileTime.cpp
 	./sources/Math.cpp
 	./sources/Matrix.cpp
 	./sources/Ray.cpp
@@ -59,31 +66,39 @@ SET(SAMPLE_SRCS
 )
 
 SET(SAMPLE_HDRS
-	./includes/AbstractLeaf.hpp
-	./includes/AbstractNode.hpp
-	./includes/AbstractTree.hpp
+	./includes/AbstractCsgTree.hpp
+	./includes/EmptyCsgTree.hpp
+	./includes/ExternCsgTree.hpp
 
-	./includes/ExternTree.hpp
+	./includes/AbstractCsgNode.hpp
+	./includes/BoundingCsgNode.hpp
+	./includes/DifferenceCsgNode.hpp
+	./includes/IntersectionCsgNode.hpp
+	./includes/MaterialCsgNode.hpp
+	./includes/MeshCsgNode.hpp
+	./includes/TransformationCsgNode.hpp
+	./includes/UnionCsgNode.hpp
 
-	./includes/BoxLeaf.hpp
-	./includes/ConeLeaf.hpp
-	./includes/SphereLeaf.hpp
-	./includes/TangleLeaf.hpp
-	./includes/TorusLeaf.hpp
-	./includes/TriangleLeaf.hpp
-
-	./includes/BoundingNode.hpp
-	./includes/DifferenceNode.hpp
-	./includes/IntersectionNode.hpp
-	./includes/MaterialNode.hpp
-	./includes/MeshNode.hpp
-	./includes/TransformationNode.hpp
-	./includes/UnionNode.hpp
+	./includes/AbstractCsgLeaf.hpp
+	./includes/BoxCsgLeaf.hpp
+	./includes/ConeCsgLeaf.hpp
+	./includes/SphereCsgLeaf.hpp
+	./includes/TangleCsgLeaf.hpp
+	./includes/TorusCsgLeaf.hpp
+	./includes/TriangleCsgLeaf.hpp
 	
-	./includes/AbstractLight.hpp
-	./includes/DirectionalLight.hpp
-	./includes/OcclusionLight.hpp
-	./includes/PointLight.hpp
+	./includes/AbstractLightTree.hpp
+	./includes/EmptyLightTree.hpp
+	./includes/ExternLightTree.hpp
+
+	./includes/AbstractLightNode.hpp
+	./includes/TransformationLightNode.hpp
+	./includes/UnionLightNode.hpp
+	
+	./includes/AbstractLightLeaf.hpp
+	./includes/DirectionalLightLeaf.hpp
+	./includes/OcclusionLightLeaf.hpp
+	./includes/PointLightLeaf.hpp
 	
 	./includes/AbstractRaytracer.hpp
 	./includes/PreviewRaytracer.hpp
@@ -92,13 +107,12 @@ SET(SAMPLE_HDRS
 	./includes/Color.hpp
 	./includes/Intersection.hpp
 	./includes/Material.hpp
-	./includes/Mesh.hpp
 	./includes/Parser.hpp
 	./includes/Scene.hpp
+	./includes/SceneLibrary.hpp
 
 	./includes/Config.hpp
 	./includes/Exception.hpp
-	./includes/FileTime.hpp
 	./includes/Math.hpp
 	./includes/Matrix.hpp
 	./includes/Ray.hpp

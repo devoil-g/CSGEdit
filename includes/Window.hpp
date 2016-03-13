@@ -2,6 +2,8 @@
 #define _WINDOW_HPP_
 
 #include <map>
+#include <string>
+
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
 

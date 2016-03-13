@@ -141,12 +141,3 @@ bool  RT::Color::operator!=(RT::Color const & clr) const
 {
   return r != clr.r || g != clr.g || b != clr.b;
 }
-
-std::string RT::Color::dump() const
-{
-  std::stringstream   stream;
-
-  stream << "[" << r << ", " << g << ", " << b << "]";
-
-  return stream.str();
-}

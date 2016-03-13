@@ -1,0 +1,39 @@
+def fractal_cube(x)
+{
+	if (x < 1) {
+		box(1, true);
+		return;
+	}
+	
+	bounding();
+		sphere(1.5);
+		
+		box(1, true);
+		scale([0.5]);
+			translation([0,0,1.5]); fractal_cube(x - 1); end();
+			rotation([90,0,0]); translation([0,0,1.5]); fractal_cube(x - 1); end(); end();
+			rotation([90,0,90]); translation([0,0,1.5]); fractal_cube(x - 1); end(); end();
+			rotation([90,0,180]); translation([0,0,1.5]); fractal_cube(x - 1); end(); end();
+			rotation([90,0,270]); translation([0,0,1.5]); fractal_cube(x - 1); end(); end();
+		end();
+	end();
+}
+
+def fractal(x)
+{
+	bounding();
+		sphere(1.5);
+		
+		box(1, true);
+		scale([0.5]);
+			translation([0,0,1.5]); fractal_cube(x - 1); end();
+			rotation([90,0,0]); translation([0,0,1.5]); fractal_cube(x - 1); end(); end();
+			rotation([90,0,90]); translation([0,0,1.5]); fractal_cube(x - 1); end(); end();
+			rotation([90,0,180]); translation([0,0,1.5]); fractal_cube(x - 1); end(); end();
+			rotation([90,0,270]); translation([0,0,1.5]); fractal_cube(x - 1); end(); end();
+			rotation([180,0,0]); translation([0,0,1.5]); fractal_cube(x - 1); end(); end();
+		end();
+	end();
+}
+
+fractal(6);

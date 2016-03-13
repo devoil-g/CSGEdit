@@ -1,5 +1,6 @@
 #include <iostream>
 #include <list>
+#include <thread>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -29,23 +30,15 @@ void	RT::RenderRaytracer::load(RT::Scene * scene)
   _status = First;
   _progress = 0;
   
-  if (_scene == nullptr || _scene->tree() == nullptr || _scene->light().empty())
-  {
-    _grid.resize(0);
-    _antialiasing.resize(0);
-  }
-  else
-  {
-    // Reset zone grid
-    _grid.resize((_scene->image().getSize().x / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().x % RT::Config::Raytracer::BlockSize ? 1 : 0)) * (_scene->image().getSize().y / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().y % RT::Config::Raytracer::BlockSize ? 1 : 0)));
-    for (unsigned int i = 0; i < _grid.size(); i++)
-      _grid[i] = RT::Config::Raytracer::BlockSize;
+  // Reset zone grid
+  _grid.resize((_scene->image().getSize().x / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().x % RT::Config::Raytracer::BlockSize ? 1 : 0)) * (_scene->image().getSize().y / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().y % RT::Config::Raytracer::BlockSize ? 1 : 0)));
+  for (unsigned int i = 0; i < _grid.size(); i++)
+    _grid[i] = RT::Config::Raytracer::BlockSize;
 
-    // Reset antialiasing factor
-    _antialiasing.resize(_scene->image().getSize().x * _scene->image().getSize().y);
-    for (unsigned int i = 0; i < _antialiasing.size(); i++)
-      _antialiasing[i] = _scene->antialiasing().live;
-  }
+  // Reset antialiasing factor
+  _antialiasing.resize(_scene->image().getSize().x * _scene->image().getSize().y);
+  for (unsigned int i = 0; i < _antialiasing.size(); i++)
+    _antialiasing[i] = _scene->antialiasing().live;
 }
 
 void	RT::RenderRaytracer::begin()
@@ -360,7 +353,7 @@ RT::Color RT::RenderRaytracer::renderRay(RT::Ray const & ray, unsigned int recur
     return RT::Color(0.f);
 
   // Render intersections list with CSG tree
-  std::list<RT::Intersection>	intersect = (_scene->tree() ? _scene->tree()->render(ray) : std::list<RT::Intersection>());
+  std::list<RT::Intersection>	intersect = _scene->csg()->render(ray);
   
   // Drop intersection behind camera
   while (!intersect.empty() && intersect.front().distance < 0.f)
@@ -521,14 +514,9 @@ RT::Color RT::RenderRaytracer::renderTransparency(RT::Ray const & ray, RT::Inter
   return clr / (double)rays.size() * intersection.material.color * intersection.material.transparency.intensity;
 }
 
-RT::Color RT::RenderRaytracer::renderLight(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite) const
+RT::Color RT::RenderRaytracer::renderLight(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int) const
 {
-  RT::Color light;
-
-  for (std::list<RT::AbstractLight *>::const_iterator it = _scene->light().begin(); it != _scene->light().end(); it++)
-    light += (*it)->render(_scene, ray, intersection);
-
-  return light;
+  return _scene->light()->render(Math::Matrix<4, 4>::identite(), _scene, ray, intersection);
 }
 
 double	  RT::RenderRaytracer::progress() const

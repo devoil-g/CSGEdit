@@ -6,7 +6,6 @@
 #include <map>
 
 #include "AbstractState.hpp"
-#include "FileTime.hpp"
 #include "Matrix.hpp"
 #include "PreviewRaytracer.hpp"
 #include "Scene.hpp"
@@ -16,26 +15,16 @@ namespace RT
   class ControlState : public RT::AbstractState
   {
   private:
-
-#ifdef _WIN32
-    typedef FILETIME Time;	// Time structure (Windows, contain creation, last access & last write data)
-#else
-    typedef time_t   Time;	// Time structure (linux, time since Epoch in seconds)
-#endif
-
     RT::PreviewRaytracer	_preview;	// Raytracer for preview
-    RT::Scene *			_scene;		// Current scene loaded
-    RT::FileTime		_file;		// FileTime of current loaded file
-    Math::Matrix<4, 4>		_camera;	// Current position of camera
+    RT::Scene *			_scene;		// Current scene
+    std::string			_file;		// Current file
+    Math::Matrix<4, 4>		_camera;	// Camera applied to current scene
 
-  private:
-    bool  			updateFiles();				// Check if current file and dependencies have been modified
-    
   public:
     ControlState(std::string const &);
     ~ControlState();
 
-    bool  			update(sf::Time) override;	// Wait for input
+    bool  			update(sf::Time) override;	// Wait for input or scene change
     void  			draw() override;		// Display raytracer image
   };
 };

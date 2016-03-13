@@ -32,8 +32,6 @@ namespace RT
 
     bool	operator==(Color const &) const;	// Color comparison
     bool	operator!=(Color const &) const;	// Color comparison
-    
-    std::string	dump() const;				// Dump CSG tree
   };
 };
 

@@ -5,26 +5,22 @@
 #include "Config.hpp"
 #include "ControlState.hpp"
 #include "Exception.hpp"
-#include "Parser.hpp"
 #include "PreviewRaytracer.hpp"
 #include "RenderRaytracer.hpp"
 #include "RenderState.hpp"
+#include "SceneLibrary.hpp"
 #include "StateMachine.hpp"
 #include "Window.hpp"
 
 RT::ControlState::ControlState(std::string const & file)
-  : _preview(), _scene(nullptr), _file(file), _camera(Math::Matrix<4, 4>::identite())
+  : _preview(), _scene(nullptr), _file(file), _camera()
 {
-  RT::Parser	parser;
-
   RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Indeterminate);
 
   // Load scene
-  _scene = parser.load(_file.file());
-
-  // Get camera
-  if (_scene)
-    _camera = _scene->camera();
+  RT::SceneLibrary::Instance().clear();
+  _scene = RT::SceneLibrary::Instance().get(file);
+  _camera = _scene->camera();
 
   // Start preview rendering
   _preview.load(_scene);
@@ -36,18 +32,6 @@ RT::ControlState::ControlState(std::string const & file)
 RT::ControlState::~ControlState()
 {
   _preview.stop();
-  delete _scene;
-}
-
-bool	RT::ControlState::updateFiles()
-{
-  bool	result = _file.update();
-
-  if (_scene != nullptr)
-    for (RT::FileTime & it : _scene->dependencies())
-      result |= it.update();
-
-  return result;
 }
 
 bool	RT::ControlState::update(sf::Time)
@@ -56,38 +40,55 @@ bool	RT::ControlState::update(sf::Time)
   if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::Escape))
     return true;
 
-  // Update file time, preview if change detected
-  if (updateFiles() || RT::Window::Instance().keyPressed(sf::Keyboard::Key::R))
+  // Reload if file modified
+  if (RT::SceneLibrary::Instance().change())
   {
-    RT::Parser	parser;
-
-    if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::R))
-      _camera = Math::Matrix<4, 4>::identite();
-
     RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Indeterminate);
 
-    // Reload scene
+    // Stop rendering
     _preview.stop();
-    delete _scene;
-    _scene = parser.load(_file.file());
-    
-    // Set/get camera position
-    if (_scene && _camera == Math::Matrix<4, 4>::identite())
-      _camera = _scene->camera();
-    else
-      _scene->camera() = _camera;
+
+    // Update scene
+    RT::SceneLibrary::Instance().update();
+
+    // Get camera position
+    _scene->camera() = _camera;
 
     // Start preview rendering
     _preview.load(_scene);
     _preview.start();
-    
+
+    RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::NoProgress);
+
+    return false;
+  }
+
+  // Force reload
+  if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::R))
+  {
+    RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Indeterminate);
+
+    // Stop rendering
+    _preview.stop();
+
+    // Reload scene
+    RT::SceneLibrary::Instance().clear();
+    _scene = RT::SceneLibrary::Instance().get(_file);
+
+    // Get camera position
+    _camera = _scene->camera();
+
+    // Start preview rendering
+    _preview.load(_scene);
+    _preview.start();
+
     RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::NoProgress);
 
     return false;
   }
 
   // Move camera
-  if (_scene && RT::Window::Instance().focus())
+  if (RT::Window::Instance().focus())
   {
     // Camera rotation X
     if (RT::Window::Instance().mouse().middle || (RT::Window::Instance().mouse().left == true && RT::Window::Instance().mouse().right == true))
@@ -116,7 +117,7 @@ bool	RT::ControlState::update(sf::Time)
   }
 
   // Save image
-  if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::S) && _scene)
+  if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::S))
   {
 #ifdef _WIN32
     // See MSDN of GetOpenFileName
@@ -168,14 +169,22 @@ bool	RT::ControlState::update(sf::Time)
 
     if (GetOpenFileName(&fileinfo))
     {
-      _file = RT::FileTime(std::string(path));
-      std::cout << "[" << RT::Config::Window::Title << "] Opening file '" << _file.file() << "'." << std::endl;
+      _file = std::string(path);
+      std::cout << "[" << RT::Config::Window::Title << "] Opening file '" << _file << "'." << std::endl;
+
+      RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Indeterminate);
+
+      // Load new scene
+      _scene = RT::SceneLibrary::Instance().get(_file);
+      _camera = _scene->camera();
+
+      RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::NoProgress);
     }
 #endif
   }
 
   // Launch render state
-  if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::Return) && _scene)
+  if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::Return))
   {
     _preview.stop();
     RT::StateMachine::Instance().push(new RT::RenderState(_scene));
@@ -195,6 +204,5 @@ bool	RT::ControlState::update(sf::Time)
 
 void	RT::ControlState::draw()
 {
-  if (_scene)
-    RT::Window::Instance().draw(_scene->image());
+  RT::Window::Instance().draw(_scene->image());
 }

@@ -1,4 +1,5 @@
 #include <list>
+#include <thread>
 
 #include "Config.hpp"
 #include "Math.hpp"
@@ -19,18 +20,10 @@ void	RT::PreviewRaytracer::load(RT::Scene * scene)
 
   _scene = scene;
 
-  // If not scene, no tree or no light, no render
-  if (_scene == nullptr || _scene->tree() == nullptr || _scene->light().empty())
-  {
-    _grid.resize(0);
-  }
-  else
-  {
-    // Reset zone grid
-    _grid.resize((_scene->image().getSize().x / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().x % RT::Config::Raytracer::BlockSize ? 1 : 0)) * (_scene->image().getSize().y / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().y % RT::Config::Raytracer::BlockSize ? 1 : 0)));
-    for (unsigned int i = 0; i < _grid.size(); i++)
-      _grid[i] = RT::Config::Raytracer::BlockSize;
-  }
+  // Reset zone grid
+  _grid.resize((_scene->image().getSize().x / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().x % RT::Config::Raytracer::BlockSize ? 1 : 0)) * (_scene->image().getSize().y / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().y % RT::Config::Raytracer::BlockSize ? 1 : 0)));
+  for (unsigned int i = 0; i < _grid.size(); i++)
+    _grid[i] = RT::Config::Raytracer::BlockSize;
 }
 
 void	RT::PreviewRaytracer::begin()
@@ -115,7 +108,7 @@ RT::Color	RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
   ray = (_scene->camera() * ray).normalize();
 
   // Render intersections using ray
-  std::list<RT::Intersection>	intersect = (_scene->tree() ? _scene->tree()->render(ray) : std::list<RT::Intersection>());
+  std::list<RT::Intersection>	intersect = _scene->csg()->render(ray);
   
   // Delete back intersections
   while (!intersect.empty() && intersect.front().distance < 0)
@@ -123,14 +116,7 @@ RT::Color	RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
 
   // Calcul intersection color if it exist, otherwise return black
   if (!intersect.empty() && RT::Ray::cos(ray.d(), intersect.front().normal.d()) < 0.f)
-  {
-    RT::Color light;
-
-    for (std::list<RT::AbstractLight *>::const_iterator it = _scene->light().begin(); it != _scene->light().end(); it++)
-      light += (*it)->preview(_scene, ray, intersect.front());
-
-    return light;
-  }
+    return _scene->light()->preview(Math::Matrix<4, 4>::identite(), _scene, ray, intersect.front());
   else
     return RT::Color(0.f);
 }

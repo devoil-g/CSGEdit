@@ -6,15 +6,15 @@
 
 namespace RT
 {
-  class AbstractTree;
+  class AbstractCsgTree;
 
   class Intersection
   {
   public:
-    Intersection(RT::AbstractTree const *, RT::Ray const &, double);
+    Intersection(RT::AbstractCsgTree const *, RT::Ray const &, double);
     ~Intersection();
 
-    RT::AbstractTree const *	node;		// Sub-tree containing intersection object
+    RT::AbstractCsgTree const *	node;		// Sub-tree containing intersection object
     RT::Ray			normal;		// Normal with intersected object
     double			distance;	// Distance of intersection
     RT::Material		material;	// Material to apply

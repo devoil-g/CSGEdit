@@ -15,7 +15,7 @@
 
 namespace RT
 {
-  class AbstractTree;
+  class AbstractCsgTree;
 };
 
 namespace Math
@@ -41,7 +41,7 @@ namespace Math
     std::vector<double>	solve(double, double, double);			// Solve a 2nd degree equation
     std::vector<double>	solve(double, double, double, double, double);	// Solve a 4th degree equation
 
-    RT::AbstractTree const *	BoundingSphere(std::vector<std::tuple<double, double, double> > const &);	// Generate a bounding sphere from points
+    RT::AbstractCsgTree const *	BoundingSphere(std::vector<std::tuple<double, double, double> > const &);	// Generate a bounding sphere from points
   };
 
   class Random

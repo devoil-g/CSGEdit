@@ -14,6 +14,17 @@ namespace Math
     Vector(Math::Matrix<vSize, 1> const & m) : Math::Matrix<vSize, 1>(m) {};
     ~Vector() {};
 
+    template<typename ... Doubles>
+    Vector(Doubles... args)
+    {
+      double	vec[]{ args... };
+
+      static_assert(sizeof(vec) / sizeof(double) == vSize, "Invalid vector parameters.");
+
+      for (unsigned int i = 0; i < vSize; i++)
+	(*this)(i) = vec[i];
+    };
+
     inline double &	operator()(unsigned int c) { return Math::Matrix<vSize, 1>::operator()(c, 0); }		// Get nth component of vector
     inline double	operator()(unsigned int c) const { return Math::Matrix<vSize, 1>::operator()(c, 0); }	// Get nth component of vector
 

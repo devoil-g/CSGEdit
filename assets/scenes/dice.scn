@@ -1,4 +1,4 @@
-translation([-25, 25, 25]); rotation([0,35,-45]); camera(); end(); end();
+camera([-25, 25, 25], [0,35,-45], [1,1,1]);
 
 var c_size = 10.0;
 var c_radius = 1.0;

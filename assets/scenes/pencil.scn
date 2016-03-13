@@ -10,7 +10,7 @@ var h_metal = 15.0
 var n_cote = 6.0;
 
 // Camera set-up
-translation([-1.41 * (h_mine + h_corps + h_metal + h_gomme), 0, (h_mine + h_corps + h_metal + h_gomme) / 2]); scale([10 , 1, 1]); camera(); end(); end();
+camera([-1.41 * (h_mine + h_corps + h_metal + h_gomme), 0, (h_mine + h_corps + h_metal + h_gomme) / 2], [0,0,0], [10 , 1, 1]);
 resolution(128,960);
 
 bounding();

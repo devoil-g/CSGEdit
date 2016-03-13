@@ -1,0 +1,28 @@
+#ifndef _BOX_CSG_LEAF_HPP_
+#define _BOX_CSG_LEAF_HPP_
+
+#include <string>
+#include <vector>
+
+#include "AbstractCsgLeaf.hpp"
+#include "Ray.hpp"
+
+namespace RT
+{
+  class BoxCsgLeaf : public RT::AbstractCsgLeaf
+  {
+  private:
+    double const	_x, _y, _z;	// Box dimension according to X, Y and Z axis
+    bool const		_center;	// false= (0,0,0) at origin of the box, true= (0,0,0) at center of the box
+
+    std::vector<double>	intersection(RT::Ray const &) const override;	// Render intersection distance according to ray
+    Math::Vector<4>	normal(Math::Vector<4> const &) const override;	// Calculate normal from intersection point
+
+  public:
+    BoxCsgLeaf(double, double, double, bool);
+    BoxCsgLeaf(double, bool);
+    ~BoxCsgLeaf();
+  };
+};
+
+#endif

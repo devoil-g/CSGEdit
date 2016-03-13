@@ -15,6 +15,8 @@ namespace RT
     Ray() { _p(3) = 1.f; };
     ~Ray() {};
 
+    Ray(Math::Vector<4> const & p, Math::Vector<4> const & d) : _p(p), _d(d) {};
+
     inline Math::Vector<4> &	p() { return _p; };		// Return point of origin matrix
     inline Math::Vector<4> &	d() { return _d; };		// Return direction vector matrix
     inline Math::Vector<4>	p() const { return _p; };	// Return point of origin matrix

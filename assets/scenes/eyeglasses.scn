@@ -1,4 +1,4 @@
-translation([-45, 45, 50]); rotation([0,37,-35]); camera(); end(); end();
+camera([-45, 45, 50], [0,37,-35], [1,1,1]);
 
 var g_thickness = 1.0;
 var g_radius = 10.0;

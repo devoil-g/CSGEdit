@@ -7,8 +7,8 @@
 
 #include "Math.hpp"
 #include "Matrix.hpp"
-#include "SphereLeaf.hpp"
-#include "TransformationNode.hpp"
+#include "SphereCsgLeaf.hpp"
+#include "TransformationCsgNode.hpp"
 
 void	Math::initialize()
 {
@@ -83,7 +83,7 @@ std::vector<double>	Math::Utils::solve(double a, double b, double c, double d, d
   return { x1 - x2 + n, x1 + x2 + n, y1 - y2 + n, y1 + y2 + n };
 }
 
-RT::AbstractTree const *  Math::Utils::BoundingSphere(std::vector<std::tuple<double, double, double> > const & pts)
+RT::AbstractCsgTree const *  Math::Utils::BoundingSphere(std::vector<std::tuple<double, double, double> > const & pts)
 {
   std::tuple<double, double, double>	xmin, xmax, ymin, ymax, zmin, zmax;
   std::tuple<double, double, double>	dia1, dia2, center;
@@ -164,8 +164,8 @@ RT::AbstractTree const *  Math::Utils::BoundingSphere(std::vector<std::tuple<dou
     }
   }
 
-  RT::AbstractNode *  node = new RT::TransformationNode(Math::Matrix<4, 4>::translation(std::get<0>(center), std::get<1>(center), std::get<2>(center)));
-  node->push(new RT::SphereLeaf(radius));
+  RT::AbstractCsgNode *  node = new RT::TransformationCsgNode(Math::Matrix<4, 4>::translation(std::get<0>(center), std::get<1>(center), std::get<2>(center)));
+  node->push(new RT::SphereCsgLeaf(radius));
 
   return node;
 }
