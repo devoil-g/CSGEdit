@@ -2,7 +2,6 @@
 #define _ABSTRACT_CSG_TREE_HPP_
 
 #include <list>
-#include <string>
 
 #include "Intersection.hpp"
 #include "Ray.hpp"

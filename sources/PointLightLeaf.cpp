@@ -20,22 +20,22 @@ RT::PointLightLeaf::PointLightLeaf(RT::Color const & color, double radius, doubl
 RT::PointLightLeaf::~PointLightLeaf()
 {}
 
-RT::Color RT::PointLightLeaf::preview(Math::Matrix<4, 4> const & transformation, RT::Scene const *, RT::Ray const &, RT::Intersection const & intersection, unsigned int) const
+RT::Color	RT::PointLightLeaf::preview(Math::Matrix<4, 4> const & transformation, RT::Scene const *, RT::Ray const &, RT::Intersection const & intersection, unsigned int) const
 {
   // If no diffuse light, stop
   if (intersection.material.color == 0.f || intersection.material.light.diffuse == 0.f)
     return RT::Color(0.f);
   
   // Calculate relative position of intersection
-  RT::Ray		normal = transformation.inverse() * intersection.normal;
+  RT::Ray	normal = transformation.inverse() * intersection.normal;
 
   // Calculate normal cosinus with light ray
-  double		diffuse = RT::Ray::cos(normal.d(), Math::Vector<4>(-1.f, 0.f, 0.f, 0.f));
+  double	diffuse = RT::Ray::cos(normal.d(), Math::Vector<4>(-1.f, 0.f, 0.f, 0.f));
   if (diffuse < 0.f)
     return RT::Color(0.f);
 
   // Intensity of light
-  double		intensity = _intensity == 0.f ? 1.f : ((_intensity * _intensity) / (normal.p().x() * normal.p().x() + normal.p().y() * normal.p().y() + normal.p().z() * normal.p().z()));
+  double	intensity = _intensity == 0.f ? 1.f : ((_intensity * _intensity) / (normal.p().x() * normal.p().x() + normal.p().y() * normal.p().y() + normal.p().z() * normal.p().z()));
 
   if (_angle1 == 0.f && _angle2 == 0.f)
     return intersection.material.color * intersection.material.light.diffuse * intensity * diffuse * _color;
@@ -82,7 +82,7 @@ RT::Color RT::PointLightLeaf::render(Math::Matrix<4, 4> const & transformation, 
       for (double b = Math::Random::rand(Math::Pi / (int)(a / _radius * intersection.material.light.quality + 1)); b < Math::Pi; b += Math::Pi / (int)(a / _radius * intersection.material.light.quality + 1))
 	for (double c = Math::Random::rand(2.f * Math::Pi / (std::sin(b) * a / _radius * intersection.material.light.quality + 1)); c < 2.f * Math::Pi; c += 2.f * Math::Pi / (std::sin(b) * a / _radius * intersection.material.light.quality + 1))
 	{
-	  Math::Vector<4>	r = matrix * Math::Vector<4>(std::cos(b) * a, std::cos(c) * std::sin(b) * a, std::sin(c) * std::sin(b) * a, 0.f);
+	  Math::Vector<4>	r = matrix * Math::Vector<4>(std::cos(b) * a, std::cos(c) * std::sin(b) * a, std::sin(c) * std::sin(b) * a, 1.f);
 
 	  rays.push_back(RT::Ray(r, Math::Vector<4>(p.x() - r.x(), p.y() - r.y(), p.z() - r.z(), 0.f)));
 	}
@@ -128,7 +128,7 @@ RT::Color RT::PointLightLeaf::render(Math::Matrix<4, 4> const & transformation, 
 
     // Apply light to specular component
     if (inside == false)
-      specular += light * pow(fmax(RT::Ray::cos(r, transformation * it.d()), 0.f), intersection.material.light.shininess) * angle * intensity;
+      specular += light * pow(fmax(RT::Ray::cos(r, transformation * it.d() * -1.f), 0.f), intersection.material.light.shininess) * angle * intensity;
   }
 
   return diffuse / (double)rays.size() * intersection.material.color * intersection.material.light.diffuse * (1.f - intersection.material.transparency.intensity) * (1.f - intersection.material.reflection.intensity)

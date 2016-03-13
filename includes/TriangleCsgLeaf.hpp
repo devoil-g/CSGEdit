@@ -1,12 +1,10 @@
 #ifndef _TRIANGLE_CSG_LEAF_HPP_
 #define _TRIANGLE_CSG_LEAF_HPP_
 
-#include <string>
 #include <tuple>
 #include <vector>
 
 #include "AbstractCsgLeaf.hpp"
-#include "Ray.hpp"
 #include "Vector.hpp"
 
 namespace RT

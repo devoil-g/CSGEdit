@@ -1,5 +1,8 @@
+#include <list>
 #include <unordered_map>
 
+#include "AbstractCsgTree.hpp"
+#include "Intersection.hpp"
 #include "UnionCsgNode.hpp"
 
 RT::UnionCsgNode::UnionCsgNode()

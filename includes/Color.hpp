@@ -2,7 +2,6 @@
 #define _COLOR_HPP_
 
 #include <SFML/Graphics/Color.hpp>
-#include <string>
 
 namespace RT
 {

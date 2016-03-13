@@ -1,11 +1,7 @@
 #ifndef _EXTERN_CSG_TREE_HPP_
 #define _EXTERN_CSG_TREE_HPP_
 
-#include <list>
-
 #include "AbstractCsgTree.hpp"
-#include "Intersection.hpp"
-#include "Ray.hpp"
 
 namespace RT
 {

@@ -1,11 +1,7 @@
 #ifndef _TANGLE_CSG_LEAF_HPP_
 #define _TANGLE_CSG_LEAF_HPP_
 
-#include <string>
-#include <vector>
-
 #include "AbstractCsgLeaf.hpp"
-#include "Ray.hpp"
 
 namespace RT
 {

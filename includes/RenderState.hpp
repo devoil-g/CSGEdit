@@ -1,8 +1,6 @@
 #ifndef _RENDER_STATE_HPP_
 #define _RENDER_STATE_HPP_
 
-#include <SFML/System/Time.hpp>
-
 #include "AbstractState.hpp"
 #include "RenderRaytracer.hpp"
 #include "Scene.hpp"

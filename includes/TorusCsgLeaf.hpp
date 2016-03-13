@@ -1,12 +1,7 @@
 #ifndef _TORUS_CSG_LEAF_HPP_
 #define _TORUS_CSG_LEAF_HPP_
 
-#include <string>
-#include <vector>
-
 #include "AbstractCsgLeaf.hpp"
-#include "Ray.hpp"
-#include "Vector.hpp"
 
 namespace RT
 {

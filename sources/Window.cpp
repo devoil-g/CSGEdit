@@ -3,7 +3,6 @@
 
 #include "Window.hpp"
 #include "Exception.hpp"
-#include "Config.hpp"
 
 RT::Window::Window()
   : _window(sf::VideoMode(RT::Config::Window::Width, RT::Config::Window::Height), std::string(RT::Config::Window::Title), sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close), _focus(true)

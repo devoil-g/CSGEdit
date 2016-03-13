@@ -1,4 +1,6 @@
+#include "Ray.hpp"
 #include "TriangleCsgLeaf.hpp"
+#include "Vector.hpp"
 
 RT::TriangleCsgLeaf::TriangleCsgLeaf(std::tuple<double, double, double> const & p0, std::tuple<double, double, double> const & p1, std::tuple<double, double, double> const & p2)
   : _p0(p0), _p1(p1), _p2(p2)

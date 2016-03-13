@@ -1,13 +1,8 @@
 #ifndef _MATERIAL_CSG_NODE_HPP_
 #define _MATERIAL_CSG_NODE_HPP_
 
-#include <list>
-#include <string>
-
 #include "AbstractCsgNode.hpp"
-#include "Intersection.hpp"
 #include "Material.hpp"
-#include "Ray.hpp"
 
 namespace RT
 {

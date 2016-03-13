@@ -1,10 +1,7 @@
 #ifndef _UNION_LIGHT_NODE_HPP_
 #define _UNION_LIGHT_NODE_HPP_
 
-#include <list>
-
 #include "AbstractLightNode.hpp"
-#include "Matrix.hpp"
 
 namespace RT
 {

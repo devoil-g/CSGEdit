@@ -1,3 +1,5 @@
+#include "AbstractLightTree.hpp"
+#include "Color.hpp"
 #include "Scene.hpp"
 #include "UnionLightNode.hpp"
 

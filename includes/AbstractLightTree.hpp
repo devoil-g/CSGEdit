@@ -1,9 +1,6 @@
 #ifndef _ABSTRACT_LIGHT_TREE_HPP_
 #define _ABSTRACT_LIGHT_TREE_HPP_
 
-#include <string>
-
-#include "AbstractCsgTree.hpp"
 #include "Color.hpp"
 #include "Intersection.hpp"
 #include "Matrix.hpp"

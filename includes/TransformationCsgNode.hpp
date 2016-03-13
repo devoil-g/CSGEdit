@@ -1,13 +1,8 @@
 #ifndef _TRANSFORMATION_CSG_NODE_HPP_
 #define _TRANSFORMATION_CSG_NODE_HPP_
 
-#include <list>
-#include <string>
-
 #include "AbstractCsgNode.hpp"
-#include "Intersection.hpp"
 #include "Matrix.hpp"
-#include "Ray.hpp"
 
 namespace RT
 {

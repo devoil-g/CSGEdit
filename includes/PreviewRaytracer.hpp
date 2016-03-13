@@ -1,7 +1,6 @@
 #ifndef _PREVIEW_RAYTRACER_HPP_
 #define _PREVIEW_RAYTRACER_HPP_
 
-#include <atomic>
 #include <vector>
 
 #include "AbstractRaytracer.hpp"

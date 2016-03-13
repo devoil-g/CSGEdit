@@ -1,8 +1,6 @@
 #ifndef _EXTERN_LIGHT_TREE_HPP_
 #define _EXTERN_LIGHT_TREE_HPP_
 
-#include <list>
-
 #include "AbstractLightTree.hpp"
 
 namespace RT
@@ -22,4 +20,3 @@ namespace RT
 };
 
 #endif
-

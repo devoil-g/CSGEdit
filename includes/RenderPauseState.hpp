@@ -2,7 +2,6 @@
 #define _RENDER_PAUSE_STATE_HPP_
 
 #include <SFML/Graphics/Image.hpp>
-#include <SFML/System/Time.hpp>
 
 #include "AbstractState.hpp"
 #include "RenderRaytracer.hpp"

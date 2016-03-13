@@ -7,6 +7,7 @@
 #include "AbstractCsgTree.hpp"
 #include "Intersection.hpp"
 #include "Ray.hpp"
+#include "Vector.hpp"
 
 namespace RT
 {

@@ -3,8 +3,6 @@
 
 #include <string>
 
-#include "Color.hpp"
-
 namespace RT
 {
   namespace Config

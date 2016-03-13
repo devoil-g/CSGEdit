@@ -1,14 +1,11 @@
 #ifndef _MESH_CSG_NODE_HPP_
 #define _MESH_CSG_NODE_HPP_
 
-#include <list>
 #include <map>
 #include <string>
 
 #include "AbstractCsgNode.hpp"
 #include "AbstractCsgTree.hpp"
-#include "Intersection.hpp"
-#include "Ray.hpp"
 
 namespace RT
 {

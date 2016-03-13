@@ -1,9 +1,7 @@
 #ifndef _CONTROL_STATE_HPP_
 #define _CONTROL_STATE_HPP_
 
-#include <SFML/System/Time.hpp>
 #include <string>
-#include <map>
 
 #include "AbstractState.hpp"
 #include "Matrix.hpp"

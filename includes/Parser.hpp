@@ -9,6 +9,7 @@
 #include "AbstractCsgNode.hpp"
 #include "AbstractCsgTree.hpp"
 #include "AbstractLightNode.hpp"
+#include "AbstractLightTree.hpp"
 #include "Scene.hpp"
 
 namespace RT

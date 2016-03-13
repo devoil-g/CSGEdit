@@ -1,12 +1,7 @@
 #ifndef _INTERSECTION_CSG_NODE_HPP_
 #define _INTERSECTION_CSG_NODE_HPP_
 
-#include <list>
-#include <string>
-
 #include "AbstractCsgNode.hpp"
-#include "Intersection.hpp"
-#include "Ray.hpp"
 
 namespace RT
 {

@@ -1,13 +1,7 @@
 #ifndef _BOUNDING_CSG_NODE_HPP_
 #define _BOUNDING_CSG_NODE_HPP_
 
-#include <list>
-#include <string>
-
 #include "AbstractCsgNode.hpp"
-#include "AbstractCsgTree.hpp"
-#include "Intersection.hpp"
-#include "Ray.hpp"
 
 namespace RT
 {
