@@ -1,4 +1,6 @@
+#include <iostream>
 #include <list>
+#include <SFML/System/Clock.hpp>
 #include <thread>
 
 #include "Config.hpp"
@@ -33,17 +35,18 @@ void	RT::PreviewRaytracer::begin()
     return;
 
   std::list<std::thread>  threads;
-  
+  sf::Clock		  clock;
+
   // Launch rendering threads
   for (unsigned int i = 0; i < _scene->config().threadNumber; i++)
     threads.push_back(std::thread((void(RT::PreviewRaytracer::*)())(&RT::PreviewRaytracer::preview), this));
   
   // Wait for rendering threads to finish
-  while (!threads.empty())
-  {
-    threads.front().join();
-    threads.pop_front();
-  }
+  for (std::thread & it : threads)
+    it.join();
+
+  if (active())
+    std::cout << "[Preview] Rendered in " << clock.getElapsedTime().asMilliseconds() / 1000 << "." << clock.getElapsedTime().asMicroseconds() % 1000 << "s." << std::endl;
 }
 
 void	RT::PreviewRaytracer::preview()
@@ -105,6 +108,42 @@ RT::Color	RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
   ray.d().x() = (double)_scene->image().getSize().x;
   ray.d().y() = (double)_scene->image().getSize().x / 2 - x + 0.5f;
   ray.d().z() = (double)_scene->image().getSize().y / 2 - y + 0.5f;
+  
+  // Virtual reality
+  if (_scene->vr().offset != 0.f)
+  {
+    double  center;
+
+    // Left eye
+    if (ray.d().y() > 0.f)
+    {
+      center = +(double)_scene->image().getSize().x * _scene->vr().center / 4.f;
+      ray.p().y() = +_scene->vr().offset / 2.f;
+      ray.d().y() = ray.d().y() - _scene->image().getSize().x / 4.f;
+    }
+    // Right eye
+    else
+    {
+      center = -(double)_scene->image().getSize().x * _scene->vr().center / 4.f;
+      ray.p().y() = -_scene->vr().offset / 2.f;
+      ray.d().y() = ray.d().y() + _scene->image().getSize().x / 4.f;
+    }
+
+    // Distortion
+    if (_scene->vr().distortion != 0.f)
+    {
+      double  distortion = std::sqrt(std::pow(ray.d().y() - center, 2) + std::pow(ray.d().z(), 2)) / (std::sqrt(std::pow(_scene->image().getSize().x, 2) + std::pow(_scene->image().getSize().y, 2)) / std::abs(_scene->vr().distortion));
+
+      if (_scene->vr().distortion > 0.f)
+	distortion = distortion / std::atan(distortion);
+      else
+	distortion = std::atan(distortion) / distortion;
+
+      ray.d().y() = (ray.d().y() - center) * distortion + center;
+      ray.d().z() *= distortion;
+    }
+  }
+  
   ray = (_scene->camera() * ray).normalize();
 
   // Render intersections using ray

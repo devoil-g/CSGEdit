@@ -60,11 +60,8 @@ void	RT::RenderRaytracer::begin()
     threads.push_back(std::thread((void(RT::RenderRaytracer::*)())(&RT::RenderRaytracer::render), this));
 
   // Wait for rendering threads to finish
-  while (!threads.empty())
-  {
-    threads.front().join();
-    threads.pop_front();
-  }
+  for (std::thread & it : threads)
+    it.join();
 
   // If first pass done, initiate second pass
   if (_status == First)
@@ -275,32 +272,52 @@ RT::Color RT::RenderRaytracer::renderAntialiasing(unsigned int x, unsigned int y
       ray.d().z() = _scene->image().getSize().y / 2.f - y + (2.f * b + 1) / (2.f * antialiasing);
 
       // Sum rendered color
-      clr += renderAnaglyph3D(ray.normalize());
+      clr += renderVirtualReality(ray);
     }
 
   // Return average color
   return clr / (antialiasing * antialiasing);
 }
 
-RT::Color RT::RenderRaytracer::renderAnaglyph3D(RT::Ray const & ray) const
+RT::Color RT::RenderRaytracer::renderVirtualReality(RT::Ray const & ray) const
 {
   // If no offset between eyes, do not render anaglyph
-  if (_scene->anaglyph().offset == 0)
+  if (_scene->vr().offset == 0.f)
     return renderDephOfField((_scene->camera() * ray).normalize());
 
-  // Calculate focus angle
-  double		angle = Math::Utils::RadToDeg(Math::Pi / 2.f - std::atan(_scene->anaglyph().focal / (_scene->anaglyph().offset / 2.f)));
+  RT::Ray vr = ray;
+  double  center;
 
-  // Calculate left/right eye ray accoding offset and focus angle
-  Math::Matrix<4, 4>	cam_left = _scene->camera() * Math::Matrix<4, 4>::translation(0.f, +_scene->anaglyph().offset / 2.f, 0.f) * Math::Matrix<4, 4>::rotation(0, 0, -angle);
-  Math::Matrix<4, 4>	cam_right = _scene->camera() * Math::Matrix<4, 4>::translation(0.f, -_scene->anaglyph().offset / 2.f, 0.f) * Math::Matrix<4, 4>::rotation(0, 0, +angle);
+  // Left eye
+  if (ray.d().y() > 0.f)
+  {
+    center = +(double)_scene->image().getSize().x * _scene->vr().center / 4.f;
+    vr.p().y() = +_scene->vr().offset / 2.f;
+    vr.d().y() = ray.d().y() - _scene->image().getSize().x / 4.f;
+  }
+  // Right eye
+  else
+  {
+    center = -(double)_scene->image().getSize().x * _scene->vr().center / 4.f;
+    vr.p().y() = -_scene->vr().offset / 2.f;
+    vr.d().y() = ray.d().y() + _scene->image().getSize().x / 4.f;
+  }
 
-  // Render left/right colors
-  RT::Color		clr_left = renderDephOfField((cam_left * ray).normalize());
-  RT::Color		clr_right = renderDephOfField((cam_right * ray).normalize());
+  // Distortion
+  if (_scene->vr().distortion != 0.f)
+  {
+    double  distortion = std::sqrt(std::pow(vr.d().y() - center, 2) + std::pow(vr.d().z(), 2)) / (std::sqrt(std::pow(_scene->image().getSize().x, 2) + std::pow(_scene->image().getSize().y, 2)) / std::abs(_scene->vr().distortion));
 
-  // Return color using masks anaglyph MaskLeft/Right from scene configuration
-  return (clr_left * _scene->anaglyph().maskLeft) + (clr_right * _scene->anaglyph().maskRight);
+    if (_scene->vr().distortion > 0.f)
+      distortion = distortion / std::atan(distortion);
+    else
+      distortion = std::atan(distortion) / distortion;
+
+    vr.d().y() = (vr.d().y() - center) * distortion + center;
+    vr.d().z() *= distortion;
+  }
+
+  return renderDephOfField((_scene->camera() * vr).normalize());
 }
 
 RT::Color RT::RenderRaytracer::renderDephOfField(RT::Ray const & ray) const
@@ -440,6 +457,7 @@ RT::Color RT::RenderRaytracer::renderTransparency(RT::Ray const & ray, RT::Inter
   RT::Ray	normal = intersection.normal;
   double	refraction = intersection.material.transparency.refraction;
   bool		inside = false;
+  bool		reflection = false;
 
   if (RT::Ray::cos(ray.d(), intersection.normal.d()) > 0.f)
   {
@@ -461,8 +479,7 @@ RT::Color RT::RenderRaytracer::renderTransparency(RT::Ray const & ray, RT::Inter
   {
     r.p() = normal.p() + normal.d() * Math::Shift;
     r.d() = normal.p() - ray.p() - 2.f * normal.d() * (normal.d().x() * (normal.p().x() - ray.p().x()) + normal.d().y() * (normal.p().y() - ray.p().y()) + normal.d().z() * (normal.p().z() - ray.p().z())) / (normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z());
-    recursivite += 1;
-    inside = true;
+    reflection = true;
   }
   else
   {
@@ -475,8 +492,8 @@ RT::Color RT::RenderRaytracer::renderTransparency(RT::Ray const & ray, RT::Inter
   unsigned int		quality = intersection.material.transparency.quality > recursivite ? intersection.material.transparency.quality - recursivite : 0;
 
   // If basic transparency, return basic rendering
-  if (inside == true || intersection.material.transparency.glossiness == 0.f || quality <= 1.f)
-    return renderRay(r, recursivite) * intersection.material.color * intersection.material.transparency.intensity;
+  if (inside == true || reflection == true || intersection.material.transparency.glossiness == 0.f || quality <= 1)
+    return renderRay(r, recursivite + (reflection == true ? 1 : 0)) * intersection.material.color * intersection.material.transparency.intensity;
 
   // Calculate rotation angles of normal
   double	ry = -std::asin(r.d().z());

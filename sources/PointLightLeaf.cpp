@@ -95,9 +95,7 @@ RT::Color RT::PointLightLeaf::render(Math::Matrix<4, 4> const & transformation, 
   RT::Color		diffuse, specular;
   for (RT::Ray const & it : rays)
   {
-    std::list<RT::Intersection>	intersect;
-    RT::Color			light = RT::Color(_color);
-    double			angle, intensity;
+    double	angle;
 
     if ((_angle1 == 0.f && _angle2 == 0.f) || (angle = Math::Utils::RadToDeg(RT::Ray::angle(Math::Vector<4>(1.f, 0.f, 0.f, 0.f), it.d()))) <= _angle1)
       angle = 1.f;
@@ -105,14 +103,20 @@ RT::Color RT::PointLightLeaf::render(Math::Matrix<4, 4> const & transformation, 
       angle = (_angle2 - angle) / (_angle2 - _angle1);
     else
       angle = 0.f;
-    
+
+    if (angle == 0.f)
+      continue;
+
+    std::list<RT::Intersection>	intersect = scene->csg()->render(transformation * it);
+    RT::Color			light = RT::Color(_color);
+    double			cos_diffuse = std::fabs(RT::Ray::cos(normal.d(), Math::Vector<4>(-it.d().x(), -it.d().y(), -it.d().z(), 0.f)));
+    double			cos_specular = fmax(RT::Ray::cos(r, transformation * it.d() * -1.f), 0.f);
+    double			intensity;
+
     if (_intensity == 0.f)
       intensity = 1.f;
     else
       intensity = (_intensity * _intensity) / (it.d().x() * it.d().x() + it.d().y() * it.d().y() + it.d().z() * it.d().z());
-
-    if (angle != 0.f)
-      intersect = scene->csg()->render(transformation * it);
 
     // Render light
     while (!intersect.empty() && intersect.front().distance < 0.f)
@@ -124,11 +128,11 @@ RT::Color RT::PointLightLeaf::render(Math::Matrix<4, 4> const & transformation, 
     }
 
     // Apply light to diffuse component
-    diffuse += light * std::fabs(RT::Ray::cos(normal.d(), Math::Vector<4>(-it.d().x(), -it.d().y(), -it.d().z(), 0.f))) * angle * intensity;
+    diffuse += light * cos_diffuse * angle * intensity;
 
     // Apply light to specular component
     if (inside == false)
-      specular += light * pow(fmax(RT::Ray::cos(r, transformation * it.d() * -1.f), 0.f), intersection.material.light.shininess) * angle * intensity;
+      specular += light * pow(cos_specular, intersection.material.light.shininess) * angle * intensity;
   }
 
   return diffuse / (double)rays.size() * intersection.material.color * intersection.material.light.diffuse * (1.f - intersection.material.transparency.intensity) * (1.f - intersection.material.reflection.intensity)

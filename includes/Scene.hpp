@@ -15,23 +15,22 @@ namespace RT
   {
     namespace AntiAliasing
     {
-      unsigned int const	Live(1);	// Live anti-aliasing default level
-      unsigned int const	Post(2);	// Post anti-aliasing default level
-    };
-
-    namespace Anaglyph3D
-    {
-      double const		Offset(0.f);			// Distance between the eyes
-      double const		Focal(0.f);			// Focal distance
-      RT::Color const		MaskLeft(1.f, 0.f, 0.f);	// Color mask for left eye
-      RT::Color const		MaskRight(0.f, 1.f, 1.f);	// Color mask for right eye
+      unsigned int const	Live(1);		// Live anti-aliasing default level
+      unsigned int const	Post(2);		// Post anti-aliasing default level
     };
 
     namespace DephOfField
     {
-      double const		Aperture(0.f);	// Deph of field intensity
-      double const		Focal(0.f);	// Focal distance
-      unsigned int const	Quality(3);	// Quality of deph of field
+      double const		Aperture(0.f);		// Deph of field intensity
+      double const		Focal(0.f);		// Focal distance
+      unsigned int const	Quality(3);		// Quality of deph of field
+    };
+
+    namespace VirtualReality
+    {
+      double const		Offset(0.f);		// Distance between the eyes
+      double const		Distortion(0.f);	// Perspective distortion
+      double const		Center(0.f);		// Eye centering
     };
   };
 
@@ -56,12 +55,11 @@ namespace RT
       unsigned int	quality = RT::Config::DephOfField::Quality;	// Deph of field quality
     };
 
-    struct Anaglyph3D
+    struct VirtualReality
     {
-      double		offset = RT::Config::Anaglyph3D::Offset;	// Distance between eyes
-      double		focal = RT::Config::Anaglyph3D::Focal;		// Focal distance
-      RT::Color		maskLeft = RT::Config::Anaglyph3D::MaskLeft;	// Color mask for left eye
-      RT::Color		maskRight = RT::Config::Anaglyph3D::MaskRight;	// Color mask for right eye
+      double		offset = RT::Config::VirtualReality::Offset;		// Distance between eyes
+      double		distortion = RT::Config::VirtualReality::Distortion;	// Perspective distortion
+      double		center = RT::Config::VirtualReality::Center;		// Eye centering
     };
 
     sf::Image					_image;		// Rendered image of scene
@@ -71,7 +69,7 @@ namespace RT
     RT::Scene::Config				_config;	// System configuration
     RT::Scene::AntiAliasing			_antialiasing;	// Anti-aliasing parameters
     RT::Scene::DephOfField			_dof;		// Deph of field parameters
-    RT::Scene::Anaglyph3D			_anaglyph;	// Anaglyph3D parameters
+    RT::Scene::VirtualReality			_vr;	// Anaglyph3D parameters
 
   public:
     Scene();
@@ -87,7 +85,7 @@ namespace RT
     RT::Scene::Config &				config() { return _config; };
     RT::Scene::AntiAliasing &			antialiasing() { return _antialiasing; };
     RT::Scene::DephOfField &			dof() { return _dof; };
-    RT::Scene::Anaglyph3D &			anaglyph() { return _anaglyph; };
+    RT::Scene::VirtualReality &			vr() { return _vr; };
 
     // Const getter for all parameters
     sf::Image const &				image() const { return _image; };
@@ -97,7 +95,7 @@ namespace RT
     RT::Scene::Config const &			config() const { return _config; };
     RT::Scene::AntiAliasing const &		antialiasing() const { return _antialiasing; };
     RT::Scene::DephOfField const &		dof() const { return _dof; };
-    RT::Scene::Anaglyph3D const &		anaglyph() const { return _anaglyph; };
+    RT::Scene::VirtualReality const &		vr() const { return _vr; };
   };
 };
 

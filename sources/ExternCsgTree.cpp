@@ -12,5 +12,5 @@ std::list<RT::Intersection>	RT::ExternCsgTree::render(RT::Ray const & ray, unsig
   if (deph < RT::Config::Csg::MaxDeph)
     return _tree->render(ray, deph + 1);
   else
-    return {};
+    return std::list<RT::Intersection>();
 }

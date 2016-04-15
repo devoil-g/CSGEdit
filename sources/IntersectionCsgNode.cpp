@@ -10,7 +10,7 @@ RT::IntersectionCsgNode::~IntersectionCsgNode()
 
 std::list<RT::Intersection>	RT::IntersectionCsgNode::renderChildren(RT::Ray const & ray, unsigned int deph) const
 {
-  std::list<RT::Intersection>			intersect;
+  std::list<RT::Intersection>	intersect;
 
   // Iterate through sub-tree to get intersections
   for (RT::AbstractCsgTree const * it : _children)

@@ -108,8 +108,10 @@ RT::Parser::Parser()
   _script.add(chaiscript::fun(std::function<void(unsigned int)>(std::bind(&RT::Parser::settingAntiAliasing, this, std::placeholders::_1, 0))), "antialiasing");
   _script.add(chaiscript::fun(std::function<void(unsigned int, unsigned int)>(std::bind(&RT::Parser::settingAntiAliasing, this, std::placeholders::_1, std::placeholders::_2))), "antialiasing");
   _script.add(chaiscript::fun(std::function<void(double, double)>(std::bind(&RT::Parser::settingDephOfField, this, std::placeholders::_1, std::placeholders::_2, RT::Config::DephOfField::Quality))), "deph_of_field");
-  _script.add(chaiscript::fun(std::function<void(double, double)>(std::bind(&RT::Parser::settingAnaglyph3D, this, std::placeholders::_1, std::placeholders::_2, RT::Config::Anaglyph3D::MaskLeft, RT::Config::Anaglyph3D::MaskRight))), "anaglyph_3d");
-  _script.add(chaiscript::fun(std::function<void(double, double, RT::Color const &, RT::Color const &)>(std::bind(&RT::Parser::settingAnaglyph3D, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4))), "anaglyph_3d");
+  _script.add(chaiscript::fun(std::function<void(double, double, unsigned int)>(std::bind(&RT::Parser::settingDephOfField, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3))), "deph_of_field");
+  _script.add(chaiscript::fun(std::function<void(double)>(std::bind(&RT::Parser::settingVirtualReality, this, std::placeholders::_1, RT::Config::VirtualReality::Distortion, RT::Config::VirtualReality::Center))), "virtual_reality");
+  _script.add(chaiscript::fun(std::function<void(double, double)>(std::bind(&RT::Parser::settingVirtualReality, this, std::placeholders::_1, std::placeholders::_2, RT::Config::VirtualReality::Center))), "virtual_reality");
+  _script.add(chaiscript::fun(std::function<void(double, double, double)>(std::bind(&RT::Parser::settingVirtualReality, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3))), "virtual_reality");
   _script.add(chaiscript::fun(std::function<void(unsigned int)>(std::bind(&RT::Parser::settingThread, this, std::placeholders::_1))), "thread");
   // Others
   _script.add(chaiscript::fun(&RT::Parser::import, this), "import");
@@ -128,8 +130,8 @@ RT::Parser::Parser()
   _script.add(chaiscript::fun((double(*)(double))(&std::sqrt)), "sqrt");
   _script.add(chaiscript::fun((double(*)(double))(&std::cbrt)), "cbrt");
   _script.add(chaiscript::fun((double(*)(double, double))(&std::pow)), "pow");
-  _script.add(chaiscript::var(Math::Pi), "pi");
-
+  _script.add(chaiscript::fun((double(*)(double))(&Math::Random::rand)), "rand");
+  _script.add_global_const(chaiscript::const_var(Math::Pi), "pi");
   // Vector conversion: std::vector<double>
   _script.add(chaiscript::type_conversion<std::vector<chaiscript::Boxed_Value>, std::vector<double>>(
     [](const std::vector<chaiscript::Boxed_Value> & v)
@@ -522,15 +524,14 @@ void	RT::Parser::settingDephOfField(double aperture, double focal, unsigned int 
   }
 }
 
-void	RT::Parser::settingAnaglyph3D(double offset, double focal, RT::Color const & left, RT::Color const & right)
+void	RT::Parser::settingVirtualReality(double offset, double distortion, double center)
 {
-  // Set deph of field configuration only if in main file
+  // Set virtual reality configuration only if in main file
   if (_files.size() == 1)
   {
-    _scene.anaglyph().offset = offset;
-    _scene.anaglyph().focal = focal;
-    _scene.anaglyph().maskLeft = left;
-    _scene.anaglyph().maskRight = right;
+    _scene.vr().offset = offset;
+    _scene.vr().distortion = distortion;
+    _scene.vr().center = center;
   }
 }
 

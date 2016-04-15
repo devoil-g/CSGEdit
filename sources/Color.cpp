@@ -35,6 +35,11 @@ sf::Color	RT::Color::sfml() const
   return sf::Color((sf::Uint8)(n.r * 255.f + 0.5f), (sf::Uint8)(n.g * 255.f + 0.5f), (sf::Uint8)(n.b * 255.f + 0.5f));
 };
 
+RT::Color	RT::Color::grey() const
+{
+  return RT::Color(r * 0.2126f + g * 0.7152f + b * 0.0722f);
+}
+
 RT::Color	RT::Color::normalize() const
 {
   double	r = this->r;
@@ -42,20 +47,20 @@ RT::Color	RT::Color::normalize() const
   double	b = this->b;
 
   // Check if components positive
-  if (r < 0)
-    r = 0;
-  if (g < 0)
-    g = 0;
-  if (b < 0)
-    b = 0;
+  if (r < 0.f)
+    r = 0.f;
+  if (g < 0.f)
+    g = 0.f;
+  if (b < 0.f)
+    b = 0.f;
 
   // Check for components saturation
-  if (r > 1)
-    r = 1;
-  if (g > 1)
-    g = 1;
-  if (b > 1)
-    b = 1;
+  if (r > 1.f)
+    r = 1.f;
+  if (g > 1.f)
+    g = 1.f;
+  if (b > 1.f)
+    b = 1.f;
 
   return RT::Color(r, g, b);
 }
@@ -121,7 +126,7 @@ RT::Color &	RT::Color::operator/=(RT::Color const & clr)
 {
 #ifdef _DEBUG
   // Check for division by 0
-  if (clr.r == 0 || clr.g == 0 || clr.b == 0)
+  if (clr.r == 0.f || clr.g == 0.f || clr.b == 0.f)
     throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
 #endif
 

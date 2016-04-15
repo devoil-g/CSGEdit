@@ -80,7 +80,7 @@ namespace RT
     void	settingResolution(unsigned int, unsigned int);								// Set resolution of current scene
     void	settingAntiAliasing(unsigned int, unsigned int);							// Set antialiasing level of current scene
     void	settingDephOfField(double, double, unsigned int);							// Set deph of field parameters of current scene
-    void	settingAnaglyph3D(double, double, RT::Color const &, RT::Color const &);				// Set 3D anaglyph parameters of current scene
+    void	settingVirtualReality(double, double, double);								// Set virtual reality parameters of current scene
     void	settingThread(unsigned int);										// Set the number of thread for rendering
 
     // Utilities

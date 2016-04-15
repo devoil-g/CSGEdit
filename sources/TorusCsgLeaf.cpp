@@ -35,29 +35,17 @@ std::vector<double>	RT::TorusCsgLeaf::intersection(RT::Ray const & ray) const
 
 Math::Vector<4>		RT::TorusCsgLeaf::normal(Math::Vector<4> const & pt) const
 {
-  Math::Vector<4>	n;
-  
   // Point perfectly centered
   if (pt.x() == 0.f && pt.y() == 0.f)
-    n.z() = 1.f;
+    return Math::Vector<4>(0.f, 0.f, +1.f, 0.f);
   else
   {
     // Simple method to get n
     double	c = _r / std::sqrt(pt.x() * pt.x() + pt.y() * pt.y());
 
-    if (std::abs(std::sqrt(std::pow(pt.x() - (pt.x() * c), 2.f) + std::pow(pt.y() - (pt.y() * c), 2.f) + std::pow(pt.z(), 2.f)) - _h) < Math::Shift)
-    {
-      n.x() = pt.x() - pt.x() * c;
-      n.y() = pt.y() - pt.y() * c;
-      n.z() = pt.z();
-    }
+    if (std::abs(std::sqrt(std::pow(pt.x() - (pt.x() * c), 2) + std::pow(pt.y() - (pt.y() * c), 2) + std::pow(pt.z(), 2)) - _h) < Math::Shift)
+      return Math::Vector<4>(pt.x() * (1.f - c), pt.y() * (1.f - c), pt.z(), 0.f);
     else
-    {
-      n.x() = pt.x() + pt.x() * c;
-      n.y() = pt.y() + pt.y() * c;
-      n.z() = pt.z();
-    }
+      return Math::Vector<4>(pt.x() * (1.f + c), pt.y() * (1.f + c), pt.z(), 0.f);
   }
-
-  return n;
 }

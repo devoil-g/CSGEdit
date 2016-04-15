@@ -17,6 +17,7 @@ namespace RT
     double	r, g, b;				// Color components
 
     sf::Color	sfml() const;				// Convert RT::Color to sfml
+    RT::Color	grey() const;				// Return a grey-scaled color
     RT::Color	normalize() const;			// Return a normalize color (component 0-1)
 
     RT::Color	operator+(Color const &) const;		// Color addition

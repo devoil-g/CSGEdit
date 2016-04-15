@@ -1,0 +1,446 @@
+// Camera set-up
+camera([-512, -512, +512], [0, 34, 45], [1,1,1]);
+camera([-2048, -2048, +2048+128+64], [0, 34, 45], [2,1,1]);
+resolution(640, 640);
+antialiasing(0,2);
+
+// Lights
+rotation([0, 60, 30]); directional_light([64], 8.4); end();
+occlusion_light([48], 32);
+
+def	streetlamp()
+{
+	bounding();
+		translation([-64-128,-32,0]); box(64+128+8,64,512+64+32); end();
+		
+		cylinder(8,512);
+		intersection();
+			translation([-64,-8,512]); box(64+8,16,64+8); end();
+			translation([-64,0,512]); rotation([90,0,0]); torus(64,8); end(); end();
+		end();
+		difference();
+			translation([-124,0,512+64]); scale([2,1,1]); sphere(32); end(); end();
+			translation([-124,0,512+64]); scale([2,1,1]); sphere(28); end(); end();
+			translation([-124,0,512+64-24]); box(128,64,32, true); end();
+		end();
+	
+		translation([-124,0,512+64]); scale([1.42,1,1]); rotation([0,90,0]); point_light([128], 16, 0, 15,25); end(); end(); end();
+	end();
+}
+
+def	car()
+{
+	def	wheel()
+	{
+		bounding();
+			cylinder(42,24, true);
+			
+			difference();
+				cylinder(42,24, true);
+				translation([0,0,10]); cone(24,26,3); end();
+			end();
+			translation([0,0,10]); cone(6,5,1); end();
+			for (var r = 0; r < 360; r += 72) {
+				rotation([0,0,r]); translation([12,0,10]); cylinder(2,1.5); end(); end();
+			}
+		end();
+	}
+	
+	bounding();
+		translation([0,0,128]); box(128+36,320+4,256, true); end();
+		
+		// Wheels
+		translation([-64,-96,42]); rotation([0,-90,0]); wheel(); end(); end();
+		translation([+64,-96,42]); rotation([0,+90,0]); wheel(); end(); end();
+		translation([-64,+96,42]); rotation([0,-90,0]); wheel(); end(); end();
+		translation([+64,+96,42]); rotation([0,+90,0]); wheel(); end(); end();
+		
+		// Main body
+		difference();
+			translation([0,0,84]); box(128+32,320,84, true); end();
+			
+			translation([-64,-96,42]); rotation([0,90,0]); cylinder(48,32+4, true); end(); end();
+			translation([+64,-96,42]); rotation([0,90,0]); cylinder(48,32+4, true); end(); end();
+			translation([-64,+96,42]); rotation([0,90,0]); cylinder(48,32+4, true); end(); end();
+			translation([+64,+96,42]); rotation([0,90,0]); cylinder(48,32+4, true); end(); end();
+		end();
+		
+		// Bumpers
+		translation([0,-320/2,84-32]); box(128+32+4,4,24, true); end();
+		translation([0,+320/2,84-42+14]); box(128+32+4,4,24, true); end();
+		translation([0,-320/2+0,84-32+36+24]); box(64,4,4, true); end();
+		for (var x = 0; x < 8; ++x) {
+			translation([-28+8*x,-320/2+0,84-32+36]); box(2,2,48, true); end();
+		}
+		
+		// Light
+		translation([+56,0,100]); rotation([90,0,0]); cylinder(12,324, true); end(); end();
+		translation([-56,0,100]); rotation([90,0,0]); cylinder(12,324, true); end(); end();
+		
+		// Cockpit
+		translation([0,0,168]);
+			box(128+32, 128-32, 84, true);
+			translation([0,-18, 0]); shear(0,0,0,+0.42,0,0); box(128+32, 128-32, 84, true); end(); end();
+			translation([0,+18, 0]); shear(0,0,0,-0.42,0,0); box(128+32, 128-32, 84, true); end(); end();
+		end();
+		
+	end();
+}
+
+def	building()
+{
+	def	door()
+	{
+		bounding();
+			translation([-6,-20,0]); box(70,168,276); end();
+			
+			difference();
+				translation([32,17,1]); box(32,94,222); end();
+				
+				translation([32-1,27,181]); intersection();
+					shear(0,0,-1,0,0,0); box(3,32,32); end();
+					shear(0,0,+1,0,0,0); box(3,32,32); end();
+					shear(0,0,0,0,-1,0); box(3,32,32); end();
+					shear(0,0,0,0,+1,0); box(3,32,32); end();
+				end(); end();
+				translation([32-1,69,181]); intersection();
+					shear(0,0,-1,0,0,0); box(3,32,32); end();
+					shear(0,0,+1,0,0,0); box(3,32,32); end();
+					shear(0,0,0,0,-1,0); box(3,32,32); end();
+					shear(0,0,0,0,+1,0); box(3,32,32); end();
+				end(); end();
+				translation([32-1,27,107]); intersection();
+					shear(0,0,-1,0,0,0); box(3,32,64); end();
+					shear(0,0,+1,0,0,0); box(3,32,64); end();
+					shear(0,0,0,0,-1,0); box(3,32,64); end();
+					shear(0,0,0,0,+1,0); box(3,32,64); end();
+				end(); end();
+				translation([32-1,69,107]); intersection();
+					shear(0,0,-1,0,0,0); box(3,32,64); end();
+					shear(0,0,+1,0,0,0); box(3,32,64); end();
+					shear(0,0,0,0,-1,0); box(3,32,64); end();
+					shear(0,0,0,0,+1,0); box(3,32,64); end();
+				end(); end();
+				translation([32-1,27,32]); intersection();
+					shear(0,0,-1,0,0,0); box(3,32,55); end();
+					shear(0,0,+1,0,0,0); box(3,32,55); end();
+					shear(0,0,0,0,-1,0); box(3,32,55); end();
+					shear(0,0,0,0,+1,0); box(3,32,55); end();
+				end(); end();
+				translation([32-1,69,32]); intersection();
+					shear(0,0,-1,0,0,0); box(3,32,55); end();
+					shear(0,0,+1,0,0,0); box(3,32,55); end();
+					shear(0,0,0,0,-1,0); box(3,32,55); end();
+					shear(0,0,0,0,+1,0); box(3,32,55); end();
+				end(); end();
+			end();
+			
+			difference();
+				translation([31,48,91]); box(2,32,12); end();
+				translation([30,52,93]); box(2,24,8); end();
+			end();
+				
+			translation([31,100,97]); rotation([0,+90,0]); cylinder(3,1); end(); end();
+			translation([30,100,97]); rotation([0,+90,0]); cone(1,3,1); end(); end();
+			translation([29,100,97]); rotation([0,+90,0]); cylinder(1,1); end(); end();
+			difference();
+				translation([29-2.8,100,97]); scale([1,1.5,1.5]); sphere(3); end(); end();
+				translation([26-2.8,100,97]); rotation([0,+90,0]); cone(1,0.72,0.5); end(); end();
+			end();
+			
+			translation([31,64,176]); rotation([0,+90,0]); cylinder(5,1); end(); end();
+			translation([29,64,176]); rotation([0,+90,0]); cone(1.5,5,2); end(); end();
+			translation([27,64,176]); rotation([0,+90,0]); cylinder(1.5,2); end(); end();
+			translation([27,64,176]); scale([0.5,1,1]); sphere(1.5); end(); end();
+			translation([28,64,171]); rotation([0,+90,0]); torus(5,0.5); end(); end();
+			
+			difference();
+				translation([22,0,0]); box(42,16,256); end();
+				translation([22,16,0]); cylinder(8,256); end();
+			end();
+			difference();
+				translation([22,112,0]); box(42,16,256); end();
+				translation([22,112,0]); cylinder(8,256); end();
+			end();
+			difference();
+				translation([22,0,224]); box(42,128,32); end();
+				translation([22,0,224]); rotation([-90,0,0]); cylinder(8,128); end(); end();
+			end();
+			
+			for (var x = 0; x < 10; ++x) {
+				if (x % 2 == 0) {
+					translation([-2,-20,1+x*24]); box(22,22,22); end();
+					translation([-2,126,1+x*24]); box(22,22,22); end();
+				}
+				else {
+					translation([-2,-10,1+x*24]); box(22,12,22); end();
+					translation([-2,126,1+x*24]); box(22,12,22); end();
+				}
+			}
+			
+			translation([-2,-20,1+240]); box(22,168,22); end();
+			translation([-4,60,252]); shear(0,-0.25,0,0,0,0); box(16,8,24); end(); end();
+			translation([-4,50,256]); shear(0,0,0,-0.25,0,0); box(12,8,16); end(); end();
+			translation([-4,70,256]); shear(0,0,0,+0.25,0,0); box(12,8,16); end(); end();
+		end();
+	}
+	
+	def	window()
+	{
+		bounding();
+			translation([-8,-16,0]); box(72,160,270); end();
+			
+			translation([32,0,0]); box(32,128,256); end();
+			translation([0,0,0]); box(64,128,78); end();
+			translation([0,0,0]); box(32,8,256); end();
+			translation([0,120,0]); box(32,8,256); end();
+			translation([-8,-4,76]); box(40,136,16); end();
+			
+			for (var x = 0; x < 10; ++x) {
+				if (x % 2 == 0) {
+					translation([-2,-8,92+1+x*16]); box(18,18,14); end();
+					translation([-2,118,92+1+x*16]); box(18,18,14); end();
+				}
+				else {
+					translation([-2,-4,92+1+x*16]); box(22,14,14); end();
+					translation([-2,118,92+1+x*16]); box(22,14,14); end();
+				}
+			}
+			translation([-4,-8,253]); box(36,144,16); end();
+			
+			translation([32,16-1,168]); rotation([0,0,45]); box(sqrt(8), sqrt(8), 146, true); end(); end();
+			translation([32,16+1,168]); rotation([0,0,45]); box(sqrt(8), sqrt(8), 146, true); end(); end();
+			translation([32,16,168]); box(4, 2, 146, true); end();
+			
+			translation([32,40,168]); rotation([0,0,45]); box(sqrt(2), sqrt(2), 146, true); end(); end();
+			
+			translation([32,64-1,168]); rotation([0,0,45]); box(sqrt(8), sqrt(8), 146, true); end(); end();
+			translation([32,64+1,168]); rotation([0,0,45]); box(sqrt(8), sqrt(8), 146, true); end(); end();
+			translation([32,64,168]); box(4, 2, 146, true); end();
+			
+			translation([32,88,168]); rotation([0,0,45]); box(sqrt(2), sqrt(2), 146, true); end(); end();
+			
+			translation([32,112-1,168]); rotation([0,0,45]); box(sqrt(8), sqrt(8), 146, true); end(); end();
+			translation([32,112+1,168]); rotation([0,0,45]); box(sqrt(8), sqrt(8), 146, true); end(); end();
+			translation([32,112,168]); box(4, 2, 146, true); end();
+			
+			translation([32,64,240-1]); rotation([0,45,0]); box(sqrt(8), 98, sqrt(8), true); end(); end();
+			translation([32,64,240+1]); rotation([0,45,0]); box(sqrt(8), 98, sqrt(8), true); end(); end();
+			translation([32,64,240]); box(4, 98, 2, true); end();
+			
+			translation([32,64,216]); rotation([0,45,0]); box(sqrt(2), 98, sqrt(2), true); end(); end();
+			
+			translation([32,64,192-1]); rotation([0,45,0]); box(sqrt(8), 98, sqrt(8), true); end(); end();
+			translation([32,64,192+1]); rotation([0,45,0]); box(sqrt(8), 98, sqrt(8), true); end(); end();
+			translation([32,64,192]); box(4, 98, 2, true); end();
+			
+			translation([32,64,168]); rotation([0,45,0]); box(sqrt(2), 98, sqrt(2), true); end(); end();
+			translation([32,64,144]); rotation([0,45,0]); box(sqrt(2), 98, sqrt(2), true); end(); end();
+			translation([32,64,120]); rotation([0,45,0]); box(sqrt(2), 98, sqrt(2), true); end(); end();
+			
+			translation([32,64,96-1]); rotation([0,45,0]); box(sqrt(8), 98, sqrt(8), true); end(); end();
+			translation([32,64,96+1]); rotation([0,45,0]); box(sqrt(8), 98, sqrt(8), true); end(); end();
+			translation([32,64,96]); box(4, 98, 2, true); end();
+		end();
+	}
+	
+	difference();
+		box(128,1024,896);
+		
+		translation([-1,128,128]); box(64+1,128,256); end();
+		translation([-1,384,128]); box(64+1,256,256); end();
+		translation([-1,768,128]); box(64+1,128,256); end();
+		
+		translation([-1,128,512]); box(64+1,128,256); end();
+		translation([-1,128+640/3.0,512]); box(64+1,128,256); end();
+		translation([-1,128+1280/3.0,512]); box(64+1,128,256); end();
+		translation([-1,768,512]); box(64+1,128,256); end();
+	end();
+	
+	translation([0,128,128]); door(); end();
+	// ------------------------------------------------------------------------------------------------- Here!
+	translation([0,768,128]); window(); end();
+	translation([0,128,512]); window(); end();
+	translation([0,128+640/3.0,512]); window(); end();
+	translation([0,128+1280/3.0,512]); window(); end();
+	translation([0,768,512]); window(); end();
+	
+	translation([-60, 512, 288]); box(2,136,192, true); end();
+	translation([-30, 414, 288]); rotation([0,0,+45]); box(2,60*sqrt(2),192, true); end(); end();
+	translation([-30, 610, 288]); rotation([0,0,-45]); box(2,60*sqrt(2),192, true); end(); end();
+	
+	var myTan = tan(22.5/360.0*2.0*3.14159265359) * 4;
+	translation([-4,384-myTan,192]); rotation([0,0,45]); box(8,8,192); end(); end();
+	translation([-4,384-myTan,192]); rotation([0,0,0]); box(8,8,192); end(); end();
+	translation([-64,444-myTan,192]); rotation([0,0,0]); box(8,8,192); end(); end();
+	translation([-64,444-myTan,192]); rotation([0,0,-45]); box(8,8,192); end(); end();
+	translation([-64,580+myTan,192]); rotation([0,0,-45]); box(8,8,192); end(); end();
+	translation([-64,580+myTan,192]); rotation([0,0,-90]); box(8,8,192); end(); end();
+	translation([-4,640+myTan,192]); rotation([0,0,-90]); box(8,8,192); end(); end();
+	translation([-4,640+myTan,192]); rotation([0,0,-135]); box(8,8,192); end(); end();
+	
+	// Brick wall
+	translation([-4,0,0]); bounding();
+		box(5,1024,128);
+		
+		translation([0, 0, 7*16]); box(4,1024,16); end();
+		for (var y = 0; y < 7; ++y) {
+			bounding();
+				translation([2, 0, y*16]); box(3,1024,14); end();
+				
+				for (var x = -1; x < 32; ++x) {
+					translation([2, (x + (y % 2 == 0 ? 0.5 : 0))*32, y*16]); box(4,30,14); end();
+				}
+			end();
+		}
+	end(); end();
+}
+
+def	mailBox()
+{
+	bounding();
+		translation([-3,0,0]); box(51,64,120); end();
+		
+		translation([0,0,0]); box(4,4,16); end();
+		translation([0,+60,0]); box(4,4,16); end();
+		translation([+44,0,0]); box(4,4,16); end();
+		translation([+44,+60,0]); box(4,4,16); end();
+		
+		translation([0,0,+16]); box(48,64,80); end();
+		
+		difference();
+			translation([24,0,+96]); rotation([-90,0,0]); cylinder(24,64); end(); end();
+			translation([0,4,+96]); box(24,56,24); end();
+		end();
+		
+		translation([24,0,+96]); rotation([-90,0,0]); cylinder(22,64); end(); end();
+		
+		translation([4, 24, 104]); rotation([0,-90,0]); cylinder(1,6); end(); end();
+		translation([4, 40, 104]); rotation([0,-90,0]); cylinder(1,6); end(); end();
+		translation([-2, 24, 104]); sphere(1); end();
+		translation([-2, 40, 104]); sphere(1); end();
+		translation([-2, 24, 104]); rotation([-90,0,0]); cylinder(1,16); end(); end();
+	end();
+}
+
+def	barrier()
+{
+	bounding();
+		translation([-4,0,0]); box(48,1024,124); end();
+		
+		difference();
+			union();
+				box(32,1024,64);
+				for (var x = 0; x < 32; ++x) {
+					for (var y = 0; y < 4; ++y) {
+						if (rand(4) < 1) {
+							translation([-2, (x + (y % 2 == 0 ? 0.5 : 0))*32, y*16]); box(36,30,14); end();
+						}
+					}
+				}
+				//
+			end();
+			translation([-0.05,330,-1]); box(32.1,108,66); end();
+			translation([-3,332,-1]); box(38,104,66); end();
+		end();
+		difference();
+			translation([-4,0,64]); box(48, 1024, 12); end();
+			translation([-5,338,63]); box(50,92,14); end();
+		end();
+		difference();
+			union();
+				translation([24,0,84]); rotation([-90,0,0]); cylinder(4,1024); end(); end();
+				translation([24,0,96]); rotation([-90,0,0]); cylinder(4,1024); end(); end();
+				translation([24,0,108]); rotation([-90,0,0]); cylinder(4,1024); end(); end();
+			end();
+			translation([19,320,79]); box(10,128,114); end();
+		end();
+		for (var x = 0; x < 8; ++x) {
+			translation([24,64+x*128,76+24]); box(10,10,48,true); end();
+		}
+	end();
+}
+
+def	stairs()
+{
+	bounding();
+		translation([-2,-2,0]); box(132,260,128+128); end();
+		
+		box(128,128,114);
+		translation([-2,-2,7*16]); box(132,132,16); end();
+		
+		for (var y = 0; y < 7; ++y) {
+			if (y % 2 == 0) {
+				translation([-2,-2,y*16]); box(14,30,14); end();
+				translation([100,-2,y*16]); box(30,14,14); end();
+			}
+			else {
+				translation([-2,-2,y*16]); box(30,14,14); end();
+				translation([116,-2,y*16]); box(14,30,14); end();
+			}
+		}
+		
+		for (var x = 0; x < 5; ++x) {
+			translation([0,128+x*(128.0/6),0]); box(128,(128.0/6),(128.0/6)*(5-x)-2); end();
+			translation([-2,128+x*(128.0/6)-2,(128.0/6)*(5-x)-4]); box(132,(128.0/6)+4,4); end();
+		}
+		
+		translation([4,4,128]); cylinder(3,96); end();
+		translation([4,4,128+96]); sphere(3); end();
+		translation([4,124,128]); cylinder(3,96); end();
+		translation([4,124,128+96]); sphere(3); end();
+		//translation([4,124+128-(128.0/6),(128.0/6)]); cylinder(3,96); end();
+		//translation([4,124+128-(128.0/6),(128.0/6)+96]); sphere(3); end();
+		translation([4,4,128+16]); rotation([-90,0,0]); cylinder(2,120); end(); end();
+		translation([4,4,128+90]); rotation([-90,0,0]); cylinder(2,120); end(); end();
+		translation([4,4,128+90]); rotation([0,+90,0]); cylinder(2,126); end(); end();
+		translation([4,4,128+16]); rotation([0,+90,0]); cylinder(2,126); end(); end();
+		
+		for (var x = 0; x < 9; ++x) {
+			translation([4,4+12*(x+1),128+16]); cylinder(1,74); end();
+			translation([4+12*(x+1),4,128+16]); cylinder(1,74); end();
+		}
+	end();
+}
+
+light([255],[255],[255], 8.4);
+
+	// Route
+	translation([0,0,-64]); box(1024,1024,128,true); end();
+	bounding();
+		translation([-384,0,1]); rotation([90,0,0]); cylinder(6.1,1024,true); end(); end();
+		for (var x = 0; x < 12; ++x) {
+			translation([-384,-512+(1024.0/12.0)*(x+0.5),0]); box(12,48,2, true); end();
+		}
+	end();
+	
+	// Trottoir
+	translation([0,-512,0]); box(512,1024,10); end();
+	bounding();
+		translation([4,0,6]); rotation([90,0,0]); cylinder(8.5,1024,true); end(); end();
+		for (var x = 0; x < 32; ++x) {
+			translation([-2,-512+32*x+1,0]); box(12,30,12); end();
+		}
+	end();
+	
+	// Streetlamp
+	translation([48,320,10]); streetlamp(); end();
+	
+	// Car
+	translation([-128,128,0]); car(); end();
+	
+	// MailBox
+	translation([128,-448,10]); mailBox(); end();
+	
+	// Building
+	translation([384,-512,10]); building(); end();
+	
+	// Barrier
+	translation([192,-512,10]); barrier(); end();
+	
+	// Stairs
+	translation([256,-384,10]); stairs(); end();
+	
+	// Man
+	//translation([64, -64, 176]); rotation([0,0,-82]); scale([0.24]); mesh("../models/man.stl"); end(); end(); end();
+end();

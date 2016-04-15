@@ -8,5 +8,5 @@ RT::EmptyCsgTree::~EmptyCsgTree()
 
 std::list<RT::Intersection>	RT::EmptyCsgTree::render(RT::Ray const &, unsigned int) const
 {
-  return {};
+  return std::list<RT::Intersection>();
 }

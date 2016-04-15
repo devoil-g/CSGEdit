@@ -32,7 +32,7 @@ RT::MeshCsgNode::~MeshCsgNode()
 std::list<RT::Intersection>	RT::MeshCsgNode::renderChildren(RT::Ray const & ray, unsigned int deph) const
 {
   // Stop if no intersection with bounding sphere
-  if (_bound && _bound->render(ray, deph).empty())
+  if (_bound->render(ray, deph).empty())
     return std::list<RT::Intersection>();
 
   std::list<RT::Intersection>	intersect;

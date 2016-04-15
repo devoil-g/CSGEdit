@@ -20,14 +20,14 @@ namespace RT
   class AbstractRaytracer
   {
   private:
-    std::recursive_mutex	_lock;		// Lock for start & stop
-    std::thread *		_thread;	// List of active threads
-    bool			_active;	// True to continue rendering, false to stop
+    std::recursive_mutex	_lock;			// Lock for start & stop
+    std::thread *		_thread;		// List of active threads
+    bool			_active;		// True to continue rendering, false to stop
 
-    virtual void		begin() = 0;	// Method called once when start()
+    virtual void		begin() = 0;		// Method called once when start()
 
   protected:
-    bool			active() const;	// Return active status
+    bool			active() const;		// Return active status
     
   public:
     AbstractRaytracer();

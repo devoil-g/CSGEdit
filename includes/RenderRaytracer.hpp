@@ -30,9 +30,9 @@ namespace RT
     void    			begin() override;									// Method managing rendering threads
     void    			render();										// Rendering thread main method
     void    			render(unsigned int);									// Render a zone
-    RT::Color			renderAntialiasing(unsigned int, unsigned int, unsigned int) const;			// Render antialistd::asing
-    RT::Color			renderAnaglyph3D(RT::Ray const &) const;						// Render anaglyph image using parameters stored in RT::Config::Anaglyph3D
-    RT::Color			renderDephOfField(RT::Ray const &) const;						// Render deph of field image using parameters stored in RT::Config::DephOfField
+    RT::Color			renderAntialiasing(unsigned int, unsigned int, unsigned int) const;			// Render antialiasing
+    RT::Color			renderVirtualReality(RT::Ray const &) const;						// Render virtual reality image
+    RT::Color			renderDephOfField(RT::Ray const &) const;						// Render deph of field image
     RT::Color			renderRay(RT::Ray const &, unsigned int = 0) const;					// Render a ray with CSG tree
     RT::Color			renderReflection(RT::Ray const &, RT::Intersection const &, unsigned int) const;	// Render reflection of ray  
     RT::Color			renderTransparency(RT::Ray const &, RT::Intersection const &, unsigned int) const;	// Render transparency

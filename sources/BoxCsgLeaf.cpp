@@ -92,30 +92,28 @@ std::vector<double>	RT::BoxCsgLeaf::intersection(RT::Ray const & ray) const
 
 Math::Vector<4>	RT::BoxCsgLeaf::normal(Math::Vector<4> const & pt) const
 {
-  RT::Ray	n;
+  Math::Vector<4>	p;
 
   // Apply center to ray
-  n.p() = pt;
+  p = pt;
   if (_center == true)
   {
-    n.p().x() += _x / 2.f;
-    n.p().y() += _y / 2.f;
-    n.p().z() += _z / 2.f;
+    p.x() += _x / 2.f;
+    p.y() += _y / 2.f;
+    p.z() += _z / 2.f;
   }
 
   // Find which face is intersected (X, Y or Z)
-  if (n.p().x() < Math::Shift)
-    n.d().x() = -1;
-  else if (n.p().x() > _x - Math::Shift)
-    n.d().x() = +1;
-  else if (n.p().y() < Math::Shift)
-    n.d().y() = -1;
-  else if (n.p().y() > _y - Math::Shift)
-    n.d().y() = +1;
-  else if (n.p().z() < Math::Shift)
-    n.d().z() = -1;
+  if (p.x() < Math::Shift)
+    return Math::Vector<4>(-1.f, 0.f, 0.f, 0.f);
+  else if (p.x() > _x - Math::Shift)
+    return Math::Vector<4>(+1.f, 0.f, 0.f, 0.f);
+  else if (p.y() < Math::Shift)
+    return Math::Vector<4>(0.f, -1.f, 0.f, 0.f);
+  else if (p.y() > _y - Math::Shift)
+    return Math::Vector<4>(0.f, +1.f, 0.f, 0.f);
+  else if (p.z() < Math::Shift)
+    return Math::Vector<4>(0.f, 0.f, -1.f, 0.f);
   else
-    n.d().z() = +1;
-
-  return n.d();
+    return Math::Vector<4>(0.f, 0.f, +1.f, 0.f);
 }

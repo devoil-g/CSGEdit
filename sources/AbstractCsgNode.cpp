@@ -6,11 +6,8 @@ RT::AbstractCsgNode::AbstractCsgNode()
 
 RT::AbstractCsgNode::~AbstractCsgNode()
 {
-  while (!_children.empty())
-  {
-    delete _children.front();
-    _children.pop_front();
-  }
+  for (RT::AbstractCsgTree * it : _children)
+    delete it;
 }
 
 std::list<RT::Intersection>	RT::AbstractCsgNode::render(RT::Ray const & ray, unsigned int deph) const

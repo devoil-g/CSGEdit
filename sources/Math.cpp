@@ -59,7 +59,7 @@ std::vector<double>	Math::Utils::solve(double a, double b, double c, double d, d
 
   double  k = f / 3.f + delta;
   double  l = std::sqrt(k - f);
-  double  m = std::sqrt(std::pow(k / 2.f, 2.f) - h);
+  double  m = std::sqrt(std::pow(k / 2.f, 2) - h);
   double  n = -b / (4.f * a);
 
   delta = l * l - 2.f * k + 4.f * m;
@@ -114,9 +114,9 @@ RT::AbstractCsgTree const *  Math::Utils::BoundingSphere(std::vector<std::tuple<
       zmax = pts[n];
   }
 
-  xSpan = std::pow(std::get<0>(xmax) - std::get<0>(xmin), 2.f) + std::pow(std::get<1>(xmax) - std::get<1>(xmin), 2.f) + std::pow(std::get<2>(xmax) - std::get<2>(xmin), 2.f);
-  ySpan = std::pow(std::get<0>(ymax) - std::get<0>(ymin), 2.f) + std::pow(std::get<1>(ymax) - std::get<1>(ymin), 2.f) + std::pow(std::get<2>(ymax) - std::get<2>(ymin), 2.f);
-  zSpan = std::pow(std::get<0>(zmax) - std::get<0>(zmin), 2.f) + std::pow(std::get<1>(zmax) - std::get<1>(zmin), 2.f) + std::pow(std::get<2>(zmax) - std::get<2>(zmin), 2.f);
+  xSpan = std::pow(std::get<0>(xmax) - std::get<0>(xmin), 2) + std::pow(std::get<1>(xmax) - std::get<1>(xmin), 2) + std::pow(std::get<2>(xmax) - std::get<2>(xmin), 2);
+  ySpan = std::pow(std::get<0>(ymax) - std::get<0>(ymin), 2) + std::pow(std::get<1>(ymax) - std::get<1>(ymin), 2) + std::pow(std::get<2>(ymax) - std::get<2>(ymin), 2);
+  zSpan = std::pow(std::get<0>(zmax) - std::get<0>(zmin), 2) + std::pow(std::get<1>(zmax) - std::get<1>(zmin), 2) + std::pow(std::get<2>(zmax) - std::get<2>(zmin), 2);
 
   dia1 = xmin;
   dia2 = xmax;
@@ -140,14 +140,14 @@ RT::AbstractCsgTree const *  Math::Utils::BoundingSphere(std::vector<std::tuple<
   std::get<1>(center) = (std::get<1>(dia1) + std::get<1>(dia2)) / 2.f;
   std::get<2>(center) = (std::get<2>(dia1) + std::get<2>(dia2)) / 2.f;
 
-  sqRad = std::pow(std::get<0>(dia2) - std::get<0>(center), 2.f) + std::pow(std::get<1>(dia2) - std::get<1>(center), 2.f) + std::pow(std::get<2>(dia2) - std::get<2>(center), 2.f);
+  sqRad = std::pow(std::get<0>(dia2) - std::get<0>(center), 2) + std::pow(std::get<1>(dia2) - std::get<1>(center), 2) + std::pow(std::get<2>(dia2) - std::get<2>(center), 2);
   radius = std::sqrt(sqRad);
 
   for (unsigned int n = 0; n < pts.size(); n++)
   {
     double	d;
 
-    d = std::pow(std::get<0>(pts[n]) - std::get<0>(center), 2.f) + std::pow(std::get<1>(pts[n]) - std::get<1>(center), 2.f) + std::pow(std::get<2>(pts[n]) - std::get<2>(center), 2.f);
+    d = std::pow(std::get<0>(pts[n]) - std::get<0>(center), 2) + std::pow(std::get<1>(pts[n]) - std::get<1>(center), 2) + std::pow(std::get<2>(pts[n]) - std::get<2>(center), 2);
 
     if (d > sqRad)
     {

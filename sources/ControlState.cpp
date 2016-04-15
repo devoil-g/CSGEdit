@@ -177,6 +177,8 @@ bool	RT::ControlState::update(sf::Time)
       // Load new scene
       _scene = RT::SceneLibrary::Instance().get(_file);
       _camera = _scene->camera();
+      _preview.load(_scene);
+      _preview.start();
 
       RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::NoProgress);
     }

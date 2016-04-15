@@ -12,7 +12,7 @@ RT::TransformationCsgNode::~TransformationCsgNode()
 std::list<RT::Intersection>	RT::TransformationCsgNode::renderChildren(RT::Ray const & ray, unsigned int deph) const
 {
   std::list<RT::Intersection>	intersect;
-  RT::Ray const &		r = _transformation.inverse() * ray;
+  RT::Ray			r = _transformation.inverse() * ray;
 
   // Iterate through sub-tree to get intersections
   for (RT::AbstractCsgTree const * it : _children)

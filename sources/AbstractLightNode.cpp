@@ -6,11 +6,8 @@ RT::AbstractLightNode::AbstractLightNode()
 
 RT::AbstractLightNode::~AbstractLightNode()
 {
-  while (!_children.empty())
-  {
-    delete _children.front();
-    _children.pop_front();
-  }
+  for (RT::AbstractLightTree * it : _children)
+    delete it;
 }
 
 void	RT::AbstractLightNode::push(RT::AbstractLightTree * node)
