@@ -398,7 +398,7 @@ RT::Color RT::RenderRaytracer::renderRay(RT::Ray const & ray, unsigned int recur
 
   // Render intersections list with CSG tree
   std::list<RT::Intersection>	intersect = _scene->csg()->render(ray);
-  
+
   // Drop intersection behind camera
   while (!intersect.empty() && intersect.front().distance < 0.f)
     intersect.pop_front();
@@ -515,7 +515,7 @@ RT::Color RT::RenderRaytracer::renderTransparency(RT::Ray const & ray, RT::Inter
   }
 
   // Stop immediatly if total reflection
-  if (reflection_coef == 1.f)
+  if (reflection_coef > 1.f - Math::Shift)
     return reflection_clr;
 
   // Inverse normal if necessary
@@ -529,19 +529,18 @@ RT::Color RT::RenderRaytracer::renderTransparency(RT::Ray const & ray, RT::Inter
   }
 
   // Using sphere technique to calculate refracted ray
-  RT::Ray	s = ray.normalize();
   std::vector<double> result = Math::Utils::solve(
     normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z(),
-    2.f * (s.d().x() * normal.d().x() + s.d().y() * normal.d().y() + s.d().z() * normal.d().z()),
-    s.d().x() * s.d().x() + s.d().y() * s.d().y() + s.d().z() * s.d().z() - refraction * refraction
+    2.f * (ray.d().x() * normal.d().x() + ray.d().y() * normal.d().y() + ray.d().z() * normal.d().z()),
+    (ray.d().x() * ray.d().x() + ray.d().y() * ray.d().y() + ray.d().z() * ray.d().z()) * (1.f - refraction * refraction)
     );
-
+  
 #ifdef _DEBUG
   if (result.empty())
     throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
 #endif
 
-  RT::Ray	r = RT::Ray(normal.p() - normal.d() * Math::Shift, s.d() + normal.d() * result.front()).normalize();
+  RT::Ray	r = RT::Ray(normal.p() - normal.d() * Math::Shift, ray.d() + normal.d() * result.front()).normalize();
   normal.d() *= -1.f;
 
   unsigned int		quality = intersection.material.transparency.quality > recursivite ? intersection.material.transparency.quality - recursivite : 0;

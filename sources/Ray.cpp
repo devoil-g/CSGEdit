@@ -3,22 +3,13 @@
 
 double		RT::Ray::cos(Math::Vector<4> const & A, Math::Vector<4> const & B)
 {
-  // Get squared vector lenght
-  double	v1 = A.x() * A.x() + A.y() * A.y() + A.z() * A.z();
-  double	v2 = B.x() * B.x() + B.y() * B.y() + B.z() * B.z();
-
 #ifdef _DEBUG
   // Should not happen
-  if (v1 == 0 || v2 == 0)
+  if (A.x() * A.x() + A.y() * A.y() + A.z() * A.z() == 0 || B.x() * B.x() + B.y() * B.y() + B.z() * B.z() == 0)
     throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
 #endif
 
-  // Get lenght of A+B
-  double	v12 = (A.x() + B.x()) * (A.x() + B.x())
-    + (A.y() + B.y()) * (A.y() + B.y())
-    + (A.z() + B.z()) * (A.z() + B.z());
-
-  return (v12 - (v1 + v2)) / (2.f * std::sqrt(v1 * v2));
+  return RT::Ray::scalaire(A, B) / std::sqrt((A.x() * A.x() + A.y() * A.y() + A.z() * A.z()) * (B.x() * B.x() + B.y() * B.y() + B.z() * B.z()));
 }
 
 double		RT::Ray::angle(Math::Vector<4> const & A, Math::Vector<4> const & B)
@@ -28,10 +19,7 @@ double		RT::Ray::angle(Math::Vector<4> const & A, Math::Vector<4> const & B)
 
 double		RT::Ray::scalaire(Math::Vector<4> const & A, Math::Vector<4> const & B)
 {
-  return ((A.x() * A.x() + A.y() * A.y() + A.z() * A.z())
-    + (B.x() * B.x() + B.y() * B.y() + B.z() * B.z())
-    - ((A.x() - B.x()) * (A.x() - B.x()) + (A.y() - B.y()) * (A.y() - B.y()) + (A.z() - B.z()) * (A.z() - B.z())))
-    / 2.f;
+  return A.x() * B.x() + A.y() * B.y() + A.z() * B.z();
 }
 
 Math::Vector<4>	RT::Ray::vectoriel(Math::Vector<4> const & A, Math::Vector<4> const & B)

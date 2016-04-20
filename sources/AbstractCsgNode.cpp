@@ -16,7 +16,7 @@ std::list<RT::Intersection>	RT::AbstractCsgNode::render(RT::Ray const & ray, uns
   if (_children.empty())
     throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
 #endif
-
+  
   std::list<RT::Intersection>	result = renderChildren(ray, deph);
 
   // Attribute top node

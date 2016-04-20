@@ -72,16 +72,32 @@ std::vector<double>	Math::Utils::solve(double a, double b, double c, double d, d
   if (g > 0)
     x1 *= -1.f;
 
+  double r0 = x1 - x2 + n;
+  if (std::isnan(r0))
+    return std::vector<double>();
+
+  double r1 = x1 + x2 + n;
+  if (std::isnan(r1))
+    return std::vector<double>();
+
   delta = l * l - 2.f * k - 4.f * m;
   if (delta < 0.f)
-    return { x1 - x2 + n, x1 + x2 + n };
-
+    return { r0, r1 };
+  
   double  y1 = -l / 2.f;
   double  y2 = std::sqrt(delta) / 2.f;
   if (g > 0)
     y1 *= -1.f;
 
-  return { x1 - x2 + n, x1 + x2 + n, y1 - y2 + n, y1 + y2 + n };
+  double  r2 = y1 - y2 + n;
+  if (std::isnan(r2))
+    return std::vector<double>();
+
+  double  r3 = y1 + y2 + n;
+  if (std::isnan(r3))
+    return std::vector<double>();
+
+  return { r0, r1, r2, r3 };
 }
 
 RT::AbstractCsgTree const *  Math::Utils::BoundingSphere(std::vector<std::tuple<double, double, double> > const & pts)
