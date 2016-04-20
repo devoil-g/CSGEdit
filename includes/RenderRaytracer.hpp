@@ -36,8 +36,9 @@ namespace RT
     RT::Color			renderRay(RT::Ray const &, unsigned int = 0) const;					// Render a ray with CSG tree
     RT::Color			renderReflection(RT::Ray const &, RT::Intersection const &, unsigned int) const;	// Render reflection of ray  
     RT::Color			renderTransparency(RT::Ray const &, RT::Intersection const &, unsigned int) const;	// Render transparency
-    RT::Color			renderLight(RT::Ray const &, RT::Intersection const &, unsigned int) const;		// Render light of an intersection
-
+    RT::Color			renderLightDirect(RT::Ray const &, RT::Intersection const &, unsigned int) const;	// Render direct light of an intersection
+    RT::Color			renderLightIndirect(RT::Ray const &, RT::Intersection const &, unsigned int) const;	// Render indirect light of an intersection
+    
   public:
     RenderRaytracer();
     ~RenderRaytracer();

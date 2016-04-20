@@ -53,9 +53,12 @@ RT::Parser::Parser()
   // Scope materials
   _script.add(chaiscript::fun(&RT::Parser::scopeMaterial, this), "material");
   _script.add(chaiscript::fun(&RT::Parser::scopeColor, this), "color");
-  _script.add(chaiscript::fun(std::function<void(RT::Color const &, RT::Color const &, RT::Color const &)>(std::bind(&RT::Parser::scopeLight, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, 1.f, RT::Config::Material::Quality))), "light");
-  _script.add(chaiscript::fun(std::function<void(RT::Color const &, RT::Color const &, RT::Color const &, double)>(std::bind(&RT::Parser::scopeLight, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, RT::Config::Material::Quality))), "light");
-  _script.add(chaiscript::fun(std::function<void(RT::Color const &, RT::Color const &, RT::Color const &, double, unsigned int)>(std::bind(&RT::Parser::scopeLight, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5))), "light");
+  _script.add(chaiscript::fun(std::function<void(RT::Color const &, RT::Color const &, RT::Color const &)>(std::bind(&RT::Parser::scopeDirect, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, 1.f, RT::Config::Material::Quality))), "direct_light");
+  _script.add(chaiscript::fun(std::function<void(RT::Color const &, RT::Color const &, RT::Color const &, double)>(std::bind(&RT::Parser::scopeDirect, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, RT::Config::Material::Quality))), "direct_light");
+  _script.add(chaiscript::fun(std::function<void(RT::Color const &, RT::Color const &, RT::Color const &, double, unsigned int)>(std::bind(&RT::Parser::scopeDirect, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5))), "direct_light");
+  _script.add(chaiscript::fun(std::function<void(RT::Color const &, RT::Color const &, RT::Color const &)>(std::bind(&RT::Parser::scopeIndirect, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, 1.f, RT::Config::Material::Quality))), "indirect_light");
+  _script.add(chaiscript::fun(std::function<void(RT::Color const &, RT::Color const &, RT::Color const &, double)>(std::bind(&RT::Parser::scopeIndirect, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, RT::Config::Material::Quality))), "indirect_light");
+  _script.add(chaiscript::fun(std::function<void(RT::Color const &, RT::Color const &, RT::Color const &, double, unsigned int)>(std::bind(&RT::Parser::scopeIndirect, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5))), "indirect_light");
   _script.add(chaiscript::fun(std::function<void(double)>(std::bind(&RT::Parser::scopeTransparency, this, std::placeholders::_1, 1.f, 0.f, RT::Config::Material::Quality))), "transparency");
   _script.add(chaiscript::fun(std::function<void(double, double)>(std::bind(&RT::Parser::scopeTransparency, this, std::placeholders::_1, std::placeholders::_2, 0.f, RT::Config::Material::Quality))), "transparency");
   _script.add(chaiscript::fun(std::function<void(double, double, double)>(std::bind(&RT::Parser::scopeTransparency, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, RT::Config::Material::Quality))), "transparency");
@@ -333,15 +336,27 @@ void	RT::Parser::scopeColor(RT::Color const & clr)
   scopeStart(new RT::MaterialCsgNode(material));
 }
 
-void	RT::Parser::scopeLight(RT::Color const & ambient, RT::Color const & diffuse, RT::Color const & specular, double shininess, unsigned int quality)
+void	RT::Parser::scopeDirect(RT::Color const & ambient, RT::Color const & diffuse, RT::Color const & specular, double shininess, unsigned int quality)
 {
   RT::Material	material;
 
-  material.light.ambient = ambient;
-  material.light.diffuse = diffuse;
-  material.light.specular = specular;
-  material.light.shininess = shininess;
-  material.light.quality = quality;
+  material.direct.ambient = ambient;
+  material.direct.diffuse = diffuse;
+  material.direct.specular = specular;
+  material.direct.shininess = shininess;
+  material.direct.quality = quality;
+  scopeStart(new RT::MaterialCsgNode(material));
+}
+
+void	RT::Parser::scopeIndirect(RT::Color const & ambient, RT::Color const & diffuse, RT::Color const & specular, double shininess, unsigned int quality)
+{
+  RT::Material	material;
+
+  material.indirect.ambient = ambient;
+  material.indirect.diffuse = diffuse;
+  material.indirect.specular = specular;
+  material.indirect.shininess = shininess;
+  material.indirect.quality = quality;
   scopeStart(new RT::MaterialCsgNode(material));
 }
 
@@ -500,7 +515,10 @@ void	RT::Parser::settingResolution(unsigned int width, unsigned int height)
 {
   // Set resolution only if in main file
   if (_files.size() == 1)
-    _scene.image().create(width, height);
+  {
+    _scene.image().create(width, height, RT::Color(0.f).sfml());
+    _scene.hud().create(width, height, RT::Color::transparent());
+  }
 }
 
 void	RT::Parser::settingAntiAliasing(unsigned int live, unsigned int post)

@@ -20,15 +20,15 @@ RT::DirectionalLightLeaf::~DirectionalLightLeaf()
 RT::Color RT::DirectionalLightLeaf::preview(Math::Matrix<4, 4> const & transformation, RT::Scene const *, RT::Ray const &, RT::Intersection const & intersection, unsigned int) const
 {
   // If no ambient light, stop
-  if (intersection.material.color == 0.f || intersection.material.light.diffuse == 0.f)
+  if (intersection.material.color == 0.f || intersection.material.direct.diffuse == 0.f)
     return RT::Color(0.f);
 
-  return intersection.material.color * intersection.material.light.diffuse * _color * std::fmax(RT::Ray::cos(intersection.normal.d(), Math::Vector<4>(transformation * Math::Vector<4>(-1.f, 0.f, 0.f, 0.f))), 0.f);
+  return intersection.material.color * intersection.material.direct.diffuse * _color * std::fmax(RT::Ray::cos(intersection.normal.d(), Math::Vector<4>(transformation * Math::Vector<4>(-1.f, 0.f, 0.f, 0.f))), 0.f);
 }
 
 RT::Color RT::DirectionalLightLeaf::render(Math::Matrix<4, 4> const & transformation, RT::Scene const * scene, RT::Ray const & ray, RT::Intersection const & intersection, unsigned int) const
 {
-  if (intersection.material.light.diffuse == 0.f && intersection.material.light.specular == 0.f)
+  if (intersection.material.direct.diffuse == 0.f && intersection.material.direct.specular == 0.f)
     return RT::Color(0.f);
 
   // Inverse normal if necessary
@@ -43,10 +43,10 @@ RT::Color RT::DirectionalLightLeaf::render(Math::Matrix<4, 4> const & transforma
   std::list<RT::Ray>	rays;
 
   Math::Vector<4>	p = intersection.normal.p() + n * Math::Shift;
-  if (intersection.material.light.quality <= 1 || _angle == 0)
+  if (intersection.material.direct.quality <= 1 || _angle == 0)
     rays.push_back(RT::Ray(p, transformation * Math::Vector<4>(-1.f, 0.f, 0.f, 0.f)));
   else
-    for (double a = Math::Random::rand(1.f / (intersection.material.light.quality + 1)); a < 1.f; a += 1.f / (intersection.material.light.quality + 1))
+    for (double a = Math::Random::rand(1.f / (intersection.material.direct.quality + 1)); a < 1.f; a += 1.f / (intersection.material.direct.quality + 1))
       for (double b = Math::Random::rand((2.f * Math::Pi) / (int)(2.f * a * Math::Pi + 1.f)); b < 2.f * Math::Pi; b += (2.f * Math::Pi) / (int)(2.f * a * Math::Pi + 1.f))
 	rays.push_back(RT::Ray(p, transformation * Math::Vector<4>(-1.f / std::tan(Math::Utils::DegToRad(_angle)), a * std::cos(b), a * std::sin(b), 0.f)));
 
@@ -74,9 +74,9 @@ RT::Color RT::DirectionalLightLeaf::render(Math::Matrix<4, 4> const & transforma
 
     // Apply light to specular component
     if (inside == false)
-      specular += light * std::pow(std::fmax(RT::Ray::cos(r, it.d()), 0.f), intersection.material.light.shininess);
+      specular += light * std::pow(std::fmax(RT::Ray::cos(r, it.d()), 0.f), intersection.material.direct.shininess);
   }
 
-  return diffuse / (double)rays.size() * intersection.material.color * intersection.material.light.diffuse * (1.f - intersection.material.transparency.intensity) * (1.f - intersection.material.reflection.intensity)
-    + specular / (double)rays.size() * intersection.material.light.specular;
+  return diffuse / (double)rays.size() * intersection.material.color * intersection.material.direct.diffuse * (1.f - intersection.material.transparency.intensity) * (1.f - intersection.material.reflection.intensity)
+    + specular / (double)rays.size() * intersection.material.direct.specular;
 }

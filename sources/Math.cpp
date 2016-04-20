@@ -1,5 +1,6 @@
 #include <ctime>
 #include <limits>
+#include <random>
 
 #ifdef _DEBUG
 #include "Exception.hpp"
@@ -176,9 +177,10 @@ unsigned int	Math::Random::_cursor = 0;
 void	Math::Random::initialize()
 {
   // Set random generator to timestamp
-  std::srand((unsigned int)std::time(nullptr));
-
+  std::default_random_engine			generator;
+  std::uniform_real_distribution<double>	distribution(0.f, 1.f);
+  
   // Fill random table
   for (unsigned int i = 0; i < Math::RandomTableSize; i++)
-    _table[i] = (double)std::rand() / (double)RAND_MAX;
+    _table[i] = distribution(generator);
 }

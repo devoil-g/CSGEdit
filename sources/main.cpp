@@ -37,7 +37,7 @@ int	main(int argc, char ** argv)
   // See MSDN of GetOpenFileName
   OPENFILENAME  fileinfo;
   CHAR		path[MAX_PATH];
-    
+
   memset(path, 0, sizeof(path));
   fileinfo.lStructSize = sizeof(OPENFILENAME);
   fileinfo.hwndOwner = nullptr;
@@ -52,7 +52,7 @@ int	main(int argc, char ** argv)
   fileinfo.Flags = OFN_FILEMUSTEXIST;
   fileinfo.lpstrDefExt = nullptr;
   fileinfo.FlagsEx = 0;
-  
+
   // Remove false to enable OpenFileDialogWindow
   if (GetOpenFileName(&fileinfo))
     file = std::string(path);

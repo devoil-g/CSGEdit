@@ -77,4 +77,5 @@ bool  RT::RenderState::update(sf::Time elapsed)
 void  RT::RenderState::draw()
 {
   RT::Window::Instance().draw(_scene->image());
+  RT::Window::Instance().draw(_scene->hud());
 }

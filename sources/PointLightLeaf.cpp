@@ -23,7 +23,7 @@ RT::PointLightLeaf::~PointLightLeaf()
 RT::Color	RT::PointLightLeaf::preview(Math::Matrix<4, 4> const & transformation, RT::Scene const *, RT::Ray const &, RT::Intersection const & intersection, unsigned int) const
 {
   // If no diffuse light, stop
-  if (intersection.material.color == 0.f || intersection.material.light.diffuse == 0.f)
+  if (intersection.material.color == 0.f || intersection.material.direct.diffuse == 0.f)
     return RT::Color(0.f);
   
   // Calculate relative position of intersection
@@ -38,15 +38,15 @@ RT::Color	RT::PointLightLeaf::preview(Math::Matrix<4, 4> const & transformation,
   double	intensity = _intensity == 0.f ? 1.f : ((_intensity * _intensity) / (normal.p().x() * normal.p().x() + normal.p().y() * normal.p().y() + normal.p().z() * normal.p().z()));
 
   if (_angle1 == 0.f && _angle2 == 0.f)
-    return intersection.material.color * intersection.material.light.diffuse * intensity * diffuse * _color;
+    return intersection.material.color * intersection.material.direct.diffuse * intensity * diffuse * _color;
   else
   {
     double	angle = Math::Utils::RadToDeg(RT::Ray::angle(Math::Vector<4>(1.f, 0.f, 0.f, 0.f), normal.p()));
 
     if (angle < _angle1)
-      return intersection.material.color * intersection.material.light.diffuse * intensity * diffuse * _color;
+      return intersection.material.color * intersection.material.direct.diffuse * intensity * diffuse * _color;
     else if (angle < _angle2)
-      return RT::Color((_angle2 - angle) / (_angle2 - _angle1)) * intersection.material.color * intersection.material.light.diffuse * intensity * diffuse * _color;
+      return RT::Color((_angle2 - angle) / (_angle2 - _angle1)) * intersection.material.color * intersection.material.direct.diffuse * intensity * diffuse * _color;
     else
       return RT::Color(0.f);
   }
@@ -54,7 +54,7 @@ RT::Color	RT::PointLightLeaf::preview(Math::Matrix<4, 4> const & transformation,
 
 RT::Color RT::PointLightLeaf::render(Math::Matrix<4, 4> const & transformation, RT::Scene const * scene, RT::Ray const & ray, RT::Intersection const & intersection, unsigned int) const
 {
-  if (intersection.material.light.diffuse == 0.f && intersection.material.light.specular == 0.f)
+  if (intersection.material.direct.diffuse == 0.f && intersection.material.direct.specular == 0.f)
     return RT::Color(0.f);
 
   // Inverse normal if necessary
@@ -71,16 +71,16 @@ RT::Color RT::PointLightLeaf::render(Math::Matrix<4, 4> const & transformation, 
   std::list<RT::Ray>	rays;
 
   Math::Vector<4>	p = normal.p() + normal.d() * Math::Shift;
-  if (intersection.material.light.quality <= 1 || _radius == 0.f)
+  if (intersection.material.direct.quality <= 1 || _radius == 0.f)
     rays.push_back(RT::Ray(Math::Vector<4>(0.f, 0.f, 0.f, 1.f), Math::Vector<4>(p.x(), p.y(), p.z(), 0.f)));
   else
   {
     // Random rotation matrix
     Math::Matrix<4, 4>	matrix = Math::Matrix<4, 4>::rotation(Math::Random::rand(180.f), Math::Random::rand(180.f), Math::Random::rand(180.f));
 
-    for (double a = Math::Random::rand(_radius / (intersection.material.light.quality + 1)); a < _radius; a += _radius / (intersection.material.light.quality + 1))
-      for (double b = Math::Random::rand(Math::Pi / (int)(a / _radius * intersection.material.light.quality + 1)); b < Math::Pi; b += Math::Pi / (int)(a / _radius * intersection.material.light.quality + 1))
-	for (double c = Math::Random::rand(2.f * Math::Pi / (std::sin(b) * a / _radius * intersection.material.light.quality + 1)); c < 2.f * Math::Pi; c += 2.f * Math::Pi / (std::sin(b) * a / _radius * intersection.material.light.quality + 1))
+    for (double a = Math::Random::rand(_radius / (intersection.material.direct.quality + 1)); a < _radius; a += _radius / (intersection.material.direct.quality + 1))
+      for (double b = Math::Random::rand(Math::Pi / (int)(a / _radius * intersection.material.direct.quality + 1)); b < Math::Pi; b += Math::Pi / (int)(a / _radius * intersection.material.direct.quality + 1))
+	for (double c = Math::Random::rand(2.f * Math::Pi / (std::sin(b) * a / _radius * intersection.material.direct.quality + 1)); c < 2.f * Math::Pi; c += 2.f * Math::Pi / (std::sin(b) * a / _radius * intersection.material.direct.quality + 1))
 	{
 	  Math::Vector<4>	r = matrix * Math::Vector<4>(std::cos(b) * a, std::cos(c) * std::sin(b) * a, std::sin(c) * std::sin(b) * a, 1.f);
 
@@ -132,9 +132,9 @@ RT::Color RT::PointLightLeaf::render(Math::Matrix<4, 4> const & transformation, 
 
     // Apply light to specular component
     if (inside == false)
-      specular += light * pow(cos_specular, intersection.material.light.shininess) * angle * intensity;
+      specular += light * pow(cos_specular, intersection.material.direct.shininess) * angle * intensity;
   }
 
-  return diffuse / (double)rays.size() * intersection.material.color * intersection.material.light.diffuse * (1.f - intersection.material.transparency.intensity) * (1.f - intersection.material.reflection.intensity)
-    + specular / (double)rays.size() * intersection.material.light.specular;
+  return diffuse / (double)rays.size() * intersection.material.color * intersection.material.direct.diffuse * (1.f - intersection.material.transparency.intensity) * (1.f - intersection.material.reflection.intensity)
+    + specular / (double)rays.size() * intersection.material.direct.specular;
 }

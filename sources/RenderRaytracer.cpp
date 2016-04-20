@@ -9,6 +9,7 @@
 #include "Config.hpp"
 #include "Exception.hpp"
 #include "Math.hpp"
+#include "Ray.hpp"
 #include "RenderRaytracer.hpp"
 
 RT::RenderRaytracer::RenderRaytracer()
@@ -214,7 +215,20 @@ void	RT::RenderRaytracer::render(unsigned int zone)
   // Calcul zone coordinates (x, y)
   unsigned int	x = zone % (_scene->image().getSize().x / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().x % RT::Config::Raytracer::BlockSize ? 1 : 0)) * RT::Config::Raytracer::BlockSize;
   unsigned int	y = zone / (_scene->image().getSize().x / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().x % RT::Config::Raytracer::BlockSize ? 1 : 0)) * RT::Config::Raytracer::BlockSize;
-  
+
+  // Draw zone box
+  for (unsigned int a = 0; a < RT::Config::Raytracer::BlockSize; a++)
+  {
+    if (x + a < _scene->image().getSize().x && y < _scene->image().getSize().y)
+      _scene->hud().setPixel(x + a, y, RT::Color(1.f, 0.f, 0.f).sfml());
+    if (x + a < _scene->image().getSize().x && y + RT::Config::Raytracer::BlockSize - 1 < _scene->image().getSize().y)
+      _scene->hud().setPixel(x + a, y + RT::Config::Raytracer::BlockSize - 1, RT::Color(1.f, 0.f, 0.f).sfml());
+    if (x < _scene->image().getSize().x && y + a < _scene->image().getSize().y)
+      _scene->hud().setPixel(x, y + a, RT::Color(1.f, 0.f, 0.f).sfml());
+    if (x + RT::Config::Raytracer::BlockSize - 1 < _scene->image().getSize().x && y + a < _scene->image().getSize().y)
+      _scene->hud().setPixel(x + RT::Config::Raytracer::BlockSize - 1, y + a, RT::Color(1.f, 0.f, 0.f).sfml());
+  }
+
   // To count the number of pixels rendered
   unsigned int	p = 0;
 
@@ -245,6 +259,19 @@ void	RT::RenderRaytracer::render(unsigned int zone)
 	  }
 	}
       }
+
+  // Erase zone box
+  for (unsigned int a = 0; a < RT::Config::Raytracer::BlockSize; a++)
+  {
+    if (x + a < _scene->image().getSize().x && y < _scene->image().getSize().y)
+      _scene->hud().setPixel(x + a, y, RT::Color::transparent());
+    if (x + a < _scene->image().getSize().x && y + RT::Config::Raytracer::BlockSize - 1 < _scene->image().getSize().y)
+      _scene->hud().setPixel(x + a, y + RT::Config::Raytracer::BlockSize - 1, RT::Color::transparent());
+    if (x < _scene->image().getSize().x && y + a < _scene->image().getSize().y)
+      _scene->hud().setPixel(x, y + a, RT::Color::transparent());
+    if (x + RT::Config::Raytracer::BlockSize - 1 < _scene->image().getSize().x && y + a < _scene->image().getSize().y)
+      _scene->hud().setPixel(x + RT::Config::Raytracer::BlockSize - 1, y + a, RT::Color::transparent());
+  }
 
   // Validate changes only if not interrupted
   if (active())
@@ -281,7 +308,7 @@ RT::Color RT::RenderRaytracer::renderAntialiasing(unsigned int x, unsigned int y
 
 RT::Color RT::RenderRaytracer::renderVirtualReality(RT::Ray const & ray) const
 {
-  // If no offset between eyes, do not render anaglyph
+  // If no offset between eyes, skip VR
   if (_scene->vr().offset == 0.f)
     return renderDephOfField((_scene->camera() * ray).normalize());
 
@@ -347,7 +374,7 @@ RT::Color RT::RenderRaytracer::renderDephOfField(RT::Ray const & ray) const
 	  deph.p().z() = std::sin(c) * std::cos(b) * a;
 
 	  // Randomly rotate point to smooth rendered image
-	  deph = rot * deph;
+	  deph.p() = rot * deph.p();
 
 	  // Calculate ray
 	  deph.p() = deph.p() + ray.p();
@@ -379,8 +406,9 @@ RT::Color RT::RenderRaytracer::renderRay(RT::Ray const & ray, unsigned int recur
   // Calculate transparency, reflection and light
   if (!intersect.empty())
     return renderReflection(ray, intersect.front(), recursivite)
-      + renderTransparency(ray, intersect.front(), recursivite)
-      + renderLight(ray, intersect.front(), recursivite);
+    + renderTransparency(ray, intersect.front(), recursivite)
+    + renderLightDirect(ray, intersect.front(), recursivite)
+    + renderLightIndirect(ray, intersect.front(), recursivite);
   // If no intersection, return background color (black)
   else
     return RT::Color(0.f);
@@ -401,12 +429,8 @@ RT::Color RT::RenderRaytracer::renderReflection(RT::Ray const & ray, RT::Interse
     inside = true;
   }
 
-  RT::Ray	r;
-  r.p() = normal.p() + normal.d() * Math::Shift;
-  r.d() = normal.p() - ray.p() - normal.d() * 2.f * (normal.d().x() * (normal.p().x() - ray.p().x()) + normal.d().y() * (normal.p().y() - ray.p().y()) + normal.d().z() * (normal.p().z() - ray.p().z())) / (normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z());
-  r = r.normalize();
-
-  unsigned int		quality = intersection.material.reflection.quality > recursivite ? intersection.material.reflection.quality - recursivite : 0;
+  RT::Ray	r = RT::Ray(normal.p() + normal.d() * Math::Shift, normal.p() - ray.p() - normal.d() * 2.f * (normal.d().x() * (normal.p().x() - ray.p().x()) + normal.d().y() * (normal.p().y() - ray.p().y()) + normal.d().z() * (normal.p().z() - ray.p().z())) / (normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z())).normalize();
+  unsigned int	quality = intersection.material.reflection.quality > recursivite ? intersection.material.reflection.quality - recursivite : 0;
 
   // If basic reflection, return basic rendering
   if (inside == true || intersection.material.reflection.glossiness == 0.f || quality <= 1)
@@ -438,7 +462,7 @@ RT::Color RT::RenderRaytracer::renderReflection(RT::Ray const & ray, RT::Interse
       if (RT::Ray::cos(r.d(), normal.d()) < 0.f)
 	r.d() += normal.d() * -2.f * (r.d().x() * normal.d().x() + r.d().y() * normal.d().y() + r.d().z() * normal.d().z()) / (normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z());
 
-      rays.push_back(r);
+      rays.push_back(r.normalize());
     }
 
   RT::Color	clr;
@@ -452,48 +476,79 @@ RT::Color RT::RenderRaytracer::renderTransparency(RT::Ray const & ray, RT::Inter
 {
   if (intersection.material.transparency.intensity == 0.f)
     return RT::Color(0.f);
-  
-  // Inverse normal and refraction if necessary
-  RT::Ray	normal = intersection.normal;
-  double	refraction = intersection.material.transparency.refraction;
-  bool		inside = false;
-  bool		reflection = false;
 
+  // Fresnel
+  double	cosi = RT::Ray::scalaire(ray.d(), intersection.normal.d());
+  double	refraction = intersection.material.transparency.refraction;
+
+  if (cosi > 0.f)
+    refraction = 1.f / refraction;
+  else
+    cosi *= -1.f;
+
+  RT::Color	reflection_clr;
+  double	reflection_coef;
+  double	sint = std::sqrt((std::max)((double)0.f, 1.f - cosi * cosi)) / refraction;
+
+  // Total internal reflection
+  if (sint >= 1.f - Math::Shift)
+    reflection_coef = 1.f;
+  else
+  {
+    double	cost = std::sqrt((std::max)((double)0.f, 1.f - sint * sint));
+    reflection_coef = (std::pow((refraction * cosi - cost) / (refraction * cosi + cost), 2) + std::pow((cosi - refraction * cost) / (cosi + refraction * cost), 2)) / 2.f;
+  }
+  
+  // Render reflection if significant amount
+  if (reflection_coef > Math::Shift)
+  {
+    RT::Intersection  new_intersection = intersection;
+
+    // Copy transparency properties to reflection
+    new_intersection.material.reflection.intensity = intersection.material.transparency.intensity * reflection_coef;
+    new_intersection.material.reflection.glossiness = intersection.material.transparency.glossiness;
+    new_intersection.material.reflection.quality = intersection.material.transparency.quality;
+    // Ignore transparency
+    new_intersection.material.transparency.intensity = 0.f;
+
+    reflection_clr = renderReflection(ray, new_intersection, recursivite + 1);
+  }
+
+  // Stop immediatly if total reflection
+  if (reflection_coef == 1.f)
+    return reflection_clr;
+
+  // Inverse normal if necessary
+  RT::Ray	normal = intersection.normal;
+  bool		inside = false;
+  
   if (RT::Ray::cos(ray.d(), intersection.normal.d()) > 0.f)
   {
     normal.d() *= -1.f;
-    refraction = 1.f / refraction;
     inside = true;
   }
 
   // Using sphere technique to calculate refracted ray
+  RT::Ray	s = ray.normalize();
   std::vector<double> result = Math::Utils::solve(
     normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z(),
-    2.f * (ray.d().x() * normal.d().x() + ray.d().y() * normal.d().y() + ray.d().z() * normal.d().z()),
-    ray.d().x() * ray.d().x() + ray.d().y() * ray.d().y() + ray.d().z() * ray.d().z() - (refraction * refraction * (ray.d().x() * ray.d().x() + ray.d().y() * ray.d().y() + ray.d().z() * ray.d().z()))
+    2.f * (s.d().x() * normal.d().x() + s.d().y() * normal.d().y() + s.d().z() * normal.d().z()),
+    s.d().x() * s.d().x() + s.d().y() * s.d().y() + s.d().z() * s.d().z() - refraction * refraction
     );
 
-  // Reflection if invalid refraction
-  RT::Ray r;
+#ifdef _DEBUG
   if (result.empty())
-  {
-    r.p() = normal.p() + normal.d() * Math::Shift;
-    r.d() = normal.p() - ray.p() - 2.f * normal.d() * (normal.d().x() * (normal.p().x() - ray.p().x()) + normal.d().y() * (normal.p().y() - ray.p().y()) + normal.d().z() * (normal.p().z() - ray.p().z())) / (normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z());
-    reflection = true;
-  }
-  else
-  {
-    r.p() = normal.p() - normal.d() * Math::Shift;
-    r.d() = ray.d() + normal.d() * result.front();
-    normal.d() *= -1.f;
-  }
-  r = r.normalize();
+    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+#endif
+
+  RT::Ray	r = RT::Ray(normal.p() - normal.d() * Math::Shift, s.d() + normal.d() * result.front()).normalize();
+  normal.d() *= -1.f;
 
   unsigned int		quality = intersection.material.transparency.quality > recursivite ? intersection.material.transparency.quality - recursivite : 0;
 
   // If basic transparency, return basic rendering
-  if (inside == true || reflection == true || intersection.material.transparency.glossiness == 0.f || quality <= 1)
-    return renderRay(r, recursivite + (reflection == true ? 1 : 0)) * intersection.material.color * intersection.material.transparency.intensity;
+  if (inside == true || intersection.material.transparency.glossiness == 0.f || quality <= 1)
+    return renderRay(r, recursivite) * intersection.material.color * (intersection.material.transparency.intensity * (1.f - reflection_coef)) + reflection_clr;
 
   // Calculate rotation angles of normal
   double	ry = -std::asin(r.d().z());
@@ -521,19 +576,104 @@ RT::Color RT::RenderRaytracer::renderTransparency(RT::Ray const & ray, RT::Inter
       if (RT::Ray::cos(r.d(), normal.d()) < 0.f)
 	r.d() += normal.d() * -2.f * (r.d().x() * normal.d().x() + r.d().y() * normal.d().y() + r.d().z() * normal.d().z()) / (normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z());
 
-      rays.push_back(r);
+      rays.push_back(r.normalize());
     }
 
   RT::Color	clr;
   for (std::list<RT::Ray>::const_iterator it = rays.begin(); it != rays.end(); it++)
     clr += renderRay(*it, recursivite + 1);
   
-  return clr / (double)rays.size() * intersection.material.color * intersection.material.transparency.intensity;
+  return clr / (double)rays.size() * intersection.material.color * (intersection.material.transparency.intensity * (1.f - reflection_coef)) + reflection_clr;
 }
 
-RT::Color RT::RenderRaytracer::renderLight(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int) const
+RT::Color RT::RenderRaytracer::renderLightDirect(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int) const
 {
+  // TODO: pass recursivite to lights to decrease quality with deph
   return _scene->light()->render(Math::Matrix<4, 4>::identite(), _scene, ray, intersection);
+}
+
+RT::Color RT::RenderRaytracer::renderLightIndirect(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite) const
+{
+  if (intersection.material.indirect.diffuse == 0.f && intersection.material.indirect.specular == 0.f)
+    return RT::Color(0.f);
+
+  unsigned int	quality = intersection.material.indirect.quality > recursivite ? intersection.material.indirect.quality - recursivite : 0;
+  
+  if (quality <= 1)
+    return RT::Color(0.f);
+
+  // Inverse normal if necessary
+  RT::Ray	normal = intersection.normal;
+  if (RT::Ray::cos(ray.d(), intersection.normal.d()) > 0)
+    normal.d() *= -1.f;
+
+  // Point origin right above intersection
+  normal.p() = intersection.normal.p() + normal.d() * Math::Shift;
+
+  // Render indirect diffuse
+  RT::Color	diffuse = RT::Color(0.f);
+  if (intersection.material.indirect.diffuse != 0.f)
+  {
+    // Calculate rotation angles of normal
+    double	ry = -std::asin(normal.d().z());
+    double	rz = 0;
+
+    if (normal.d().x() != 0 || normal.d().y() != 0)
+      rz = normal.d().y() > 0 ?
+      +std::acos(normal.d().x() / std::sqrt(normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y())) :
+      -std::acos(normal.d().x() / std::sqrt(normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y()));
+
+    // Rotation matrix to get ray to point of view
+    Math::Matrix<4, 4>  matrix = Math::Matrix<4, 4>::rotation(0, Math::Utils::RadToDeg(ry), Math::Utils::RadToDeg(rz));
+
+    unsigned int	nb_ray = 0;
+    for (double a = Math::Random::rand(Math::Pi / (2.f * quality)); a < Math::Pi / 2.f; a += Math::Pi / (2.f * quality))
+      for (double b = Math::Random::rand(2.f * Math::Pi / (std::cos(a) * quality * 2.f + 1.f)); b < 2.f * Math::Pi; b += (2.f * Math::Pi) / (std::cos(a) * quality * 2.f + 1.f))
+      {
+	diffuse += renderRay(RT::Ray(normal.p(), matrix * Math::Vector<4>(std::sin(a), std::cos(b) * std::cos(a), std::sin(b) * std::cos(a), 0.f)).normalize(), recursivite + 1) * std::sin(a);
+	nb_ray++;
+      }
+
+    diffuse = diffuse / nb_ray * intersection.material.indirect.diffuse * 2.f * Math::Pi;
+  }
+
+  // Render indirect specular
+  RT::Color	specular = RT::Color(0.f);
+  if (intersection.material.indirect.specular != 0.f)
+  {
+    RT::Ray	reflection = RT::Ray(normal.p(), normal.p() - ray.p() - normal.d() * 2.f * (normal.d().x() * (normal.p().x() - ray.p().x()) + normal.d().y() * (normal.p().y() - ray.p().y()) + normal.d().z() * (normal.p().z() - ray.p().z())) / (normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z())).normalize();
+    double	angle = std::acos(std::pow(1.f / 128.f, 1.f / intersection.material.indirect.shininess));
+    
+    // Calculate rotation angles of reflection
+    double	ry = -std::asin(reflection.d().z());
+    double	rz = 0;
+
+    // Rotation matrix to get ray to point of view
+    Math::Matrix<4, 4>  matrix = Math::Matrix<4, 4>::rotation(0, Math::Utils::RadToDeg(ry), Math::Utils::RadToDeg(rz));
+
+    if (reflection.d().x() != 0 || reflection.d().y() != 0)
+      rz = reflection.d().y() > 0 ?
+      +std::acos(reflection.d().x() / std::sqrt(reflection.d().x() * reflection.d().x() + reflection.d().y() * reflection.d().y())) :
+      -std::acos(reflection.d().x() / std::sqrt(reflection.d().x() * reflection.d().x() + reflection.d().y() * reflection.d().y()));
+
+    unsigned int	nb_ray = 0;
+    for (double a = Math::Random::rand(angle / quality) + Math::Pi / 2.f - angle; a < Math::Pi / 2.f; a += angle / quality)
+      for (double b = Math::Random::rand(2.f * Math::Pi / (std::cos(a) * quality * 2.f + 1.f)); b < 2.f * Math::Pi; b += (2.f * Math::Pi) / (std::cos(a) * quality * 2.f + 1.f))
+      {
+	RT::Ray		r = RT::Ray(normal.p(), matrix * Math::Vector<4>(std::sin(a), std::cos(b) * std::cos(a), std::sin(b) * std::cos(a), 0.f)).normalize();
+
+	// Reflect ray if inside intersection
+	if (RT::Ray::cos(r.d(), normal.d()) < 0.f)
+	  r.d() += normal.d() * -2.f * (r.d().x() * normal.d().x() + r.d().y() * normal.d().y() + r.d().z() * normal.d().z()) / (normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z());
+
+	specular += renderRay(r, recursivite + 1) * std::pow(std::sin(a), intersection.material.indirect.shininess) * std::pow(std::sin(RT::Ray::angle(r.d(), normal.d())), 1.f / intersection.material.indirect.shininess);
+	nb_ray++;
+      }
+
+    specular = specular / nb_ray * intersection.material.indirect.specular * 2.f * Math::Pi;
+  }
+
+  return intersection.material.color * (diffuse + specular);
 }
 
 double	  RT::RenderRaytracer::progress() const

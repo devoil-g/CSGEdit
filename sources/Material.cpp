@@ -5,7 +5,7 @@
 std::map<std::string, RT::Material> RT::Material::_material;
 
 RT::Material::Material()
-  : color(RT::Color(1.f)), light(), transparency(), reflection()
+  : color(RT::Color(1.f)), direct(), indirect(), transparency(), reflection()
 {}
 
 RT::Material::~Material()
@@ -34,7 +34,8 @@ RT::Material &		RT::Material::operator*=(RT::Material const & material)
 {
   // Multiply two materials
   color *= material.color;
-  light *= material.light;
+  direct *= material.direct;
+  indirect *= material.indirect;
   transparency *= material.transparency;
   reflection *= material.reflection;
 

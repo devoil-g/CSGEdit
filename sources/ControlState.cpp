@@ -207,4 +207,5 @@ bool	RT::ControlState::update(sf::Time)
 void	RT::ControlState::draw()
 {
   RT::Window::Instance().draw(_scene->image());
+  RT::Window::Instance().draw(_scene->hud());
 }

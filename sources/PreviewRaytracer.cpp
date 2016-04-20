@@ -80,7 +80,7 @@ void	RT::PreviewRaytracer::preview(unsigned int zone)
   // Calcul zone coordinates (x, y)
   unsigned int	x = zone % (_scene->image().getSize().x / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().x % RT::Config::Raytracer::BlockSize ? 1 : 0)) * RT::Config::Raytracer::BlockSize;
   unsigned int	y = zone / (_scene->image().getSize().x / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().x % RT::Config::Raytracer::BlockSize ? 1 : 0)) * RT::Config::Raytracer::BlockSize;
-
+  
   // Render zone
   for (unsigned int a = 0; a < RT::Config::Raytracer::BlockSize && active(); a += size)
     for (unsigned int b = 0; b < RT::Config::Raytracer::BlockSize && active(); b += size)
@@ -93,7 +93,7 @@ void	RT::PreviewRaytracer::preview(unsigned int zone)
 	    if (x + a + c < _scene->image().getSize().x && y + b + d < _scene->image().getSize().y)
 	      _scene->image().setPixel(x + a + c, y + b + d, clr.sfml());
       }
-
+  
   if (active())
     _grid[zone] = size / 2;
   else

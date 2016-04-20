@@ -25,6 +25,11 @@ RT::Color::Color(sf::Color clr)
 RT::Color::~Color()
 {}
 
+sf::Color	RT::Color::transparent()
+{
+  return sf::Color(0, 0, 0, 0);
+}
+
 sf::Color	RT::Color::sfml() const
 {
   RT::Color	n;

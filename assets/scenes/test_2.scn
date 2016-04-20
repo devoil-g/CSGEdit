@@ -6,4 +6,6 @@ antialiasing(0,2);
 // Lights
 translation([256,256,256]); rotation([0, 45, 225]); point_light([255], 25, 0, 15,25); end(); end();
 
+indirect_light([0],[0],[0]);
 box(512,512,10, true)
+end();

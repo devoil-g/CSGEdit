@@ -56,7 +56,8 @@ namespace RT
 
   public:
     RT::Color			color;		// Color of material
-    RT::Material::Light		light;		// Light properties
+    RT::Material::Light		direct;		// Direct light properties
+    RT::Material::Light		indirect;	// Indirect light properties
     RT::Material::Transparency	transparency;	// Transparency properties
     RT::Material::Reflection	reflection;	// reflection properties
 

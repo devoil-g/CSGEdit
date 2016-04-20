@@ -63,6 +63,7 @@ namespace RT
     };
 
     sf::Image					_image;		// Rendered image of scene
+    sf::Image					_hud;		// Information layer for user
     Math::Matrix<4, 4>				_camera;	// Matrix camera
     RT::AbstractCsgTree *			_csg;		// CSG tree
     RT::AbstractLightTree *			_light;		// Light tree
@@ -79,6 +80,7 @@ namespace RT
 
     // Getter and setter for all parameters
     sf::Image &					image() { return _image; };
+    sf::Image &					hud() { return _hud; };
     Math::Matrix<4, 4> &			camera() { return _camera; };
     RT::AbstractCsgTree * &			csg() { return _csg; };
     RT::AbstractLightTree * &			light() { return _light; };
@@ -89,6 +91,7 @@ namespace RT
 
     // Const getter for all parameters
     sf::Image const &				image() const { return _image; };
+    sf::Image const &				hud() const { return _hud; };
     Math::Matrix<4, 4> const &			camera() const { return _camera; };
     RT::AbstractCsgTree const * const &		csg() const { return _csg; };
     RT::AbstractLightTree const * const &	light() const { return _light; };

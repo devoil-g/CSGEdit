@@ -17,18 +17,18 @@ RT::OcclusionLightLeaf::~OcclusionLightLeaf()
 
 RT::Color RT::OcclusionLightLeaf::preview(Math::Matrix<4, 4> const &, RT::Scene const *, RT::Ray const &, RT::Intersection const & intersection, unsigned int) const
 {
-  return intersection.material.color * intersection.material.light.ambient * _color;
+  return intersection.material.color * intersection.material.direct.ambient * _color;
 }
 
 RT::Color RT::OcclusionLightLeaf::render(Math::Matrix<4, 4> const &, RT::Scene const * scene, RT::Ray const & ray, RT::Intersection const & intersection, unsigned int) const
 {
   // If no ambient light, stop
-  if (intersection.material.light.ambient == 0.f || intersection.material.transparency.intensity == 1.f || intersection.material.reflection.intensity == 1.f)
+  if (intersection.material.direct.ambient == 0.f || intersection.material.transparency.intensity == 1.f || intersection.material.reflection.intensity == 1.f)
     return RT::Color(0.f);
 
   // If quality to basic
-  if (intersection.material.light.quality <= 1 || _radius == 0.f)
-    return intersection.material.color * intersection.material.light.ambient * (1.f - intersection.material.transparency.intensity) * (1.f - intersection.material.reflection.intensity);
+  if (intersection.material.direct.quality <= 1 || _radius == 0.f)
+    return intersection.material.color * intersection.material.direct.ambient * (1.f - intersection.material.transparency.intensity) * (1.f - intersection.material.reflection.intensity);
 
   // Inverse normal if necessary
   Math::Vector<4>	n = intersection.normal.d();
@@ -54,8 +54,8 @@ RT::Color RT::OcclusionLightLeaf::render(Math::Matrix<4, 4> const &, RT::Scene c
   unsigned int	nb_ray = 0;
   RT::Color	ambient = 0.f;
 
-  for (double a = Math::Random::rand(Math::Pi / (2.f * intersection.material.light.quality)); a < Math::Pi / 2.f; a += Math::Pi / (2.f * intersection.material.light.quality))
-    for (double b = Math::Random::rand(2.f * Math::Pi / (std::cos(a) * intersection.material.light.quality * 2.f + 1.f)); b < 2.f * Math::Pi; b += (2.f * Math::Pi) / (std::cos(a) * intersection.material.light.quality * 2.f + 1.f))
+  for (double a = Math::Random::rand(Math::Pi / (2.f * intersection.material.direct.quality)); a < Math::Pi / 2.f; a += Math::Pi / (2.f * intersection.material.direct.quality))
+    for (double b = Math::Random::rand(2.f * Math::Pi / (std::cos(a) * intersection.material.direct.quality * 2.f + 1.f)); b < 2.f * Math::Pi; b += (2.f * Math::Pi) / (std::cos(a) * intersection.material.direct.quality * 2.f + 1.f))
     {
       // Calculate ray according to point on the hemisphere
       std::list<RT::Intersection> intersect = scene->csg()->render(RT::Ray(p, matrix * Math::Vector<4>(std::sin(a), std::cos(b) * std::cos(a), std::sin(b) * std::cos(a), 0.f)).normalize());
@@ -99,5 +99,5 @@ RT::Color RT::OcclusionLightLeaf::render(Math::Matrix<4, 4> const &, RT::Scene c
       nb_ray++;
     }
 
-  return ambient / nb_ray * intersection.material.color * intersection.material.light.ambient * (1.f - intersection.material.transparency.intensity) * (1.f - intersection.material.reflection.intensity);
+  return ambient / nb_ray * intersection.material.color * intersection.material.direct.ambient * (1.f - intersection.material.transparency.intensity) * (1.f - intersection.material.reflection.intensity);
 }

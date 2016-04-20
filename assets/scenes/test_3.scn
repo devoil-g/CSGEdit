@@ -403,7 +403,8 @@ def	stairs()
 	end();
 }
 
-light([255],[255],[255], 8.4);
+direct_light([255],[255],[255], 8.4);
+indirect_light([0],[0],[0]);
 
 	// Route
 	translation([0,0,-64]); box(1024,1024,128,true); end();
@@ -443,4 +444,5 @@ light([255],[255],[255], 8.4);
 	
 	// Man
 	//translation([64, -64, 176]); rotation([0,0,-82]); scale([0.24]); mesh("../models/man.stl"); end(); end(); end();
+end();
 end();

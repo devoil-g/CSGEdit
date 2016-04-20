@@ -7,7 +7,7 @@ var p_space = 4.3;
 
 def cube(c_size, c_radius)
 {
-	light([255],[255],[255*4], 4.2)
+	direct_light([255],[255],[255*4], 4.2)
 	transparency(0.84, 1.32);
 	reflection(0.5);
 	color([255,25,25]);
