@@ -1,11 +1,7 @@
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/Sprite.hpp>
 #include <iostream>
 
-#include "Config.hpp"
 #include "ControlState.hpp"
 #include "Exception.hpp"
-#include "PreviewRaytracer.hpp"
 #include "RenderRaytracer.hpp"
 #include "RenderState.hpp"
 #include "SceneLibrary.hpp"
@@ -18,6 +14,7 @@ RT::ControlState::ControlState(std::string const & file)
   RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Indeterminate);
 
   // Load scene
+  std::cout << "[" << RT::Config::Window::Title << "] Opening file '" << _file << "'." << std::endl;
   RT::SceneLibrary::Instance().clear();
   _scene = RT::SceneLibrary::Instance().get(file);
   _camera = _scene->camera();
@@ -48,17 +45,37 @@ bool	RT::ControlState::update(sf::Time)
     // Stop rendering
     _preview.stop();
 
+    // Get current camera
+    Math::Matrix<4, 4>	camera = _scene->camera();
+
     // Update scene
     RT::SceneLibrary::Instance().update();
 
-    // Get camera position
-    _scene->camera() = _camera;
+    // Save camera and set previous camera position
+    _camera = _scene->camera();
+    _scene->camera() = camera;
 
     // Start preview rendering
     _preview.load(_scene);
     _preview.start();
 
     RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::NoProgress);
+
+    return false;
+  }
+
+  // Reset camera
+  if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::C) && _scene->camera() != _camera)
+  {
+    // Stop rendering
+    _preview.stop();
+
+    // Reset camera position
+    _scene->camera() = _camera;
+
+    // Start preview rendering
+    _preview.load(_scene);
+    _preview.start();
 
     return false;
   }
@@ -90,27 +107,29 @@ bool	RT::ControlState::update(sf::Time)
   // Move camera
   if (RT::Window::Instance().focus())
   {
+    Math::Matrix<4, 4>	camera = _scene->camera();
+
     // Camera rotation X
     if (RT::Window::Instance().mouse().middle || (RT::Window::Instance().mouse().left == true && RT::Window::Instance().mouse().right == true))
-      _camera *= Math::Matrix<4, 4>::rotation((double)RT::Window::Instance().mouse().rx / 2.f, 0.f, 0.f);
+      camera *= Math::Matrix<4, 4>::rotation((double)RT::Window::Instance().mouse().rx / 2.f, 0.f, 0.f);
     // Camera rotation YZ
     if (RT::Window::Instance().mouse().left == true && RT::Window::Instance().mouse().right == false)
-      _camera *= Math::Matrix<4, 4>::rotation(0.f, (double)RT::Window::Instance().mouse().ry / 2.f, -(double)RT::Window::Instance().mouse().rx / 2.f);
+      camera *= Math::Matrix<4, 4>::rotation(0.f, (double)RT::Window::Instance().mouse().ry / 2.f, -(double)RT::Window::Instance().mouse().rx / 2.f);
     // Camera lateral & vertical translation
     if (RT::Window::Instance().mouse().left == false && RT::Window::Instance().mouse().right == true)
-      _camera *= Math::Matrix<4, 4>::translation(0.f, (double)RT::Window::Instance().mouse().rx, (double)RT::Window::Instance().mouse().ry);
+      camera *= Math::Matrix<4, 4>::translation(0.f, (double)RT::Window::Instance().mouse().rx, (double)RT::Window::Instance().mouse().ry);
     // Camera forward & backward translation
     if (RT::Window::Instance().key(sf::Keyboard::LShift) == false)
-      _camera *= Math::Matrix<4, 4>::translation((double)RT::Window::Instance().mouse().wheel * 10.f, 0.f, 0.f);
+      camera *= Math::Matrix<4, 4>::translation((double)RT::Window::Instance().mouse().wheel * 10.f, 0.f, 0.f);
     // Camera zoom & un-zoom
     if (RT::Window::Instance().key(sf::Keyboard::LShift) == true)
-      _camera *= Math::Matrix<4, 4>::scale(std::pow((double)RT::Window::Instance().mouse().wheel > 0 ? 1.1f : 0.9f, std::abs((double)RT::Window::Instance().mouse().wheel)), 1.f, 1.f);
+      camera *= Math::Matrix<4, 4>::scale(std::pow((double)RT::Window::Instance().mouse().wheel > 0 ? 1.1f : 0.9f, std::abs((double)RT::Window::Instance().mouse().wheel)), 1.f, 1.f);
 
     // Update camera if position changed
-    if (_camera != _scene->camera())
+    if (camera != _scene->camera())
     {
       _preview.stop();
-      _scene->camera() = _camera;
+      _scene->camera() = camera;
       _preview.load(_scene);
       _preview.start();
     }
@@ -171,7 +190,7 @@ bool	RT::ControlState::update(sf::Time)
     {
       _file = std::string(path);
       std::cout << "[" << RT::Config::Window::Title << "] Opening file '" << _file << "'." << std::endl;
-
+      
       RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Indeterminate);
 
       // Load new scene

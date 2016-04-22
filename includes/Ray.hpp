@@ -23,6 +23,7 @@ namespace RT
     inline Math::Vector<4>	d() const { return _d; };	// Return direction vector matrix
 
     RT::Ray			normalize() const;	// Return a normalized ray
+    double			length() const;		// Return ray length
 
     static double		cos(Math::Vector<4> const &, Math::Vector<4> const &);		// Calculate cosinus between two rays
     static double		angle(Math::Vector<4> const &, Math::Vector<4> const &);	// Calculate angle (radian) between two rays

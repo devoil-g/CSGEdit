@@ -108,7 +108,7 @@ translation([+150,-50,60]);
 end();
 
 // Others
-translation([-50,-150,42+1]); scale([4]); rotation([-45,0,-15]); import("dice.scn"); end(); end(); end();
+translation([-50,-150,46+1]); scale([4]); rotation([-45,0,-15]); import("dice.scn"); end(); end(); end();
 translation([-80,-280,20+1]); scale([0.56]); rotation([-45,0,-45]); import("pencil.scn"); end(); end(); end();
 translation([-70,-235,30+1]); scale([1]); rotation([0,4,-40]); import("eyeglasses.scn"); end(); end(); end();
 translation([+50,-150,+40+1]); scale([25]); rotation([0,0,45]); translation([0,0,1.5]); import("recucube.scn"); end(); end(); end(); end();

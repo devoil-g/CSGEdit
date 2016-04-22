@@ -27,6 +27,30 @@ namespace RT
     RT::Material::initialize();
     Math::initialize();
   }
+
+  void	help()
+  {
+    std::cout
+      << "Welcome in CSGEdit (" << __DATE__ << " " << __TIME__ << " build)." << std::endl
+      << std::endl
+      << "  Keyboard configuration:" << std::endl
+#ifdef _WIN32
+      << "   [O]:                    Open file" << std::endl
+      << "   [S]:                    Export current view" << std::endl
+#endif
+      << "   [R]:                    Reload current file" << std::endl
+      << "   [C]:                    Reset camera to initial position" << std::endl
+      << "   [P]:                    Restart preview rendering / pause rendering" << std::endl
+      << "   [Return]:               Start rendering" << std::endl
+      << std::endl
+      << "  Camera control:" << std::endl
+      << "   [Left mouse]:           Rotate camera" << std::endl
+      << "   [Left + Right mouse]:   Rotate camera (front axis)" << std::endl
+      << "   [Right mouse]:          Translate camera" << std::endl
+      << "   [Scroll wheel]:         Translate camera (forward/backward)" << std::endl
+      << "   [Shift + Scroll wheel]: Zoom in/out" << std::endl
+      << std::endl;
+  }
 };
 
 int	main(int argc, char ** argv)
@@ -91,8 +115,8 @@ int	main(int argc, char ** argv)
 
   try
   {
-    std::cout << "[" << RT::Config::Window::Title << "] Opening file '" << file << "'." << std::endl;
     RT::initialize(argc, argv);
+    RT::help();
 
     // Push initial state in state machine here
     RT::StateMachine::Instance().push(new RT::ControlState(file));

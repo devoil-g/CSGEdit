@@ -108,6 +108,10 @@ bool				RT::Window::update()
     // Get mouse wheel movement
     if (event.type == sf::Event::MouseWheelMoved)
       _mouse.wheel += event.mouseWheel.delta;
+
+    // Update the view to the new size of the window
+    if (event.type == sf::Event::Resized)
+      _window.setView(sf::View(sf::FloatRect(0, 0, (float)event.size.width, (float)event.size.height)));
   }
 
   // Update mouse position/buttons
@@ -140,30 +144,16 @@ void				RT::Window::display()
 void				RT::Window::draw(sf::Image const & image)
 {
   sf::Texture	texture;
-  sf::Sprite	sprite;
-  float		scale, scale_x, scale_y;
-  float		pos_x, pos_y;
-
-  texture.loadFromImage(image);
-  sprite.setTexture(texture);
-
-  scale_x = (float)RT::Config::Window::Width / (float)_window.getSize().x;
-  scale_y = (float)RT::Config::Window::Height / (float)_window.getSize().y;
-
-  sprite.scale(sf::Vector2f(scale_x, scale_y));
-
-  scale_x = (float)_window.getSize().x / (float)image.getSize().x;
-  scale_y = (float)_window.getSize().y / (float)image.getSize().y;
-
-  scale = scale_x < scale_y ? scale_x : scale_y;
-  if (scale > 1.f)
-    scale = 1.f;
-
-  sprite.scale(sf::Vector2f(scale, scale));
   
-  pos_x = (((float)_window.getSize().x - ((float)image.getSize().x * scale)) / ((float)_window.getSize().x * 2.f)) * RT::Config::Window::Width;
-  pos_y = (((float)_window.getSize().y - ((float)image.getSize().y * scale)) / ((float)_window.getSize().y * 2.f)) * RT::Config::Window::Height;
+  if (texture.loadFromImage(image) == false)
+    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
 
+  sf::Sprite	sprite(texture);
+  float		scale = std::min(1.f, std::min((float)_window.getSize().x / (float)image.getSize().x, (float)_window.getSize().y / (float)image.getSize().y));
+  float		pos_x = (((float)_window.getSize().x - ((float)image.getSize().x * scale)) / 2.f);
+  float		pos_y = (((float)_window.getSize().y - ((float)image.getSize().y * scale)) / 2.f);
+  
+  sprite.scale(sf::Vector2f(scale, scale));
   sprite.setPosition(sf::Vector2f(pos_x, pos_y));
 
   _window.draw(sprite);

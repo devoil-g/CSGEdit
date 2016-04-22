@@ -465,6 +465,7 @@ RT::Color RT::RenderRaytracer::renderReflection(RT::Ray const & ray, RT::Interse
       rays.push_back(r.normalize());
     }
 
+  // Render all sub-rays
   RT::Color	clr;
   for (std::list<RT::Ray>::const_iterator it = rays.begin(); it != rays.end(); it++)
     clr += renderRay(*it, recursivite + 1);
@@ -578,6 +579,7 @@ RT::Color RT::RenderRaytracer::renderTransparency(RT::Ray const & ray, RT::Inter
       rays.push_back(r.normalize());
     }
 
+  // Render all sub-rays
   RT::Color	clr;
   for (std::list<RT::Ray>::const_iterator it = rays.begin(); it != rays.end(); it++)
     clr += renderRay(*it, recursivite + 1);
@@ -596,8 +598,10 @@ RT::Color RT::RenderRaytracer::renderLightIndirect(RT::Ray const & ray, RT::Inte
   if (intersection.material.indirect.diffuse == 0.f && intersection.material.indirect.specular == 0.f)
     return RT::Color(0.f);
 
+  // Decrease quality with deph
   unsigned int	quality = intersection.material.indirect.quality > recursivite ? intersection.material.indirect.quality - recursivite : 0;
   
+  // Stop if no quality
   if (quality <= 1)
     return RT::Color(0.f);
 
@@ -625,6 +629,7 @@ RT::Color RT::RenderRaytracer::renderLightIndirect(RT::Ray const & ray, RT::Inte
     // Rotation matrix to get ray to point of view
     Math::Matrix<4, 4>  matrix = Math::Matrix<4, 4>::rotation(0, Math::Utils::RadToDeg(ry), Math::Utils::RadToDeg(rz));
 
+    // Render all sub-rays
     unsigned int	nb_ray = 0;
     for (double a = Math::Random::rand(Math::Pi / (2.f * quality)); a < Math::Pi / 2.f; a += Math::Pi / (2.f * quality))
       for (double b = Math::Random::rand(2.f * Math::Pi / (std::cos(a) * quality * 2.f + 1.f)); b < 2.f * Math::Pi; b += (2.f * Math::Pi) / (std::cos(a) * quality * 2.f + 1.f))
@@ -655,6 +660,7 @@ RT::Color RT::RenderRaytracer::renderLightIndirect(RT::Ray const & ray, RT::Inte
       +std::acos(reflection.d().x() / std::sqrt(reflection.d().x() * reflection.d().x() + reflection.d().y() * reflection.d().y())) :
       -std::acos(reflection.d().x() / std::sqrt(reflection.d().x() * reflection.d().x() + reflection.d().y() * reflection.d().y()));
 
+    // Render all sub-rays
     unsigned int	nb_ray = 0;
     for (double a = Math::Random::rand(angle / quality) + Math::Pi / 2.f - angle; a < Math::Pi / 2.f; a += angle / quality)
       for (double b = Math::Random::rand(2.f * Math::Pi / (std::cos(a) * quality * 2.f + 1.f)); b < 2.f * Math::Pi; b += (2.f * Math::Pi) / (std::cos(a) * quality * 2.f + 1.f))

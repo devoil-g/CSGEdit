@@ -38,11 +38,16 @@ RT::Ray		RT::Ray::normalize() const
 {
   RT::Ray	r(*this);
 
-  r.d() /= std::sqrt(_d.x() * _d.x() + _d.y() * _d.y() + _d.z() * _d.z());
+  r.d() /= length();
   r.p()(3) = 1.f;
   r.d()(3) = 0.f;
 
   return r;
+}
+
+double		RT::Ray::length() const
+{
+  return std::sqrt(_d.x() * _d.x() + _d.y() * _d.y() + _d.z() * _d.z());
 }
 
 RT::Ray		operator*(Math::Matrix<4, 4> const & matrix, RT::Ray const & ray)
