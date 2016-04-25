@@ -1,5 +1,3 @@
-#include <sstream>
-
 #include "BoxCsgLeaf.hpp"
 #include "Math.hpp"
 

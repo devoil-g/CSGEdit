@@ -1,5 +1,4 @@
 #include <list>
-#include <sstream>
 
 #include "DirectionalLightLeaf.hpp"
 #include "Exception.hpp"

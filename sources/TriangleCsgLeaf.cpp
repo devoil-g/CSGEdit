@@ -35,7 +35,7 @@ std::vector<double>	RT::TriangleCsgLeaf::intersection(RT::Ray const & ray) const
   double		a = -(vec1.x() * ray.d().x() + vec1.y() * ray.d().y() + vec1.z() * ray.d().z()) / d;
 
   if (a < 0.f || a > 1.f)
-    return {};
+    return std::vector<double>();
 
   Math::Vector<4>	vec2 = RT::Ray::vectoriel(_v0, v2);
   double		b = -(vec2.x() * ray.d().x() + vec2.y() * ray.d().y() + vec2.z() * ray.d().z()) / d;
@@ -44,7 +44,7 @@ std::vector<double>	RT::TriangleCsgLeaf::intersection(RT::Ray const & ray) const
   if (b > 0.f && a + b < 1.f)
     return { (_normal.x() * v2.x() + _normal.y() * v2.y() + _normal.z() * v2.z()) / d };
   else
-    return {};
+    return std::vector<double>();
 }
 
 Math::Vector<4>	RT::TriangleCsgLeaf::normal(Math::Vector<4> const &) const

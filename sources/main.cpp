@@ -41,6 +41,7 @@ namespace RT
       << "   [R]:                    Reload current file" << std::endl
       << "   [C]:                    Reset camera to initial position" << std::endl
       << "   [P]:                    Restart preview rendering / pause rendering" << std::endl
+      << "   [Esc]:                  Quit / Interrupt rendering" << std::endl
       << "   [Return]:               Start rendering" << std::endl
       << std::endl
       << "  Camera control:" << std::endl

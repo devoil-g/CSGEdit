@@ -14,6 +14,7 @@
 #include "ExternCsgTree.hpp"
 #include "BoxCsgLeaf.hpp"
 #include "ConeCsgLeaf.hpp"
+#include "MobiusCsgLeaf.hpp"
 #include "SphereCsgLeaf.hpp"
 #include "TangleCsgLeaf.hpp"
 #include "TorusCsgLeaf.hpp"
@@ -86,6 +87,9 @@ RT::Parser::Parser()
   _script.add(chaiscript::fun(std::function<void(double)>(std::bind(&RT::Parser::primitiveCone, this, std::placeholders::_1, std::placeholders::_1, 1.f, false))), "cylinder");
   _script.add(chaiscript::fun(std::function<void(double, double)>(std::bind(&RT::Parser::primitiveCone, this, std::placeholders::_1, std::placeholders::_1, std::placeholders::_2, false))), "cylinder");
   _script.add(chaiscript::fun(std::function<void(double, double, bool)>(std::bind(&RT::Parser::primitiveCone, this, std::placeholders::_1, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3))), "cylinder");
+  _script.add(chaiscript::fun(std::function<void()>(std::bind(&RT::Parser::primitiveMobius, this, 0.5f, 0.5f / 4.f, Math::Shift))), "mobius");
+  _script.add(chaiscript::fun(std::function<void(double, double)>(std::bind(&RT::Parser::primitiveMobius, this, std::placeholders::_1, std::placeholders::_2, Math::Shift))), "mobius");
+  _script.add(chaiscript::fun(std::function<void(double, double, double)>(std::bind(&RT::Parser::primitiveMobius, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3))), "mobius");
   _script.add(chaiscript::fun(std::function<void()>(std::bind(&RT::Parser::primitiveSphere, this, 0.5f))), "sphere");
   _script.add(chaiscript::fun(std::function<void(double)>(std::bind(&RT::Parser::primitiveSphere, this, std::placeholders::_1))), "sphere");
   _script.add(chaiscript::fun(std::function<void()>(std::bind(&RT::Parser::primitiveTangle, this, 11.8f))), "tangle");
@@ -447,6 +451,11 @@ void	RT::Parser::primitiveBox(double x, double y, double z, bool center)
 void	RT::Parser::primitiveCone(double r1, double r2, double h, bool center)
 {
   primitivePush(new RT::ConeCsgLeaf(r1, r2, h, center));
+}
+
+void	RT::Parser::primitiveMobius(double r1, double r2, double t)
+{
+  primitivePush(new RT::MobiusCsgLeaf(r1, r2, t));
 }
 
 void	RT::Parser::primitiveSphere(double r)

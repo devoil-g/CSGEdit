@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <sstream>
 
 #include "Math.hpp"
 #include "TorusCsgLeaf.hpp"

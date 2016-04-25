@@ -62,6 +62,7 @@ namespace RT
     // Primitives
     void	primitiveBox(double, double, double, bool);									// Push a box in top scope
     void	primitiveCone(double, double, double, bool);									// Push a cone in top scope
+    void	primitiveMobius(double, double, double);									// Push a mobius strip in top scope
     void	primitiveSphere(double);											// Push a sphere in top scope
     void	primitiveTangle(double);											// Push a tangle in top scope
     void	primitiveTorus(double, double);											// Push a torus in top scope

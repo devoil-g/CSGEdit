@@ -154,8 +154,13 @@ RT::Color	RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
     intersect.pop_front();
 
   // Calcul intersection color if it exist, otherwise return black
-  if (!intersect.empty() && RT::Ray::cos(ray.d(), intersect.front().normal.d()) < 0.f)
-    return _scene->light()->preview(Math::Matrix<4, 4>::identite(), _scene, ray, intersect.front());
+  if (!intersect.empty())
+    // Check for a correctly oriented normal
+    if (RT::Ray::cos(ray.d(), intersect.front().normal.d()) < 0.f)
+      return _scene->light()->preview(Math::Matrix<4, 4>::identite(), _scene, ray, intersect.front());
+    // Return an error color if wrong normal
+    else
+      return RT::Color(1.f, (x / 2 + y / 5) / 2 % 2 ? 0.54f : 0.12f, (x / 2 + y / 5) / 2 % 2 ? 0.54f : 0.12f);
   else
     return RT::Color(0.f);
 }

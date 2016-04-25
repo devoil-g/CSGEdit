@@ -1,5 +1,3 @@
-#include <sstream>
-
 #include "ConeCsgLeaf.hpp"
 #include "Math.hpp"
 

@@ -1,5 +1,3 @@
-#include <sstream>
-
 #include "Exception.hpp"
 #include "Math.hpp"
 #include "OcclusionLightLeaf.hpp"

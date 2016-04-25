@@ -19,6 +19,7 @@ SET(SAMPLE_SRCS
 	./sources/AbstractCsgLeaf.cpp
 	./sources/BoxCsgLeaf.cpp
 	./sources/ConeCsgLeaf.cpp
+	./sources/MobiusCsgLeaf.cpp
 	./sources/SphereCsgLeaf.cpp
 	./sources/TangleCsgLeaf.cpp
 	./sources/TorusCsgLeaf.cpp
@@ -82,6 +83,7 @@ SET(SAMPLE_HDRS
 	./includes/AbstractCsgLeaf.hpp
 	./includes/BoxCsgLeaf.hpp
 	./includes/ConeCsgLeaf.hpp
+	./includes/MobiusCsgLeaf.hpp
 	./includes/SphereCsgLeaf.hpp
 	./includes/TangleCsgLeaf.hpp
 	./includes/TorusCsgLeaf.hpp

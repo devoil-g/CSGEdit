@@ -1,5 +1,3 @@
-#include <sstream>
-
 #ifdef _DEBUG
 #include "Exception.hpp"
 #endif

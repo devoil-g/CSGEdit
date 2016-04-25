@@ -1,5 +1,3 @@
-#include <sstream>
-
 #include "Math.hpp"
 #include "TangleCsgLeaf.hpp"
 

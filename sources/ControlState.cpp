@@ -110,7 +110,7 @@ bool	RT::ControlState::update(sf::Time)
     Math::Matrix<4, 4>	camera = _scene->camera();
 
     // Camera rotation X
-    if (RT::Window::Instance().mouse().middle || (RT::Window::Instance().mouse().left == true && RT::Window::Instance().mouse().right == true))
+    if (RT::Window::Instance().mouse().middle == true || (RT::Window::Instance().mouse().left == true && RT::Window::Instance().mouse().right == true))
       camera *= Math::Matrix<4, 4>::rotation((double)RT::Window::Instance().mouse().rx / 2.f, 0.f, 0.f);
     // Camera rotation YZ
     if (RT::Window::Instance().mouse().left == true && RT::Window::Instance().mouse().right == false)
@@ -139,7 +139,7 @@ bool	RT::ControlState::update(sf::Time)
   if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::S))
   {
 #ifdef _WIN32
-    // See MSDN of GetOpenFileName
+    // See MSDN of GetSaveFileName
     OPENFILENAME  fileinfo;
     CHAR	  path[MAX_PATH];
 
@@ -155,7 +155,7 @@ bool	RT::ControlState::update(sf::Time)
     fileinfo.lpstrInitialDir = nullptr;
     fileinfo.lpstrTitle = nullptr;
     fileinfo.Flags = 0;
-    fileinfo.lpstrDefExt = ".png";
+    fileinfo.lpstrDefExt = "png";
     fileinfo.FlagsEx = 0;
 
     if (GetSaveFileName(&fileinfo))

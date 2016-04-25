@@ -44,9 +44,17 @@ void			RT::SceneLibrary::load(std::string const & file)
   // Update file time
   _library[file].first = time(file);
 
+  // Save preview/rendered image for soft transition
+  sf::Image save = _library[file].second.image();
+
   // Load file
   _library[file].second.clear();
   _library[file].second = RT::Parser::load(file);
+
+  // Scale saved image to new scene image
+  for (unsigned int x = 0; x < _library[file].second.image().getSize().x; x++)
+    for (unsigned int y = 0; y < _library[file].second.image().getSize().y; y++)
+      _library[file].second.image().setPixel(x, y, save.getPixel((unsigned int)((float)x / (float)_library[file].second.image().getSize().x * save.getSize().x), (unsigned int)((float)y / (float)_library[file].second.image().getSize().y * save.getSize().y)));
 }
 
 RT::Scene *		RT::SceneLibrary::get(std::string const & file)
