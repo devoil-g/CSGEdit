@@ -1,4 +1,5 @@
-#include "Exception.hpp"
+#include <exception>
+
 #include "Parser.hpp"
 #include "SceneLibrary.hpp"
 
@@ -26,14 +27,14 @@ RT::SceneLibrary::Time	RT::SceneLibrary::time(std::string const & file) const
   HANDLE    f = CreateFileA(file.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 
   if (f == nullptr || GetFileTime(f, &creation, &lastaccess, &lastwrite) == false || CloseHandle(f) == false)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   return lastwrite;
 #else
   struct stat	st;
 
   if (stat(_file.c_str(), &st) < 0)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   return st.st_mtime;
 #endif

@@ -4,7 +4,7 @@ resolution(960, 540);
 antialiasing(0,2);
 //virtual_reality(84, 4);
 //camera([-1024, 0, 768], [0, 39.8, 0], [1,1,1]);
-//deph_of_field(32, 700, 2);
+//deph_of_field(32, 700, 3);
 //thread(4);
 
 // Lights

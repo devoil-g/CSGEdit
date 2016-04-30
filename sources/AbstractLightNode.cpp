@@ -1,5 +1,6 @@
+#include <exception>
+
 #include "AbstractLightNode.hpp"
-#include "Exception.hpp"
 
 RT::AbstractLightNode::AbstractLightNode()
 {}
@@ -16,7 +17,7 @@ void	RT::AbstractLightNode::push(RT::AbstractLightTree * node)
   if (node)
     _children.push_back(node);
   else
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 }
 
 void	RT::AbstractLightNode::pop()
@@ -27,7 +28,7 @@ void	RT::AbstractLightNode::pop()
     _children.pop_back();
   }
   else
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 }
 
 bool	RT::AbstractLightNode::empty() const

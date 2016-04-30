@@ -1,6 +1,7 @@
+#include <exception>
+
 #include "Material.hpp"
 #include "Math.hpp"
-#include "Exception.hpp"
 
 std::map<std::string, RT::Material> RT::Material::_material;
 
@@ -17,7 +18,7 @@ RT::Material const &	RT::Material::getMaterial(std::string const & name)
   if (_material.find(name) != _material.end())
     return _material[name];
   else
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 }
 
 void			RT::Material::setMaterial(std::string const & name, RT::Material const & material)

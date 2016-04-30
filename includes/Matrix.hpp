@@ -6,7 +6,7 @@
 #include <string>
 
 #ifdef _DEBUG
-#include "Exception.hpp"
+#include <exception>
 #endif
 
 #include "Math.hpp"
@@ -58,7 +58,7 @@ namespace Math
     {
 #ifdef _DEBUG
       if (row >= cRow || col >= cCol)
-	throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+	throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 #endif
       return _matrix[row][col];
     };
@@ -67,7 +67,7 @@ namespace Math
     {
 #ifdef _DEBUG
       if (row >= cRow || col >= cCol)
-	throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+	throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 #endif
       return _matrix[row][col];
     };
@@ -104,7 +104,7 @@ namespace Math
     {
 #ifdef _DEBUG
       if (v == 0.f)
-	throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+	throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 #endif
       for (unsigned int row = 0; row < cRow; row++)
 	for (unsigned int col = 0; col < cCol; col++)

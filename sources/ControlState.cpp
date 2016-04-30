@@ -1,7 +1,7 @@
+#include <exception>
 #include <iostream>
 
 #include "ControlState.hpp"
-#include "Exception.hpp"
 #include "RenderRaytracer.hpp"
 #include "RenderState.hpp"
 #include "SceneLibrary.hpp"

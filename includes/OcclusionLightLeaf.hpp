@@ -16,8 +16,8 @@ namespace RT
     OcclusionLightLeaf(RT::Color const & = RT::Color(1.f), double = 0.f);
     ~OcclusionLightLeaf();
 
-    RT::Color	preview(Math::Matrix<4, 4> const &, RT::Scene const *, RT::Ray const &, RT::Intersection const &, unsigned int) const override;	// Render preview mode of light
-    RT::Color	render(Math::Matrix<4, 4> const &, RT::Scene const *, RT::Ray const &, RT::Intersection const &, unsigned int) const override;	// Render complete light
+    RT::Color	preview(Math::Matrix<4, 4> const &, RT::Scene const *, RT::Ray const &, RT::Intersection const &, unsigned int, unsigned int) const override;	// Render preview mode of light
+    RT::Color	render(Math::Matrix<4, 4> const &, RT::Scene const *, RT::Ray const &, RT::Intersection const &, unsigned int, unsigned int) const override;	// Render complete light
   };
 };
 

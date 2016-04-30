@@ -1,7 +1,7 @@
+#include <exception>
 #include <list>
 
 #include "DirectionalLightLeaf.hpp"
-#include "Exception.hpp"
 #include "Math.hpp"
 #include "Scene.hpp"
 
@@ -10,13 +10,13 @@ RT::DirectionalLightLeaf::DirectionalLightLeaf(RT::Color const & color, double a
 {
   // Check values
   if (_angle < 0.f || _angle >= 90.f)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 }
 
 RT::DirectionalLightLeaf::~DirectionalLightLeaf()
 {}
 
-RT::Color RT::DirectionalLightLeaf::preview(Math::Matrix<4, 4> const & transformation, RT::Scene const *, RT::Ray const &, RT::Intersection const & intersection, unsigned int) const
+RT::Color RT::DirectionalLightLeaf::preview(Math::Matrix<4, 4> const & transformation, RT::Scene const *, RT::Ray const &, RT::Intersection const & intersection, unsigned int, unsigned int) const
 {
   // If no ambient light, stop
   if (intersection.material.color == 0.f || intersection.material.direct.diffuse == 0.f)
@@ -25,7 +25,7 @@ RT::Color RT::DirectionalLightLeaf::preview(Math::Matrix<4, 4> const & transform
   return intersection.material.color * intersection.material.direct.diffuse * _color * std::fmax(RT::Ray::cos(intersection.normal.d(), Math::Vector<4>(transformation * Math::Vector<4>(-1.f, 0.f, 0.f, 0.f))), 0.f);
 }
 
-RT::Color RT::DirectionalLightLeaf::render(Math::Matrix<4, 4> const & transformation, RT::Scene const * scene, RT::Ray const & ray, RT::Intersection const & intersection, unsigned int) const
+RT::Color RT::DirectionalLightLeaf::render(Math::Matrix<4, 4> const & transformation, RT::Scene const * scene, RT::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite, unsigned int) const
 {
   if (intersection.material.direct.diffuse == 0.f && intersection.material.direct.specular == 0.f)
     return RT::Color(0.f);
@@ -40,12 +40,13 @@ RT::Color RT::DirectionalLightLeaf::render(Math::Matrix<4, 4> const & transforma
   }
   
   std::list<RT::Ray>	rays;
+  unsigned int		quality = intersection.material.direct.quality > recursivite ? intersection.material.direct.quality - recursivite : 0;
 
   Math::Vector<4>	p = intersection.normal.p() + n * Math::Shift;
-  if (intersection.material.direct.quality <= 1 || _angle == 0)
+  if (quality <= 1 || _angle == 0)
     rays.push_back(RT::Ray(p, transformation * Math::Vector<4>(-1.f, 0.f, 0.f, 0.f)));
   else
-    for (double a = Math::Random::rand(1.f / (intersection.material.direct.quality + 1)); a < 1.f; a += 1.f / (intersection.material.direct.quality + 1))
+    for (double a = Math::Random::rand(1.f / (quality + 1)); a < 1.f; a += 1.f / (quality + 1))
       for (double b = Math::Random::rand((2.f * Math::Pi) / (int)(2.f * a * Math::Pi + 1.f)); b < 2.f * Math::Pi; b += (2.f * Math::Pi) / (int)(2.f * a * Math::Pi + 1.f))
 	rays.push_back(RT::Ray(p, transformation * Math::Vector<4>(-1.f / std::tan(Math::Utils::DegToRad(_angle)), a * std::cos(b), a * std::sin(b), 0.f)));
 

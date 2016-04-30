@@ -1,6 +1,5 @@
-#include <algorithm>
+#include <exception>
 
-#include "Exception.hpp"
 #include "Math.hpp"
 #include "MobiusCsgLeaf.hpp"
 
@@ -8,9 +7,9 @@ RT::MobiusCsgLeaf::MobiusCsgLeaf(double r1, double r2, double t)
   : _r1(r1), _r2(r2), _t(t)
 {
   if (_r2 > _r1 / 2.f)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
   if (_t > _r2)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 }
 
 RT::MobiusCsgLeaf::~MobiusCsgLeaf()

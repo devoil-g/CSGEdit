@@ -5,7 +5,6 @@
 #include <iostream>
 
 #include "Config.hpp"
-#include "Exception.hpp"
 #include "Parser.hpp"
 #include "SceneLibrary.hpp"
 
@@ -139,6 +138,7 @@ RT::Parser::Parser()
   _script.add(chaiscript::fun((double(*)(double, double))(&std::pow)), "pow");
   _script.add(chaiscript::fun((double(*)(double))(&Math::Random::rand)), "rand");
   _script.add_global_const(chaiscript::const_var(Math::Pi), "pi");
+
   // Vector conversion: std::vector<double>
   _script.add(chaiscript::type_conversion<std::vector<chaiscript::Boxed_Value>, std::vector<double>>(
     [](const std::vector<chaiscript::Boxed_Value> & v)
@@ -176,7 +176,7 @@ RT::Parser::Parser()
     else if (v.size() == 3)
       return RT::Color(chaiscript::Boxed_Number(v[0]).get_as<double>() / 255.f, chaiscript::Boxed_Number(v[1]).get_as<double>() / 255.f, chaiscript::Boxed_Number(v[2]).get_as<double>() / 255.f);
     else
-      throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+      throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
   }
   ));
   
@@ -215,10 +215,10 @@ RT::Scene	RT::Parser::parse(std::string const & path)
     {
       // Parsing file
       _script.eval_file(path);
-
+      
       // Check for invalid scope at end of file
       if (_csg.size() != 1 || _light.size() != 1)
-	throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+	throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
     }
   }
   catch (std::exception e)
@@ -227,12 +227,12 @@ RT::Scene	RT::Parser::parse(std::string const & path)
 
     // Clean scene
     _scene.clear();
-
+    chaiscript::exception::arithmetic_error;
     // Restore scene default configuration
     _scene.csg() = new RT::EmptyCsgTree();
     _scene.light() = new RT::EmptyLightTree();
   }
-
+  
   return _scene;
 }
 
@@ -246,7 +246,7 @@ void	RT::Parser::include(std::string const & path)
 {
   // Fail if maximum include/import deph reached
   if (_files.size() > RT::Config::Parser::MaxFileDeph)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   // Parsing file
   _files.push(directory(_files.top()).append(path));
@@ -274,12 +274,12 @@ void	RT::Parser::scopeTransformation(std::vector<std::vector<double>> const & v)
   Math::Matrix<4, 4>			matrix;
 
   if (v.size() != 4)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
   else
     for (unsigned int row = 0; row < 4; row++)
     {
       if (v[row].size() != 4)
-	throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+	throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
       else
 	for (unsigned int col = 0; col < 4; col++)
 	  matrix(row, col) = v[row][col];
@@ -291,7 +291,7 @@ void	RT::Parser::scopeTransformation(std::vector<std::vector<double>> const & v)
 void	RT::Parser::scopeTranslation(std::vector<double> const & v)
 {
   if (v.size() != 3)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   scopeStart(new RT::TransformationCsgNode(Math::Matrix<4, 4>::translation(v[0], v[1], v[2])));
 }
@@ -299,7 +299,7 @@ void	RT::Parser::scopeTranslation(std::vector<double> const & v)
 void	RT::Parser::scopeMirror(std::vector<double> const & v)
 {
   if (v.size() != 3)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   scopeStart(new RT::TransformationCsgNode(Math::Matrix<4, 4>::reflection(v[0], v[1], v[2])));
 }
@@ -307,7 +307,7 @@ void	RT::Parser::scopeMirror(std::vector<double> const & v)
 void	RT::Parser::scopeRotation(std::vector<double> const & v)
 {
   if (v.size() != 3)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   scopeStart(new RT::TransformationCsgNode(Math::Matrix<4, 4>::rotation(v[0], v[1], v[2])));
 }
@@ -319,7 +319,7 @@ void	RT::Parser::scopeScale(std::vector<double> const & v)
   else if (v.size() == 3)
     scopeStart(new RT::TransformationCsgNode(Math::Matrix<4, 4>::scale(v[0], v[1], v[1])));
   else
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 }
 
 void	RT::Parser::scopeShear(double xy, double xz, double yx, double yz, double zx, double zy)
@@ -440,7 +440,7 @@ void	RT::Parser::scopeEnd()
       _light.pop();
   }
   else
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 }
 
 void	RT::Parser::primitiveBox(double x, double y, double z, bool center)
@@ -477,10 +477,10 @@ void	RT::Parser::primitiveTriangle(std::vector<double> const & p0, std::vector<d
 {
   // If not in a mesh scope, error
   if (dynamic_cast<RT::MeshCsgNode *>(_csg.top()) == nullptr)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   if (p0.size() != 3 || p1.size() != 3 || p2.size() != 3)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   primitivePush(new RT::TriangleCsgLeaf(std::tuple<double, double, double>(p0[0], p0[1], p0[2]), std::tuple<double, double, double>(p1[0], p1[1], p1[2]), std::tuple<double, double, double>(p2[0], p2[1], p2[2])));
 }
@@ -513,7 +513,7 @@ void	RT::Parser::lightPush(RT::AbstractLightTree * light)
 void	RT::Parser::settingCamera(std::vector<double> const & t, std::vector<double> const & r, std::vector<double> const & s)
 {
   if (t.size() != 3 || r.size() != 3 || s.size() != 3)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   // Set camera only if in main file
   if (_files.size() == 1)

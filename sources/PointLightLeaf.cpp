@@ -1,4 +1,5 @@
-#include "Exception.hpp"
+#include <exception>
+
 #include "Math.hpp"
 #include "PointLightLeaf.hpp"
 #include "Scene.hpp"
@@ -8,19 +9,19 @@ RT::PointLightLeaf::PointLightLeaf(RT::Color const & color, double radius, doubl
 {
   // Check values
   if (_radius < 0.f)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
   if (_intensity < 0.f)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
   if (_angle1 < 0.f || _angle1 > 180.f)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
   if (_angle2 < 0.f || _angle2 > 180.f)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 }
 
 RT::PointLightLeaf::~PointLightLeaf()
 {}
 
-RT::Color	RT::PointLightLeaf::preview(Math::Matrix<4, 4> const & transformation, RT::Scene const *, RT::Ray const &, RT::Intersection const & intersection, unsigned int) const
+RT::Color	RT::PointLightLeaf::preview(Math::Matrix<4, 4> const & transformation, RT::Scene const *, RT::Ray const &, RT::Intersection const & intersection, unsigned int, unsigned int) const
 {
   // If no diffuse light, stop
   if (intersection.material.color == 0.f || intersection.material.direct.diffuse == 0.f)
@@ -52,7 +53,7 @@ RT::Color	RT::PointLightLeaf::preview(Math::Matrix<4, 4> const & transformation,
   }
 }
 
-RT::Color RT::PointLightLeaf::render(Math::Matrix<4, 4> const & transformation, RT::Scene const * scene, RT::Ray const & ray, RT::Intersection const & intersection, unsigned int) const
+RT::Color RT::PointLightLeaf::render(Math::Matrix<4, 4> const & transformation, RT::Scene const * scene, RT::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite, unsigned int) const
 {
   if (intersection.material.direct.diffuse == 0.f && intersection.material.direct.specular == 0.f)
     return RT::Color(0.f);
@@ -69,18 +70,19 @@ RT::Color RT::PointLightLeaf::render(Math::Matrix<4, 4> const & transformation, 
   }
 
   std::list<RT::Ray>	rays;
+  unsigned int		quality = intersection.material.direct.quality > recursivite ? intersection.material.direct.quality - recursivite : 0;
 
   Math::Vector<4>	p = normal.p() + normal.d() * Math::Shift;
-  if (intersection.material.direct.quality <= 1 || _radius == 0.f)
+  if (quality <= 1 || _radius == 0.f)
     rays.push_back(RT::Ray(Math::Vector<4>(0.f, 0.f, 0.f, 1.f), Math::Vector<4>(p.x(), p.y(), p.z(), 0.f)));
   else
   {
     // Random rotation matrix
     Math::Matrix<4, 4>	matrix = Math::Matrix<4, 4>::rotation(Math::Random::rand(180.f), Math::Random::rand(180.f), Math::Random::rand(180.f));
 
-    for (double a = Math::Random::rand(_radius / (intersection.material.direct.quality + 1)); a < _radius; a += _radius / (intersection.material.direct.quality + 1))
-      for (double b = Math::Random::rand(Math::Pi / (int)(a / _radius * intersection.material.direct.quality + 1)); b < Math::Pi; b += Math::Pi / (int)(a / _radius * intersection.material.direct.quality + 1))
-	for (double c = Math::Random::rand(2.f * Math::Pi / (std::sin(b) * a / _radius * intersection.material.direct.quality + 1)); c < 2.f * Math::Pi; c += 2.f * Math::Pi / (std::sin(b) * a / _radius * intersection.material.direct.quality + 1))
+    for (double a = Math::Random::rand(_radius / (quality + 1)); a < _radius; a += _radius / (quality + 1))
+      for (double b = Math::Random::rand(Math::Pi / (int)(a / _radius * quality + 1)); b < Math::Pi; b += Math::Pi / (int)(a / _radius * quality + 1))
+	for (double c = Math::Random::rand(2.f * Math::Pi / (std::sin(b) * a / _radius * quality + 1)); c < 2.f * Math::Pi; c += 2.f * Math::Pi / (std::sin(b) * a / _radius * quality + 1))
 	{
 	  Math::Vector<4>	r = matrix * Math::Vector<4>(std::cos(b) * a, std::cos(c) * std::sin(b) * a, std::sin(c) * std::sin(b) * a, 1.f);
 

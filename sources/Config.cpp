@@ -1,8 +1,8 @@
+#include <exception>
 #include <iostream>
 #include <thread>
 
 #include "Config.hpp"
-#include "Exception.hpp"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -27,7 +27,7 @@ void  RT::Config::initialize(int argc, char **argv)
   // This error should never happen...
   handle = GetModuleHandle(nullptr);
   if (handle == nullptr)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   GetModuleFileNameW(handle, path, MAX_PATH);
   result = std::wstring(path).substr(0, std::wstring(path).find_last_of('\\'));
@@ -36,7 +36,7 @@ void  RT::Config::initialize(int argc, char **argv)
 #else
   // This error should never happen...
   if (argc < 1)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   if (std::string(argv[0]).find_last_of('/') == std::string::npos)
     RT::Config::ExecutablePath = std::string(".");

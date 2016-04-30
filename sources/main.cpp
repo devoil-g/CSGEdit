@@ -1,9 +1,9 @@
+#include <exception>
 #include <iostream>
 #include <string>
 
 #include "Config.hpp"
 #include "ControlState.hpp"
-#include "Exception.hpp"
 #include "StateMachine.hpp"
 #include "Window.hpp"
 
@@ -118,17 +118,17 @@ int	main(int argc, char ** argv)
   {
     RT::initialize(argc, argv);
     RT::help();
-
+    
     // Push initial state in state machine here
     RT::StateMachine::Instance().push(new RT::ControlState(file));
     RT::StateMachine::Instance().run();
   }
-  catch (RT::Exception exception)
+  catch (std::exception e)
   {
 #ifdef _WIN32
     MessageBox(
       RT::Window::Instance().window().getSystemHandle(),
-      exception.what(),
+      e.what(),
       "Error - Exception thrown",
       MB_OK | MB_ICONSTOP
       );

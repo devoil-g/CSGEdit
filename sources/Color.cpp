@@ -1,5 +1,5 @@
 #ifdef _DEBUG
-#include "Exception.hpp"
+#include <exception>
 #endif
 
 #include "Color.hpp"
@@ -91,7 +91,7 @@ RT::Color	RT::Color::operator/(RT::Color const & clr) const
 #ifdef _DEBUG
   // Check for division by 0
   if (clr.r == 0 || clr.g == 0 || clr.b == 0)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 #endif
 
   // Components division
@@ -130,7 +130,7 @@ RT::Color &	RT::Color::operator/=(RT::Color const & clr)
 #ifdef _DEBUG
   // Check for division by 0
   if (clr.r == 0.f || clr.g == 0.f || clr.b == 0.f)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 #endif
 
   // Components division

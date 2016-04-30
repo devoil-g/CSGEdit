@@ -1,3 +1,4 @@
+#include <exception>
 #include <iostream>
 #include <list>
 #include <thread>
@@ -7,7 +8,6 @@
 #endif
 
 #include "Config.hpp"
-#include "Exception.hpp"
 #include "Math.hpp"
 #include "Ray.hpp"
 #include "RenderRaytracer.hpp"
@@ -51,7 +51,7 @@ void	RT::RenderRaytracer::begin()
 #ifdef _WIN32
   // Prevent the system to hibernate (Vista+ & XP requests)
   if (SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED) == NULL && SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED) == NULL)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 #endif
 
   std::list<std::thread>  threads;
@@ -538,7 +538,7 @@ RT::Color RT::RenderRaytracer::renderTransparency(RT::Ray const & ray, RT::Inter
   
 #ifdef _DEBUG
   if (result.empty())
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 #endif
 
   RT::Ray	r = RT::Ray(normal.p() - normal.d() * Math::Shift, ray.d() + normal.d() * result.front()).normalize();
@@ -587,10 +587,10 @@ RT::Color RT::RenderRaytracer::renderTransparency(RT::Ray const & ray, RT::Inter
   return clr / (double)rays.size() * intersection.material.color * (intersection.material.transparency.intensity * (1.f - reflection_coef)) + reflection_clr;
 }
 
-RT::Color RT::RenderRaytracer::renderLightDirect(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int) const
+RT::Color RT::RenderRaytracer::renderLightDirect(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite) const
 {
   // TODO: pass recursivite to lights to decrease quality with deph
-  return _scene->light()->render(Math::Matrix<4, 4>::identite(), _scene, ray, intersection);
+  return _scene->light()->render(Math::Matrix<4, 4>::identite(), _scene, ray, intersection, recursivite);
 }
 
 RT::Color RT::RenderRaytracer::renderLightIndirect(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite) const

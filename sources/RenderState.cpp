@@ -1,7 +1,7 @@
+#include <exception>
 #include <iostream>
 
 #include "Config.hpp"
-#include "Exception.hpp"
 #include "RenderPauseState.hpp"
 #include "RenderState.hpp"
 #include "StateMachine.hpp"
@@ -11,7 +11,7 @@ RT::RenderState::RenderState(RT::Scene * scene)
   : _elapsed(), _render(), _scene(scene), _wait(RT::Config::RenderState::Refresh)
 {
   if (_scene == nullptr)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   _render.load(scene);
   _render.start();

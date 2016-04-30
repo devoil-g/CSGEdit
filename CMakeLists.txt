@@ -50,7 +50,6 @@ SET(SAMPLE_SRCS
 	./sources/SceneLibrary.cpp
 
 	./sources/Config.cpp
-	./sources/Exception.cpp
 	./sources/Math.cpp
 	./sources/Matrix.cpp
 	./sources/Ray.cpp
@@ -114,7 +113,6 @@ SET(SAMPLE_HDRS
 	./includes/SceneLibrary.hpp
 
 	./includes/Config.hpp
-	./includes/Exception.hpp
 	./includes/Math.hpp
 	./includes/Matrix.hpp
 	./includes/Ray.hpp

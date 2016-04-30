@@ -3,7 +3,7 @@
 #include <random>
 
 #ifdef _DEBUG
-#include "Exception.hpp"
+#include <exception>
 #endif
 
 #include "Math.hpp"

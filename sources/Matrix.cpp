@@ -23,7 +23,7 @@ Math::Matrix<4, 4>	Math::Matrix<4, 4>::inverse() const
 #ifdef _DEBUG
   // Not supposed to happen
   if (s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0 == 0.f)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 #endif
 
   double  det = 1.f / (s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0);
@@ -140,7 +140,7 @@ Math::Matrix<4, 4>    Math::Matrix<4, 4>::rotation(double a, double x, double y,
 #ifdef _DEBUG
   // Should not happen
   if (l == 0)
-    throw RT::Exception(std::string(__FILE__) + ": l." + std::to_string(__LINE__));
+    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 #endif
 
   // Normalize vector

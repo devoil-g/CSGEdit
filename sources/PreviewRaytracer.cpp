@@ -157,7 +157,7 @@ RT::Color	RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
   if (!intersect.empty())
     // Check for a correctly oriented normal
     if (RT::Ray::cos(ray.d(), intersect.front().normal.d()) < 0.f)
-      return _scene->light()->preview(Math::Matrix<4, 4>::identite(), _scene, ray, intersect.front());
+      return _scene->light()->preview(Math::Matrix<4, 4>::identite(), _scene, ray, intersect.front(), 0);
     // Return an error color if wrong normal
     else
       return RT::Color(1.f, (x / 2 + y / 5) / 2 % 2 ? 0.54f : 0.12f, (x / 2 + y / 5) / 2 % 2 ? 0.54f : 0.12f);
