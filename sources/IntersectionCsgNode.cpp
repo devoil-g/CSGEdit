@@ -1,5 +1,3 @@
-#include <unordered_map>
-
 #include "IntersectionCsgNode.hpp"
 
 RT::IntersectionCsgNode::IntersectionCsgNode()
@@ -10,38 +8,45 @@ RT::IntersectionCsgNode::~IntersectionCsgNode()
 
 std::list<RT::Intersection>	RT::IntersectionCsgNode::renderChildren(RT::Ray const & ray, unsigned int deph) const
 {
-  std::list<RT::Intersection>	intersect;
+  std::list<RT::Intersection>	result = _children.front()->render(ray, deph);
+
+  if (result.empty())
+    return std::list<RT::Intersection>();
 
   // Iterate through sub-tree to get intersections
-  for (RT::AbstractCsgTree const * it : _children)
+  for (std::list<RT::AbstractCsgTree *>::const_iterator it = std::next(_children.begin()); it != _children.end(); it++)
   {
-    std::list<RT::Intersection> node = it->render(ray, deph);
+    std::list<RT::Intersection> node = (*it)->render(ray, deph);
 
-    // Acceleration tweak
     if (node.empty())
       return std::list<RT::Intersection>();
-    
-    intersect.merge(node);
-  }
 
-  std::unordered_map<RT::AbstractCsgTree const *, bool>	inside;
-  std::list<RT::Intersection>				result;
-  unsigned int						state = 0;
+    // Merge current node with final results
+    std::list<RT::Intersection>::const_iterator	it_r = result.begin(), it_n = node.begin();
+    bool					inside_r = false, inside_n = false;
 
-  // Iterate through intersections
-  for (RT::Intersection const & it : intersect)
-  {
-    // If inside all children, push intersection
-    if (state == _children.size())
-      result.push_back(it);
+    while (it_r != result.end() && it_n != node.end())
+      if (*it_r < *it_n)
+      {
+	inside_r = !inside_r;
+	if (inside_n == false)
+	  it_r = result.erase(it_r);
+	else
+	  it_r++;
+      }
+      else
+      {
+	inside_n = !inside_n;
+	if (inside_r == true)
+	  result.insert(it_r, *it_n);
+	it_n++;
+      }
 
-    // Increment deepness if getting inside an object, decrement if getting outside
-    state += inside[it.node] ? -1 : +1;
-    inside[it.node] = !(inside[it.node]);
+    // Erase remaining intersection
+    result.erase(it_r, result.end());
 
-    // If inside all children, push intersection
-    if (state == _children.size())
-      result.push_back(it);
+    if (result.empty())
+      return std::list<RT::Intersection>();
   }
 
   return result;

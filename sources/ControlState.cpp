@@ -2,7 +2,6 @@
 #include <iostream>
 
 #include "ControlState.hpp"
-#include "RenderRaytracer.hpp"
 #include "RenderState.hpp"
 #include "SceneLibrary.hpp"
 #include "StateMachine.hpp"

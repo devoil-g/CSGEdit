@@ -1,5 +1,4 @@
 #include "ConeCsgLeaf.hpp"
-#include "Math.hpp"
 
 RT::ConeCsgLeaf::ConeCsgLeaf(double r, double h, bool center)
   : _r1(r), _r2(r), _h(h), _center(center)
@@ -24,16 +23,16 @@ std::vector<double>	RT::ConeCsgLeaf::intersection(RT::Ray const & ray) const
   // If cylinder
   if (_r1 == _r2)
     tmp = Math::Utils::solve(
-      r.d().x() * r.d().x() + r.d().y() * r.d().y(),
+      std::pow(r.d().x(), 2) + std::pow(r.d().y(), 2),
       2.f * (r.p().x() * r.d().x() + r.p().y() * r.d().y()),
-      r.p().x() * r.p().x() + r.p().y() * r.p().y() - _r1 * _r1
+      std::pow(r.p().x(), 2) + std::pow(r.p().y(), 2) - std::pow(_r1, 2)
       );
   // If cone
   else
     tmp = Math::Utils::solve(
-      r.d().x() * r.d().x() + r.d().y() * r.d().y() - r.d().z() * r.d().z() * (_r2 - _r1) * (_r2 - _r1) / (_h * _h),
-      2 * (+r.p().x() * r.d().x() + r.p().y() * r.d().y() - r.p().z() * r.d().z() * (_r2 - _r1) * (_r2 - _r1) / (_h * _h) - r.d().z() * _r1 * (_r2 - _r1) / _h),
-      r.p().x() * r.p().x() + r.p().y() * r.p().y() - r.p().z() * r.p().z() * (_r2 - _r1) * (_r2 - _r1) / (_h * _h) - 2 * r.p().z() * _r1 *  (_r2 - _r1) / _h - _r1 * _r1
+      std::pow(r.d().x(), 2) + std::pow(r.d().y(), 2) - std::pow(r.d().z() * (_r2 - _r1), 2) / std::pow(_h, 2),
+      2.f * (r.p().x() * r.d().x() + r.p().y() * r.d().y() - r.p().z() * r.d().z() * std::pow((_r2 - _r1) / _h, 2) - r.d().z() * _r1 * (_r2 - _r1) / _h),
+      std::pow(r.p().x(), 2) + std::pow(r.p().y(), 2) - std::pow(r.p().z() * (_r2 - _r1) / _h, 2) - 2.f * r.p().z() * _r1 * (_r2 - _r1) / _h - std::pow(_r1, 2)
       );
 
   // Stop if no intersection with infinite cone/cylinder
@@ -41,22 +40,20 @@ std::vector<double>	RT::ConeCsgLeaf::intersection(RT::Ray const & ray) const
     return std::vector<double>();
 
   // Add intersection to result if corresponding to height
-  for (unsigned int d = 0; d < tmp.size(); d++)
-    if (r.p().z() + tmp[d] * r.d().z() >= 0 && r.p().z() + tmp[d] * r.d().z() <= _h)
-      result.push_back(tmp[d]);
-
-  if (r.d().z() != 0)
+  for (double it : tmp)
+    if (r.p().z() + it * r.d().z() >= 0.f && r.p().z() + it * r.d().z() <= _h)
+      result.push_back(it);
+  
+  if (r.d().z() != 0.f)
   {
     // Calculate top and bottom disk intersections
     double	x1 = (-r.p().z()) / r.d().z();
     double	x2 = (_h - r.p().z()) / r.d().z();
 
     // Add intersections if inside cylinder/cone
-    if (+(r.p().x() + x1 * r.d().x()) * (r.p().x() + x1 * r.d().x())
-      + (r.p().y() + x1 * r.d().y()) * (r.p().y() + x1 * r.d().y()) < _r1 * _r1)
+    if (std::pow(r.p().x() + x1 * r.d().x(), 2) + std::pow(r.p().y() + x1 * r.d().y(), 2) < std::pow(_r1, 2))
       result.push_back(x1);
-    if (+(r.p().x() + x2 * r.d().x()) * (r.p().x() + x2 * r.d().x())
-      + (r.p().y() + x2 * r.d().y()) * (r.p().y() + x2 * r.d().y()) < _r2 * _r2)
+    if (std::pow(r.p().x() + x2 * r.d().x(), 2) + std::pow(r.p().y() + x2 * r.d().y(), 2) < std::pow(_r2, 2))
       result.push_back(x2);
   }
 

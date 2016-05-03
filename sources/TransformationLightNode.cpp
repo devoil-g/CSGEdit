@@ -1,7 +1,3 @@
-#include "AbstractLightTree.hpp"
-#include "Color.hpp"
-#include "Matrix.hpp"
-#include "Scene.hpp"
 #include "TransformationLightNode.hpp"
 
 RT::TransformationLightNode::TransformationLightNode(Math::Matrix<4, 4> const & transformation)

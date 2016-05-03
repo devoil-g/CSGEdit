@@ -1,5 +1,3 @@
-#include <ctime>
-#include <limits>
 #include <random>
 
 #ifdef _DEBUG
@@ -7,7 +5,6 @@
 #endif
 
 #include "Math.hpp"
-#include "Matrix.hpp"
 #include "SphereCsgLeaf.hpp"
 #include "TransformationCsgNode.hpp"
 

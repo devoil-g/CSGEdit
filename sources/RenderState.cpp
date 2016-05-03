@@ -1,7 +1,6 @@
 #include <exception>
 #include <iostream>
 
-#include "Config.hpp"
 #include "RenderPauseState.hpp"
 #include "RenderState.hpp"
 #include "StateMachine.hpp"
@@ -54,7 +53,7 @@ bool  RT::RenderState::update(sf::Time elapsed)
   // Get to pause state
   if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::P))
   {
-    RT::StateMachine::Instance().push(new RT::RenderPauseState(_render, _scene));
+    RT::StateMachine::Instance().push(new RT::RenderPauseState(_render, _scene, _elapsed));
     return false;
   }
 

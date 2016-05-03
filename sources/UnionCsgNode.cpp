@@ -1,8 +1,3 @@
-#include <list>
-#include <unordered_map>
-
-#include "AbstractCsgTree.hpp"
-#include "Intersection.hpp"
 #include "UnionCsgNode.hpp"
 
 RT::UnionCsgNode::UnionCsgNode()
@@ -13,28 +8,35 @@ RT::UnionCsgNode::~UnionCsgNode()
 
 std::list<RT::Intersection>	RT::UnionCsgNode::renderChildren(RT::Ray const & ray, unsigned int deph) const
 {
-  std::list<RT::Intersection>				intersect, result;
-  std::unordered_map<RT::AbstractCsgTree const *, bool>	inside;
-  unsigned int						state = 0;
-
+  std::list<RT::Intersection>	result;
+  
   // Iterate through sub-tree to get intersections
   for (RT::AbstractCsgTree const * it : _children)
-    intersect.merge(it->render(ray, deph));
-
-  // Iterate through intersections
-  for (RT::Intersection const & it : intersect)
   {
-    // If currently outside, push intersection
-    if (state == 0)
-      result.push_back(it);
+    std::list<RT::Intersection>	node = it->render(ray, deph);
 
-    // Increment deepness if getting inside an object, decrement if getting outside
-    state += inside[it.node] ? -1 : +1;
-    inside[it.node] = !(inside[it.node]);
+    // Merge current node with final result
+    std::list<RT::Intersection>::const_iterator	it_r = result.begin();
+    std::list<RT::Intersection>::iterator	it_n = node.begin();
+    bool					inside_r = false, inside_n = false;
 
-    // If currently outside, push intersection
-    if (state == 0)
-      result.push_back(it);
+    while (it_r != result.end() && it_n != node.end())
+      if (*it_r < *it_n)
+      {
+	inside_r = !inside_r;
+	if (inside_n == true)
+	  it_r = result.erase(it_r);
+	else
+	  it_r++;
+      }
+      else
+      {
+	inside_n = !inside_n;
+	if (inside_r == false)
+	  result.insert(it_r, *it_n);
+	it_n++;
+      }
+    result.insert(it_r, it_n, node.end());
   }
 
   return result;

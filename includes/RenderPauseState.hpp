@@ -16,7 +16,7 @@ namespace RT
     RT::RenderRaytracer &	_render;	// Current render raytracer
     
   public:
-    RenderPauseState(RT::RenderRaytracer &, RT::Scene *);
+    RenderPauseState(RT::RenderRaytracer &, RT::Scene *, sf::Time);
     ~RenderPauseState();
 
     bool			update(sf::Time) override;	// Check for P or ESC

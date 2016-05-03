@@ -1,5 +1,4 @@
 #include "EmptyLightTree.hpp"
-#include "Scene.hpp"
 
 RT::EmptyLightTree::EmptyLightTree()
 {}

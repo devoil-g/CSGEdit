@@ -1,6 +1,5 @@
 #include <exception>
 
-#include "Math.hpp"
 #include "PointLightLeaf.hpp"
 #include "Scene.hpp"
 

@@ -1,15 +1,14 @@
-#include <exception>
 #include <iostream>
-#include <list>
-#include <thread>
 
 #ifdef _WIN32
+#include <exception>
 #include <windows.h>
 #endif
 
-#include "Config.hpp"
-#include "Math.hpp"
-#include "Ray.hpp"
+#ifdef _DEBUG
+#include <exception>
+#endif
+
 #include "RenderRaytracer.hpp"
 
 RT::RenderRaytracer::RenderRaytracer()
@@ -243,7 +242,7 @@ void	RT::RenderRaytracer::render(unsigned int zone)
 	  {
 	    RT::Color clr = renderAntialiasing(x + a, y + b, _scene->antialiasing().live);
 
-	    p += _scene->antialiasing().live * _scene->antialiasing().live;
+	    p += (unsigned int)std::pow(_scene->antialiasing().live + 1, 2);
 	    for (unsigned int c = 0; c < size; c++)
 	      for (unsigned int d = 0; d < size; d++)
 		if (x + a + c < _scene->image().getSize().x && y + b + d < _scene->image().getSize().y)
@@ -255,7 +254,7 @@ void	RT::RenderRaytracer::render(unsigned int zone)
 	  if (_antialiasing[(x + a) + (y + b) * _scene->image().getSize().x] > 0)
 	  {
 	    _scene->image().setPixel(x + a, y + b, renderAntialiasing(x + a, y + b, _scene->antialiasing().live + _antialiasing[(x + a) + (y + b) * _scene->image().getSize().x]).sfml());
-	    p += (_scene->antialiasing().live + _antialiasing[(x + a) + (y + b) * _scene->image().getSize().x]) * (_scene->antialiasing().live + _antialiasing[(x + a) + (y + b) * _scene->image().getSize().x]);
+	    p += (unsigned int)std::pow(_scene->antialiasing().live + 1 + _antialiasing[(x + a) + (y + b) * _scene->image().getSize().x], 2);
 	  }
 	}
       }
@@ -288,22 +287,22 @@ RT::Color RT::RenderRaytracer::renderAntialiasing(unsigned int x, unsigned int y
   RT::Color	clr;
   
   // Divide a pixel to antialiasing² sub-pixels to avoid aliasing
-  for (unsigned int a = 0; a < antialiasing; a++)
-    for (unsigned int b = 0; b < antialiasing; b++)
+  for (unsigned int a = 0; a < antialiasing + 1; a++)
+    for (unsigned int b = 0; b < antialiasing + 1; b++)
     {
       RT::Ray	ray;
       
       // Calculate sub-pixel ray
       ray.d().x() = _scene->image().getSize().x;
-      ray.d().y() = _scene->image().getSize().x / 2.f - x + (2.f * a + 1) / (2.f * antialiasing);
-      ray.d().z() = _scene->image().getSize().y / 2.f - y + (2.f * b + 1) / (2.f * antialiasing);
+      ray.d().y() = _scene->image().getSize().x / 2.f - x + (2.f * a + 1) / (2.f * (antialiasing + 1));
+      ray.d().z() = _scene->image().getSize().y / 2.f - y + (2.f * b + 1) / (2.f * (antialiasing + 1));
 
       // Sum rendered color
       clr += renderVirtualReality(ray);
     }
 
   // Return average color
-  return clr / (antialiasing * antialiasing);
+  return clr / std::pow(antialiasing + 1, 2);
 }
 
 RT::Color RT::RenderRaytracer::renderVirtualReality(RT::Ray const & ray) const
@@ -695,7 +694,7 @@ double	  RT::RenderRaytracer::progress() const
       return 0.999f;
     else
     {
-      double		progress = (double)_progress / (double)(_scene->image().getSize().x * _scene->image().getSize().y * _scene->antialiasing().live * _scene->antialiasing().live);
+      double		progress = (double)_progress / (double)(_scene->image().getSize().x * _scene->image().getSize().y * std::pow(_scene->antialiasing().live + 1, 2));
 
       return progress == 1.f ? 0.999f : progress;
     }
@@ -715,8 +714,8 @@ double	  RT::RenderRaytracer::progress() const
     for (unsigned int x = 0; x < _scene->image().getSize().x; x++)
       for (unsigned int y = 0; y < _scene->image().getSize().y; y++)
 	if (_antialiasing[x + y * _scene->image().getSize().x] > 0)
-	  total += (_antialiasing[x + y * _scene->image().getSize().x] + _scene->antialiasing().live) * (_antialiasing[x + y * _scene->image().getSize().x] + _scene->antialiasing().live);
+	  total += (unsigned int)std::pow(_antialiasing[x + y * _scene->image().getSize().x] + _scene->antialiasing().live + 1, 2);
 
-    return (double)((_scene->image().getSize().x * _scene->image().getSize().y * _scene->antialiasing().live * _scene->antialiasing().live) + _progress) / (double)((_scene->image().getSize().x * _scene->image().getSize().y * _scene->antialiasing().live * _scene->antialiasing().live) + total);
+    return (double)((_scene->image().getSize().x * _scene->image().getSize().y * std::pow(_scene->antialiasing().live + 1, 2)) + _progress) / (double)((_scene->image().getSize().x * _scene->image().getSize().y * std::pow(_scene->antialiasing().live + 1, 2)) + total);
   }
 }

@@ -1,12 +1,12 @@
 #ifndef _MATERIAL_CSG_NODE_HPP_
 #define _MATERIAL_CSG_NODE_HPP_
 
-#include "AbstractCsgNode.hpp"
+#include "UnionCsgNode.hpp"
 #include "Material.hpp"
 
 namespace RT
 {
-  class MaterialCsgNode : public RT::AbstractCsgNode
+  class MaterialCsgNode : public RT::UnionCsgNode
   {
   private:
     RT::Material const		_material;	// Material applied to sub-node

@@ -7,8 +7,8 @@ namespace RT
 {
   class UnionCsgNode : public RT::AbstractCsgNode
   {
-  private:
-    std::list<RT::Intersection>	renderChildren(RT::Ray const &, unsigned int) const override;	// Render sub-tree
+  protected:
+    virtual std::list<RT::Intersection>	renderChildren(RT::Ray const &, unsigned int) const override;	// Render sub-tree
 
   public:
     UnionCsgNode();

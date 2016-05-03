@@ -1,4 +1,3 @@
-#include "Config.hpp"
 #include "Scene.hpp"
 #include "Window.hpp"
 

@@ -1,4 +1,3 @@
-#include "Math.hpp"
 #include "Ray.hpp"
 
 double		RT::Ray::cos(Math::Vector<4> const & A, Math::Vector<4> const & B)

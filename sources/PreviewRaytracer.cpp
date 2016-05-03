@@ -1,10 +1,6 @@
 #include <iostream>
-#include <list>
 #include <SFML/System/Clock.hpp>
-#include <thread>
 
-#include "Config.hpp"
-#include "Math.hpp"
 #include "PreviewRaytracer.hpp"
 
 RT::PreviewRaytracer::PreviewRaytracer()

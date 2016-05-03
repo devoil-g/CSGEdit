@@ -2,11 +2,11 @@
 #include <iostream>
 #include <thread>
 
-#include "Config.hpp"
-
 #ifdef _WIN32
 #include <windows.h>
 #endif
+
+#include "Config.hpp"
 
 namespace RT
 {

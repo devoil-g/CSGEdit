@@ -1,5 +1,4 @@
 #include "ExternLightTree.hpp"
-#include "Scene.hpp"
 
 RT::ExternLightTree::ExternLightTree(RT::AbstractLightTree const * const & tree)
   : _tree(tree)

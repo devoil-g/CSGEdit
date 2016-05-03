@@ -1,6 +1,5 @@
 #include <exception>
 
-#include "Math.hpp"
 #include "OcclusionLightLeaf.hpp"
 #include "Scene.hpp"
 

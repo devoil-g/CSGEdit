@@ -1,7 +1,7 @@
 // Camera set-up
-camera([-1024, 0, -0.1], [0, 0, 0], [1.72,1,1]);
-resolution(360, 360);
-antialiasing(0,3);
+camera([-1024, 0, -0.1], [0, 0, 0], [1,1,1]);
+resolution(640, 360);
+antialiasing(4,0);
 
 // Lights
 rotation([0, 40, 100]); directional_light([255]); end();

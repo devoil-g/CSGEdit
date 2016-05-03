@@ -1,6 +1,5 @@
 #include <exception>
 
-#include "Math.hpp"
 #include "MobiusCsgLeaf.hpp"
 
 RT::MobiusCsgLeaf::MobiusCsgLeaf(double r1, double r2, double t)

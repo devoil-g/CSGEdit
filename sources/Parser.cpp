@@ -535,7 +535,7 @@ void	RT::Parser::settingAntiAliasing(unsigned int live, unsigned int post)
   // Set antialiasing only if in main file
   if (_files.size() == 1)
   {
-    _scene.antialiasing().live = live + 1;
+    _scene.antialiasing().live = live;
     _scene.antialiasing().post = post;
   }
 }

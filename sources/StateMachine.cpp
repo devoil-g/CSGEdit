@@ -1,7 +1,6 @@
 #include <exception>
 
 #include "Color.hpp"
-#include "Math.hpp"
 #include "StateMachine.hpp"
 #include "Window.hpp"
 

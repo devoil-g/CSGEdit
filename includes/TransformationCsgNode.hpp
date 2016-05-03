@@ -1,12 +1,12 @@
 #ifndef _TRANSFORMATION_CSG_NODE_HPP_
 #define _TRANSFORMATION_CSG_NODE_HPP_
 
-#include "AbstractCsgNode.hpp"
+#include "UnionCsgNode.hpp"
 #include "Matrix.hpp"
 
 namespace RT
 {
-  class TransformationCsgNode : public RT::AbstractCsgNode
+  class TransformationCsgNode : public RT::UnionCsgNode
   {
   private:
     Math::Matrix<4, 4>		_transformation;	// Transformation applied to sub-tree

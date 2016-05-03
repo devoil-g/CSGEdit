@@ -1,4 +1,3 @@
-#include "Math.hpp"
 #include "TangleCsgLeaf.hpp"
 
 RT::TangleCsgLeaf::TangleCsgLeaf(double c)

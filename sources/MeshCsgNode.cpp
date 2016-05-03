@@ -1,9 +1,6 @@
 #include <exception>
-#include <tuple>
-#include <vector>
 #include <fstream>
 
-#include "Math.hpp"
 #include "MeshCsgNode.hpp"
 #include "TriangleCsgLeaf.hpp"
 
@@ -27,7 +24,9 @@ RT::MeshCsgNode::MeshCsgNode(std::string const & path)
 }
 
 RT::MeshCsgNode::~MeshCsgNode()
-{}
+{
+  delete _bound;
+}
 
 std::list<RT::Intersection>	RT::MeshCsgNode::renderChildren(RT::Ray const & ray, unsigned int deph) const
 {
@@ -35,13 +34,13 @@ std::list<RT::Intersection>	RT::MeshCsgNode::renderChildren(RT::Ray const & ray,
   if (_bound->render(ray, deph).empty())
     return std::list<RT::Intersection>();
 
-  std::list<RT::Intersection>	intersect;
+  std::list<RT::Intersection>	result;
 
   // Iterate through triangles to get intersections
   for (RT::AbstractCsgTree const * it : _children)
-    intersect.merge(it->render(ray, deph));
+    result.merge(it->render(ray, deph));
 
-  return intersect;
+  return result;
 }
 
 void	RT::MeshCsgNode::loadStl(std::string const & path)

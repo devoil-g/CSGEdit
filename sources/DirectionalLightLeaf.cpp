@@ -1,8 +1,6 @@
 #include <exception>
-#include <list>
 
 #include "DirectionalLightLeaf.hpp"
-#include "Math.hpp"
 #include "Scene.hpp"
 
 RT::DirectionalLightLeaf::DirectionalLightLeaf(RT::Color const & color, double angle)
