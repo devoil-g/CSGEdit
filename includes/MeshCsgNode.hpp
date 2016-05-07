@@ -11,13 +11,13 @@ namespace RT
 {
   class MeshCsgNode : public RT::AbstractCsgNode
   {
-  private:  
+  private:
     static std::map<std::string, void(RT::MeshCsgNode::*)(std::string const &)> const	_extension;
 
     RT::AbstractCsgTree const *	_bound;	// Bounding sphere containing mesh faces (for acceleration purpose)
 
     std::list<RT::Intersection>	renderChildren(RT::Ray const &, unsigned int) const override;	// Render sub-tree
-    
+
     void	loadStl(std::string const &);			// Load a .stl file
 
   public:

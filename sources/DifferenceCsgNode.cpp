@@ -10,11 +10,8 @@ std::list<RT::Intersection>	RT::DifferenceCsgNode::renderChildren(RT::Ray const 
 {
   std::list<RT::Intersection>	result = _children.front()->render(ray, deph);
 
-  if (result.empty())
-    return std::list<RT::Intersection>();
-
   // Iterate through sub-tree to get intersections
-  for (std::list<RT::AbstractCsgTree *>::const_iterator it = std::next(_children.begin()); it != _children.end(); it++)
+  for (std::list<RT::AbstractCsgTree *>::const_iterator it = std::next(_children.begin()); result.empty() == false && it != _children.end(); it++)
   {
     std::list<RT::Intersection>	node = (*it)->render(ray, deph);
 
@@ -28,7 +25,7 @@ std::list<RT::Intersection>	RT::DifferenceCsgNode::renderChildren(RT::Ray const 
       {
 	inside_r = !inside_r;
 	if (inside_n == true)
-	  it_r = result.erase(it_r);
+	  result.erase(it_r++);
 	else
 	  it_r++;
       }
@@ -39,13 +36,11 @@ std::list<RT::Intersection>	RT::DifferenceCsgNode::renderChildren(RT::Ray const 
 	{
 	  // Reverse normal of negative objects
 	  it_n->normal.d() *= -1.f;
-	  result.insert(it_r, *it_n);
+	  result.splice(it_r, node, it_n++);
 	}
-	it_n++;
+	else
+	  it_n++;
       }
-
-    if (result.empty())
-      return std::list<RT::Intersection>();
   }
 
   return result;

@@ -28,7 +28,7 @@ namespace RT
 
   protected:
     bool			active() const;		// Return active status
-    
+
   public:
     AbstractRaytracer();
     virtual ~AbstractRaytracer();

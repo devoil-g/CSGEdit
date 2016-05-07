@@ -4,7 +4,7 @@ template<>
 Math::Matrix<4, 4>	Math::Matrix<4, 4>::inverse() const
 {
   Math::Matrix<4, 4>	matrix;
-  
+
   double  s0 = (*this)(0, 0) * (*this)(1, 1) - (*this)(0, 1) * (*this)(1, 0);
   double  s1 = (*this)(0, 0) * (*this)(2, 1) - (*this)(0, 1) * (*this)(2, 0);
   double  s2 = (*this)(0, 0) * (*this)(3, 1) - (*this)(0, 1) * (*this)(3, 0);
@@ -56,11 +56,11 @@ Math::Matrix<3, 3>    Math::Matrix<3, 3>::reflection(double x, double y)
   Math::Matrix<3, 3>  matrix = Math::Matrix<3, 3>::identite();
 
   // Generate a reflection matrix
-  matrix(0, 0) = 1 - 2 * x * x;
-  matrix(1, 0) = -2 * x * y;
-  matrix(0, 1) = -2 * y * x;
-  matrix(1, 1) = 1 - 2 * y * y;
-  
+  matrix(0, 0) = 1.f - 2.f * x * x;
+  matrix(1, 0) = -2.f * x * y;
+  matrix(0, 1) = -2.f * y * x;
+  matrix(1, 1) = 1.f - 2.f * y * y;
+
   return matrix;
 }
 
@@ -70,15 +70,15 @@ Math::Matrix<4, 4>    Math::Matrix<4, 4>::reflection(double x, double y, double 
   Math::Matrix<4, 4>	matrix = Math::Matrix<4, 4>::identite();
 
   // Generate a reflection matrix
-  matrix(0, 0) = 1 - 2 * x * x;
-  matrix(1, 0) = -2 * x * y;
-  matrix(2, 0) = -2 * x * z;
-  matrix(0, 1) = -2 * y * x;
-  matrix(1, 1) = 1 - 2 * y * y;
-  matrix(2, 1) = -2 * y * z;
-  matrix(0, 2) = -2 * z * x;
-  matrix(1, 2) = -2 * z * y;
-  matrix(2, 2) = 1 - 2 * z * z;
+  matrix(0, 0) = 1.f - 2.f * x * x;
+  matrix(1, 0) = -2.f * x * y;
+  matrix(2, 0) = -2.f * x * z;
+  matrix(0, 1) = -2.f * y * x;
+  matrix(1, 1) = 1.f - 2.f * y * y;
+  matrix(2, 1) = -2.f * y * z;
+  matrix(0, 2) = -2.f * z * x;
+  matrix(1, 2) = -2.f * z * y;
+  matrix(2, 2) = 1.f - 2.f * z * z;
 
   return matrix;
 }
@@ -87,7 +87,7 @@ template<>
 Math::Matrix<3, 3>    Math::Matrix<3, 3>::rotation(double z)
 {
   Math::Matrix<3, 3>	matrix = Math::Matrix<3, 3>::identite();
-  
+
   // Convert parameter to radian
   z = Math::Utils::DegToRad(z);
 
@@ -133,7 +133,7 @@ template<>
 Math::Matrix<4, 4>    Math::Matrix<4, 4>::rotation(double a, double x, double y, double z)
 {
   Math::Matrix<4, 4>  matrix = Math::Matrix<4, 4>::identite();
-  
+
   double	      l = std::sqrt(x * x + y * y + z * z);
 
 #ifdef _DEBUG

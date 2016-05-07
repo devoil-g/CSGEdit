@@ -14,7 +14,7 @@ namespace RT
   class AbstractCsgLeaf : public RT::AbstractCsgTree
   {
   private:
-    virtual std::vector<double>	intersection(RT::Ray const &) const = 0;	// Render intersection distance form primitivee. You should override this.
+    virtual std::vector<double>	intersection(RT::Ray const &) const = 0;	// Render intersection distance of primitive. You should override this.
     virtual Math::Vector<4>	normal(Math::Vector<4> const &) const = 0;	// Calculate normal vector from intersection point. You should override this.
 
   public:

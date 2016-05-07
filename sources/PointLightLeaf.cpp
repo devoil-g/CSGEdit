@@ -25,7 +25,7 @@ RT::Color	RT::PointLightLeaf::preview(Math::Matrix<4, 4> const & transformation,
   // If no diffuse light, stop
   if (intersection.material.color == 0.f || intersection.material.direct.diffuse == 0.f)
     return RT::Color(0.f);
-  
+
   // Calculate relative position of intersection
   RT::Ray	normal = transformation.inverse() * intersection.normal;
 
@@ -91,7 +91,7 @@ RT::Color RT::PointLightLeaf::render(Math::Matrix<4, 4> const & transformation, 
 
   // Calculate reflection ray
   Math::Vector<4>	r = intersection.normal.p() - ray.p() - n * 2.f * (n.x() * (intersection.normal.p().x() - ray.p().x()) + n.y() * (intersection.normal.p().y() - ray.p().y()) + n.z() * (intersection.normal.p().z() - ray.p().z())) / (n.x() * n.x() + n.y() * n.y() + n.z() * n.z());
-  
+
   // Render generated rays
   RT::Color		diffuse, specular;
   for (RT::Ray const & it : rays)
@@ -110,7 +110,7 @@ RT::Color RT::PointLightLeaf::render(Math::Matrix<4, 4> const & transformation, 
 
     std::list<RT::Intersection>	intersect = scene->csg()->render(transformation * it);
     RT::Color			light = RT::Color(_color);
-    double			cos_diffuse = std::fabs(RT::Ray::cos(normal.d(), Math::Vector<4>(-it.d().x(), -it.d().y(), -it.d().z(), 0.f)));
+    double			cos_diffuse = std::abs(RT::Ray::cos(normal.d(), Math::Vector<4>(-it.d().x(), -it.d().y(), -it.d().z(), 0.f)));
     double			cos_specular = fmax(RT::Ray::cos(r, transformation * it.d() * -1.f), 0.f);
     double			intensity;
 

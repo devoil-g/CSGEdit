@@ -93,7 +93,7 @@ void		RT::MeshCsgNode::push(RT::AbstractCsgTree * node)
   for (RT::AbstractCsgTree const * it : _children)
   {
     std::vector<std::tuple<double, double, double>> pt = dynamic_cast<RT::TriangleCsgLeaf const *>(it)->points();
-    
+
     pts.insert(pts.end(), pt.begin(), pt.end());
   }
 

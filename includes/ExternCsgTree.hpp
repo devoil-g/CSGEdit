@@ -9,7 +9,7 @@ namespace RT
   {
   private:
     RT::AbstractCsgTree const * const &	_tree;	// Pointer to a mesh in MeshManager
-    
+
   public:
     ExternCsgTree(RT::AbstractCsgTree const * const &);
     ~ExternCsgTree();

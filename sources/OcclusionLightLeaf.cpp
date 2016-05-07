@@ -43,7 +43,7 @@ RT::Color RT::OcclusionLightLeaf::render(Math::Matrix<4, 4> const &, RT::Scene c
     rz = n.y() > 0 ?
     +std::acos(n.x() / std::sqrt(n.x() * n.x() + n.y() * n.y())) :
     -std::acos(n.x() / std::sqrt(n.x() * n.x() + n.y() * n.y()));
-  
+
   // Rotation matrix to get ray to point of view
   Math::Matrix<4, 4>  matrix = Math::Matrix<4, 4>::rotation(0, Math::Utils::RadToDeg(ry), Math::Utils::RadToDeg(rz));
 
@@ -59,7 +59,7 @@ RT::Color RT::OcclusionLightLeaf::render(Math::Matrix<4, 4> const &, RT::Scene c
     {
       // Calculate ray according to point on the hemisphere
       std::list<RT::Intersection> intersect = scene->csg()->render(RT::Ray(p, matrix * Math::Vector<4>(std::sin(a), std::cos(b) * std::cos(a), std::sin(b) * std::cos(a), 0.f)).normalize());
-      
+
       // Occlusion above
       if (intersection.material.transparency.intensity != 1.f)
       {
@@ -83,7 +83,7 @@ RT::Color RT::OcclusionLightLeaf::render(Math::Matrix<4, 4> const &, RT::Scene c
       {
 	std::list<RT::Intersection>::const_reverse_iterator it = intersect.rbegin();
 	RT::Color					    light = _color;
-	
+
 	while (it != intersect.rend() && -it->distance < 0.f)
 	  it++;
 	while (it != intersect.rend() && -it->distance < _radius && light != 0.f)

@@ -36,7 +36,7 @@ namespace Math
     inline double	y() const { return (*this)(1); }	// Get second component of vector
     inline double	z() const { return (*this)(2); }	// Get third component of vector
 
-    inline Math::Vector<vSize> &	operator=(Math::Matrix<vSize, 1> const & m)	// Vector sssignment operator
+    inline Math::Vector<vSize> &	operator=(Math::Matrix<vSize, 1> const & m)	// Vector assignment operator
     {
       Math::Matrix<vSize, 1>::operator=(m);
       return *this;

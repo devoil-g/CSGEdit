@@ -18,7 +18,7 @@ std::vector<double>	RT::MobiusCsgLeaf::intersection(RT::Ray const & ray) const
 {
   std::vector<double>	result;
 
-  for (double it : Math::Utils::solve(
+  for (double it : Math::solve(
     ray.d().x() * ray.d().x() * ray.d().y() + ray.d().y() * ray.d().y() * ray.d().y() - 2.f * ray.d().x() * ray.d().x() * ray.d().z() - 2.f * ray.d().y() * ray.d().y() * ray.d().z() + ray.d().y() * ray.d().z() * ray.d().z(),
     2.f * ray.d().x() * ray.d().y() * ray.p().x() - 4.f * ray.d().x() * ray.d().z() * ray.p().x() + ray.d().x() * ray.d().x() * ray.p().y() + 3.f * ray.d().y() * ray.d().y() * ray.p().y() - 4.f * ray.d().y() * ray.d().z() * ray.p().y() + ray.d().z() * ray.d().z() * ray.p().y() - 2.f * ray.d().x() * ray.d().x() * ray.p().z() - 2.f * ray.d().y() * ray.d().y() * ray.p().z() + 2.f * ray.d().y() * ray.d().z() * ray.p().z() - 2.f * ray.d().x() * ray.d().z() * _r1,
     ray.d().y() * ray.p().x() * ray.p().x() - 2.f * ray.d().z() * ray.p().x() * ray.p().x() + 2.f * ray.d().x() * ray.p().x() * ray.p().y() + 3.f * ray.d().y() * ray.p().y() * ray.p().y() - 2.f * ray.d().z() * ray.p().y() * ray.p().y() - 4.f * ray.d().x() * ray.p().x() * ray.p().z() - 4.f * ray.d().y() * ray.p().y() * ray.p().z() + 2.f * ray.d().z() * ray.p().y() * ray.p().z() + ray.d().y() * ray.p().z() * ray.p().z() - 2.f * ray.d().z() * ray.p().x() * _r1 - 2.f * ray.d().x() * ray.p().z() * _r1 - ray.d().y() * _r1 * _r1,

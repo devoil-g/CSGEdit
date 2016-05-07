@@ -50,6 +50,10 @@ namespace RT
       << "   [Right mouse]:          Translate camera" << std::endl
       << "   [Scroll wheel]:         Translate camera (forward/backward)" << std::endl
       << "   [Shift + Scroll wheel]: Zoom in/out" << std::endl
+      << std::endl
+      << "  HUD colors:" << std::endl
+      << "   [Red]:                  Zone currently rendered" << std::endl
+      << "   [Blue]:                 Post antialiasing level (second pass)" << std::endl
       << std::endl;
   }
 };
@@ -109,7 +113,7 @@ int	main(int argc, char ** argv)
     return EXIT_FAILURE;
   }
 #endif
-  
+
 #ifdef __linux__
   XInitThreads();
 #endif
@@ -118,7 +122,7 @@ int	main(int argc, char ** argv)
   {
     RT::initialize(argc, argv);
     RT::help();
-    
+
     // Push initial state in state machine here
     RT::StateMachine::Instance().push(new RT::ControlState(file));
     RT::StateMachine::Instance().run();
@@ -131,12 +135,12 @@ int	main(int argc, char ** argv)
       e.what(),
       "Error - Exception thrown",
       MB_OK | MB_ICONSTOP
-      );
+    );
 #else
     std::cerr << "[Exception]: " << exception.what() << std::endl;
 #endif
     return EXIT_FAILURE;
   }
-  
+
   return EXIT_SUCCESS;
 }

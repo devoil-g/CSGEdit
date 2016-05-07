@@ -29,7 +29,7 @@ std::list<RT::Intersection>	RT::AbstractCsgLeaf::render(RT::Ray const & ray, uns
     // Calculate normal from intersection list
     norm.p() = ray.p() + ray.d() * it;
     norm.d() = normal(norm.p());
-    
+
     // Push intersection data to intersections list
     result.push_back(RT::Intersection(this, norm, it));
   }

@@ -22,10 +22,11 @@ namespace RT
     std::vector<unsigned int>	_grid;		// Progression of scene to render
     std::vector<unsigned int>	_antialiasing;	// Post anti-alistd::asing level
     RT::Scene *			_scene;		// Scene to render
-    unsigned int		_progress;	// Number of ray traced during first pass
+    unsigned int		_rayTotal;	// Total number of ray to render
+    unsigned int		_rayRendered;	// Number of ray rendered
     Pass			_status;	// Status of pass (first or second)
 
-    void    			antialiasing();	// Render post anti-alistd::asing level
+    void    			antialiasing();	// Render post anti-aliasing level
 
     void    			begin() override;									// Method managing rendering threads
     void    			render();										// Rendering thread main method
@@ -38,7 +39,7 @@ namespace RT
     RT::Color			renderTransparency(RT::Ray const &, RT::Intersection const &, unsigned int) const;	// Render transparency
     RT::Color			renderLightDirect(RT::Ray const &, RT::Intersection const &, unsigned int) const;	// Render direct light of an intersection
     RT::Color			renderLightIndirect(RT::Ray const &, RT::Intersection const &, unsigned int) const;	// Render indirect light of an intersection
-    
+
   public:
     RenderRaytracer();
     ~RenderRaytracer();

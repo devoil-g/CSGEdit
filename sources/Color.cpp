@@ -3,6 +3,7 @@
 #endif
 
 #include "Color.hpp"
+#include "Math.hpp"
 
 RT::Color::Color()
   : r(0.f), g(0.f), b(0.f)
@@ -23,19 +24,12 @@ RT::Color::Color(sf::Color clr)
 RT::Color::~Color()
 {}
 
-sf::Color	RT::Color::transparent()
+sf::Color	RT::Color::sfml(double alpha) const
 {
-  return sf::Color(0, 0, 0, 0);
-}
-
-sf::Color	RT::Color::sfml() const
-{
-  RT::Color	n;
-
-  n = normalize();
+  RT::Color	n = normalize();
 
   // Return sfml color object
-  return sf::Color((sf::Uint8)(n.r * 255.f + 0.5f), (sf::Uint8)(n.g * 255.f + 0.5f), (sf::Uint8)(n.b * 255.f + 0.5f));
+  return sf::Color((sf::Uint8)(n.r * 255.f + 0.5f), (sf::Uint8)(n.g * 255.f + 0.5f), (sf::Uint8)(n.b * 255.f + 0.5f), (sf::Uint8)(std::min((double)1.f, std::max((double)0.f, alpha)) * 255.f + 0.5f));
 };
 
 RT::Color	RT::Color::grey() const
@@ -45,27 +39,7 @@ RT::Color	RT::Color::grey() const
 
 RT::Color	RT::Color::normalize() const
 {
-  double	r = this->r;
-  double	g = this->g;
-  double	b = this->b;
-
-  // Check if components positive
-  if (r < 0.f)
-    r = 0.f;
-  if (g < 0.f)
-    g = 0.f;
-  if (b < 0.f)
-    b = 0.f;
-
-  // Check for components saturation
-  if (r > 1.f)
-    r = 1.f;
-  if (g > 1.f)
-    g = 1.f;
-  if (b > 1.f)
-    b = 1.f;
-
-  return RT::Color(r, g, b);
+  return RT::Color(std::min((double)1.f, std::max((double)0.f, r)), std::min((double)1.f, std::max((double)0.f, g)), std::min((double)1.f, std::max((double)0.f, b)));
 }
 
 RT::Color	RT::Color::operator+(RT::Color const & clr) const

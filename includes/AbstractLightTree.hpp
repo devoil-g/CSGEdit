@@ -17,7 +17,7 @@ namespace RT
   };
 
   class Scene;
-  
+
   class AbstractLightTree
   {
   public:

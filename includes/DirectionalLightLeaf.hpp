@@ -11,7 +11,7 @@ namespace RT
   private:
     RT::Color	_color;		// Color of the light.
     double	_angle;		// Light diffusion angle.
-    
+
   public:
     DirectionalLightLeaf(RT::Color const & = RT::Color(1.f), double = 0.f);
     ~DirectionalLightLeaf();

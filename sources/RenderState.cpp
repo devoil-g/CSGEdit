@@ -19,7 +19,12 @@ RT::RenderState::RenderState(RT::Scene * scene)
 }
 
 RT::RenderState::~RenderState()
-{}
+{
+  // Reset scene HUD
+  for (unsigned x = 0; x < _scene->hud().getSize().x; x++)
+    for (unsigned y = 0; y < _scene->hud().getSize().y; y++)
+      _scene->hud().setPixel(x, y, RT::Color(0.f).sfml(0.f));
+}
 
 bool  RT::RenderState::update(sf::Time elapsed)
 {

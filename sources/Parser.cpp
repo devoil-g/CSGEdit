@@ -155,7 +155,7 @@ RT::Parser::Parser()
     [](const std::vector<chaiscript::Boxed_Value> & v)
   {
     std::vector<std::vector<double>>	result;
-    
+
     for (chaiscript::Boxed_Value const & it1 : v)
     {
       result.push_back(std::vector<double>());
@@ -166,7 +166,7 @@ RT::Parser::Parser()
     return result;
   }
   ));
-  
+
   // Vector conversion: RT::Color
   _script.add(chaiscript::type_conversion<std::vector<chaiscript::Boxed_Value>, RT::Color>(
     [](const std::vector<chaiscript::Boxed_Value> & v)
@@ -179,7 +179,7 @@ RT::Parser::Parser()
       throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
   }
   ));
-  
+
   // Assign CSG / Light node to scene
   _scene.csg() = _csg.top();
   _scene.light() = _light.top();
@@ -215,7 +215,7 @@ RT::Scene	RT::Parser::parse(std::string const & path)
     {
       // Parsing file
       _script.eval_file(path);
-      
+
       // Check for invalid scope at end of file
       if (_csg.size() != 1 || _light.size() != 1)
 	throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
@@ -227,12 +227,12 @@ RT::Scene	RT::Parser::parse(std::string const & path)
 
     // Clean scene
     _scene.clear();
-    chaiscript::exception::arithmetic_error;
-    // Restore scene default configuration
+    
+    // Generate empty scene configuration
     _scene.csg() = new RT::EmptyCsgTree();
     _scene.light() = new RT::EmptyLightTree();
   }
-  
+
   return _scene;
 }
 
@@ -434,7 +434,7 @@ void	RT::Parser::scopeEnd()
 
       _light.pop();
       if (_light.top() != top)
-      _light.top()->pop();
+	_light.top()->pop();
     }
     else
       _light.pop();
@@ -526,7 +526,7 @@ void	RT::Parser::settingResolution(unsigned int width, unsigned int height)
   if (_files.size() == 1)
   {
     _scene.image().create(width, height, RT::Color(0.f).sfml());
-    _scene.hud().create(width, height, RT::Color::transparent());
+    _scene.hud().create(width, height, RT::Color(0.f).sfml(0.f));
   }
 }
 

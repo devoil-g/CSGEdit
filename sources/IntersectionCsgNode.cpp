@@ -10,11 +10,8 @@ std::list<RT::Intersection>	RT::IntersectionCsgNode::renderChildren(RT::Ray cons
 {
   std::list<RT::Intersection>	result = _children.front()->render(ray, deph);
 
-  if (result.empty())
-    return std::list<RT::Intersection>();
-
   // Iterate through sub-tree to get intersections
-  for (std::list<RT::AbstractCsgTree *>::const_iterator it = std::next(_children.begin()); it != _children.end(); it++)
+  for (std::list<RT::AbstractCsgTree *>::const_iterator it = std::next(_children.begin()); result.empty() == false && it != _children.end(); it++)
   {
     std::list<RT::Intersection> node = (*it)->render(ray, deph);
 
@@ -30,7 +27,7 @@ std::list<RT::Intersection>	RT::IntersectionCsgNode::renderChildren(RT::Ray cons
       {
 	inside_r = !inside_r;
 	if (inside_n == false)
-	  it_r = result.erase(it_r);
+	  result.erase(it_r++);
 	else
 	  it_r++;
       }
@@ -38,15 +35,13 @@ std::list<RT::Intersection>	RT::IntersectionCsgNode::renderChildren(RT::Ray cons
       {
 	inside_n = !inside_n;
 	if (inside_r == true)
-	  result.insert(it_r, *it_n);
-	it_n++;
+	  result.splice(it_r, node, it_n++);
+	else
+	  it_n++;
       }
 
     // Erase remaining intersection
     result.erase(it_r, result.end());
-
-    if (result.empty())
-      return std::list<RT::Intersection>();
   }
 
   return result;

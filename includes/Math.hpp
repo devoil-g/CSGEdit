@@ -25,7 +25,13 @@ namespace Math
   double const		Shift(0.000001f);	// Constant used to move points to avoid undesired intersection
   double const		Pi(M_PI);		// Use this instead of M_PI
   unsigned int const	RandomTableSize(4096);	// Size of random table
-  
+
+  // Equations solver
+  std::vector<double>	solve(double, double);				// Solve a 1st degree equation
+  std::vector<double>	solve(double, double, double);			// Solve a 2nd degree equation
+  std::vector<double>	solve(double, double, double, double);		// Solve a 3rd degree equation
+  std::vector<double>	solve(double, double, double, double, double);	// Solve a 4th degree equation
+
   namespace Utils
   {
     inline double	RadToDeg(double r)	// Convert radian to degree
@@ -37,10 +43,6 @@ namespace Math
     {
       return (r * Math::Pi) / 180.f;
     }
-
-    std::vector<double>	solve(double, double, double);			// Solve a 2nd degree equation
-    std::vector<double>	solve(double, double, double, double);		// Solve a 3rd degree equation
-    std::vector<double>	solve(double, double, double, double, double);	// Solve a 4th degree equation
 
     RT::AbstractCsgTree const *	BoundingSphere(std::vector<std::tuple<double, double, double> > const &);	// Generate a bounding sphere from points
   };

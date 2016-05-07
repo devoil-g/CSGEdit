@@ -189,7 +189,7 @@ bool	RT::ControlState::update(sf::Time)
     {
       _file = std::string(path);
       std::cout << "[" << RT::Config::Window::Title << "] Opening file '" << _file << "'." << std::endl;
-      
+
       RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Indeterminate);
 
       // Load new scene

@@ -28,7 +28,7 @@ namespace RT
 
   private:
     std::map<std::string, std::pair<Time, RT::Scene>>	_library;	// Cache of scene loaded
-    
+
     Time	time(std::string const &) const;	// Get time of file
     void	load(std::string const &);		// Load/reload a scene
 

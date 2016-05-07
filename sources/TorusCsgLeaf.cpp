@@ -10,13 +10,13 @@ RT::TorusCsgLeaf::~TorusCsgLeaf()
 std::vector<double>	RT::TorusCsgLeaf::intersection(RT::Ray const & ray) const
 {
   // Not so clever equations
-  std::vector<double>	result = Math::Utils::solve(
+  std::vector<double>	result = Math::solve(
     std::pow(std::pow(ray.d().x(), 2) + std::pow(ray.d().y(), 2) + std::pow(ray.d().z(), 2), 2),
     4.f * (ray.d().x() * ray.p().x() + ray.d().y() * ray.p().y() + ray.d().z() * ray.p().z()) * (std::pow(ray.d().x(), 2) + std::pow(ray.d().y(), 2) + std::pow(ray.d().z(), 2)),
     2.f * (std::pow(ray.d().x(), 2) + std::pow(ray.d().y(), 2) + std::pow(ray.d().z(), 2)) * (std::pow(ray.p().x(), 2) + std::pow(ray.p().y(), 2) + std::pow(ray.p().z(), 2) + std::pow(_r, 2) - std::pow(_h, 2)) + 4.f * std::pow(ray.d().x() * ray.p().x() + ray.d().y() * ray.p().y() + ray.d().z() * ray.p().z(), 2.f) - 4.f * (std::pow(ray.d().x(), 2) + std::pow(ray.d().y(), 2)) * std::pow(_r, 2),
     4.f * (std::pow(ray.p().x(), 2) + std::pow(ray.p().y(), 2) + std::pow(ray.p().z(), 2) + std::pow(_r, 2) - std::pow(_h, 2)) * (ray.d().x() * ray.p().x() + ray.d().y() * ray.p().y() + ray.d().z() * ray.p().z()) - 8.f * (ray.d().x() * ray.p().x() + ray.d().y() * ray.p().y()) * std::pow(_r, 2),
     std::pow(std::pow(ray.p().x(), 2) + std::pow(ray.p().y(), 2) + std::pow(ray.p().z(), 2) + std::pow(_r, 2) - std::pow(_h, 2), 2) - 4.f * (std::pow(ray.p().x(), 2) + std::pow(ray.p().y(), 2)) * std::pow(_r, 2)
-    );
+  );
 
   // If torus overlap on himself, delete inside intersections
   if (_h > _r && result.size() == 4)

@@ -14,8 +14,20 @@ void	Math::initialize()
   Math::Random::initialize();
 }
 
-std::vector<double>	Math::Utils::solve(double a, double b, double c)
-{ 
+std::vector<double>	Math::solve(double a, double b)
+{
+#ifdef _DEBUG
+  // Check for invalid parameter
+  if (a == 0)
+    return std::vector<double>();
+#endif
+
+  // Solve equation
+  return { -b / a };
+}
+
+std::vector<double>	Math::solve(double a, double b, double c)
+{
 #ifdef _DEBUG
   // Check for invalid parameter
   if (a == 0)
@@ -25,12 +37,12 @@ std::vector<double>	Math::Utils::solve(double a, double b, double c)
   // Solve equation
   double  d = b * b - 4.f * a * c;
   if (d >= 0)
-    return { (-b - std::sqrt(d)) / (2.f * a), (-b + std::sqrt(d)) / (2.f * a) };
+    return{ (-b - std::sqrt(d)) / (2.f * a), (-b + std::sqrt(d)) / (2.f * a) };
   else
     return std::vector<double>();
 }
 
-std::vector<double>	Math::Utils::solve(double a, double b, double c, double d)
+std::vector<double>	Math::solve(double a, double b, double c, double d)
 {
 #ifdef _DEBUG
   // Check for invalid parameter
@@ -51,20 +63,20 @@ std::vector<double>	Math::Utils::solve(double a, double b, double c, double d)
     double  phi = std::acos(r / std::pow(q, 3.f / 2.f)) / 3.f;
     double  s = -2.f * std::sqrt(q);
 
-    return { s * std::cos(phi) - b / 3.f, s * std::cos(phi + 2.f * Math::Pi / 3.f) - b / 3.f, s * std::cos(phi + 4.f * Math::Pi / 3.f) - b / 3.f };
+    return{ s * std::cos(phi) - b / 3.f, s * std::cos(phi + 2.f * Math::Pi / 3.f) - b / 3.f, s * std::cos(phi + 4.f * Math::Pi / 3.f) - b / 3.f };
   }
   else
   {
     double  s = std::cbrt((std::sqrt(-delta) + std::abs(r)));
 
     if (r < 0.f)
-      return { +s + q / s - b / 3.f };
+      return{ +s + q / s - b / 3.f };
     else
-      return { -s - q / s - b / 3.f };
+      return{ -s - q / s - b / 3.f };
   }
 }
 
-std::vector<double>	Math::Utils::solve(double a, double b, double c, double d, double e)
+std::vector<double>	Math::solve(double a, double b, double c, double d, double e)
 {
 #ifdef _DEBUG
   // Check for invalid parameter
@@ -99,7 +111,7 @@ std::vector<double>	Math::Utils::solve(double a, double b, double c, double d, d
     return std::vector<double>();
 
   std::vector<double> result;
-  
+
   double  x1 = l / 2.f;
   double  x2 = std::sqrt(delta) / 2.f;
   if (g > 0)
@@ -116,7 +128,7 @@ std::vector<double>	Math::Utils::solve(double a, double b, double c, double d, d
   delta = std::pow(l, 2) - 2.f * k - 4.f * m;
   if (delta < 0.f)
     return result;
-  
+
   double  y1 = -l / 2.f;
   double  y2 = std::sqrt(delta) / 2.f;
   if (g > 0)
@@ -228,7 +240,7 @@ void	Math::Random::initialize()
   // Set random generator to timestamp
   std::default_random_engine			generator;
   std::uniform_real_distribution<double>	distribution(0.f, 1.f);
-  
+
   // Fill random table
   for (unsigned int i = 0; i < Math::RandomTableSize; i++)
     _table[i] = distribution(generator);

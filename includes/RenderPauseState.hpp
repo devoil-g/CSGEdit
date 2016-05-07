@@ -14,7 +14,7 @@ namespace RT
   private:
     sf::Image			_image;		// Copy of raytracer image
     RT::RenderRaytracer &	_render;	// Current render raytracer
-    
+
   public:
     RenderPauseState(RT::RenderRaytracer &, RT::Scene *, sf::Time);
     ~RenderPauseState();

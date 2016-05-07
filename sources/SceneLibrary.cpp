@@ -63,7 +63,7 @@ RT::Scene *		RT::SceneLibrary::get(std::string const & file)
   // Load file if not in cache
   if (_library.find(file) == _library.end())
     load(file);
-  
+
   return &_library[file].second;
 }
 

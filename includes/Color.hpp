@@ -16,9 +16,7 @@ namespace RT
 
     double	r, g, b;				// Color components
 
-    static sf::Color	transparent();			// Return a transparent black sfml color
-
-    sf::Color		sfml() const;			// Convert RT::Color to sfml
+    sf::Color		sfml(double = 1.f) const;	// Convert RT::Color to sfml
     RT::Color		grey() const;			// Return a grey-scaled color
     RT::Color		normalize() const;		// Return a normalize color (component 0-1)
 

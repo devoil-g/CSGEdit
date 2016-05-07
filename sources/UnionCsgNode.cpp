@@ -9,7 +9,7 @@ RT::UnionCsgNode::~UnionCsgNode()
 std::list<RT::Intersection>	RT::UnionCsgNode::renderChildren(RT::Ray const & ray, unsigned int deph) const
 {
   std::list<RT::Intersection>	result;
-  
+
   // Iterate through sub-tree to get intersections
   for (RT::AbstractCsgTree const * it : _children)
   {
@@ -25,7 +25,7 @@ std::list<RT::Intersection>	RT::UnionCsgNode::renderChildren(RT::Ray const & ray
       {
 	inside_r = !inside_r;
 	if (inside_n == true)
-	  it_r = result.erase(it_r);
+	  result.erase(it_r++);
 	else
 	  it_r++;
       }
@@ -33,10 +33,13 @@ std::list<RT::Intersection>	RT::UnionCsgNode::renderChildren(RT::Ray const & ray
       {
 	inside_n = !inside_n;
 	if (inside_r == false)
-	  result.insert(it_r, *it_n);
-	it_n++;
+	  result.splice(it_r, node, it_n++);
+	else
+	  it_n++;
       }
-    result.insert(it_r, it_n, node.end());
+
+    // Insert remaining intersections
+    result.splice(it_r, node, it_n, node.end());
   }
 
   return result;

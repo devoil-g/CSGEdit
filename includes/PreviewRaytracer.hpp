@@ -19,7 +19,7 @@ namespace RT
     void			preview();					// Rendering thread main method
     void			preview(unsigned int);				// Render a zone
     RT::Color			preview(unsigned int, unsigned int) const;	// Render a pixel
-    
+
   public:
     PreviewRaytracer();
     ~PreviewRaytracer();

@@ -13,7 +13,7 @@ namespace RT
     double	_radius;		// Light radius.
     double	_intensity;		// Light intensity multiplier. 0 for constant.
     double	_angle1, _angle2;	// Spot diffusion angles. 
-    
+
   public:
     PointLightLeaf(RT::Color const & = RT::Color(1.f), double = 0.f, double = 0.f, double = 0.f, double = 0.f);
     ~PointLightLeaf();

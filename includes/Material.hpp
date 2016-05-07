@@ -15,7 +15,7 @@ namespace RT
       unsigned int const	Quality(3);	// Default quality of material properties
     };
   };
-  
+
   class Material
   {
   private:
@@ -39,7 +39,7 @@ namespace RT
       double		refraction = 1.f;				// Index of refraction [0.f-inf]
       double		glossiness = 1.f;				// Angle of glossiness [0.f-90.f]
       unsigned int	quality = RT::Config::Material::Quality;	// Quality of transparency
-      
+
       RT::Material::Transparency &	operator*=(RT::Material::Transparency const &);		// Transparency properties multiplication
       RT::Material::Transparency	operator*(RT::Material::Transparency const &) const;	// Transparency properties multiplication
     };

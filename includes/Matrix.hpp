@@ -26,20 +26,9 @@ namespace Math
       // Compilation time error if invalid matrix
       static_assert(cRow > 0 && cCol > 0, "Invalid matrix size.");
     }
-
-    Matrix(Math::Matrix<cRow, cCol> const & cpy)
-    {
-      std::memcpy(this->_matrix, cpy._matrix, sizeof(this->_matrix));
-    }
-
+    
     ~Matrix() {};
-
-    Math::Matrix<cRow, cCol> &		operator=(Math::Matrix<cRow, cCol> const & cpy)		// Copy matrix
-    {
-      std::memcpy(this->_matrix, cpy._matrix, sizeof(this->_matrix));
-      return *this;
-    }
-
+    
     bool				operator==(Math::Matrix<cRow, cCol> const & m)		// Matrix comparison
     {
       for (unsigned int row = 0; row < cRow; row++)
@@ -52,7 +41,7 @@ namespace Math
     bool				operator!=(Math::Matrix<cRow, cCol> const & m)		// Matrix comparison
     {
       return !(*this == m);
-  }
+    }
 
     inline double &			operator()(unsigned int row, unsigned int col)		// Get matrix value
     {
@@ -62,7 +51,7 @@ namespace Math
 #endif
       return _matrix[row][col];
     };
-    
+
     inline double			operator()(unsigned int row, unsigned int col) const	// Get matrix value
     {
 #ifdef _DEBUG
@@ -214,31 +203,6 @@ namespace Math
 	  matrix(i, i) = transformation[0];
 
       return matrix;
-    }
-
-    std::string				dump() const						// Dump the matrix in a string
-    {
-      std::stringstream			stream;
-
-      stream << "[";
-      for (unsigned int row = 0; row < cRow; row++)
-      {
-	if (row != 0)
-	  stream << ", ";
-	stream << "[";
-
-	for (unsigned int col = 0; col < cCol; col++)
-	{
-	  if (col != 0)
-	    stream << ", ";
-	  stream << _matrix[row][col];
-	}
-
-	stream << "]";
-      }
-      stream << "]";
-
-      return stream.str();
     }
 
     // Methods specialized in Matrix.cpp

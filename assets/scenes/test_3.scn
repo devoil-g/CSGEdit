@@ -313,7 +313,13 @@ def	mailBox()
 			translation([0,4,+96]); box(24,56,24); end();
 		end();
 		
-		translation([24,0,+96]); rotation([-90,0,0]); cylinder(22,64); end(); end();
+		translation([24,0,+96]); rotation([-90,0,0]); difference();
+			cylinder(22,64);
+			
+			for (var x = 0; x < 12; ++x) {
+				rotation([0,0,90.0/12.0 * (x + 0.5)]); translation([-22,0,0]); scale([0.5,1,1]); cylinder(0.1,64); end(); end(); end();
+			}
+		end(); end(); end();
 		
 		translation([4, 24, 104]); rotation([0,-90,0]); cylinder(1,6); end(); end();
 		translation([4, 40, 104]); rotation([0,-90,0]); cylinder(1,6); end(); end();
@@ -395,6 +401,10 @@ def	stairs()
 		translation([4,4,128+90]); rotation([-90,0,0]); cylinder(2,120); end(); end();
 		translation([4,4,128+90]); rotation([0,+90,0]); cylinder(2,126); end(); end();
 		translation([4,4,128+16]); rotation([0,+90,0]); cylinder(2,126); end(); end();
+		translation([4+126,4,128+16]); sphere(2); end();
+		translation([4+126,4,128+90]); sphere(2); end();
+		translation([4+126,4,128+16]); rotation([+90,0,0]); cylinder(2,8); end(); end();
+		translation([4+126,4,128+90]); rotation([+90,0,0]); cylinder(2,8); end(); end();
 		
 		for (var x = 0; x < 9; ++x) {
 			translation([4,4+12*(x+1),128+16]); cylinder(1,74); end();
@@ -414,7 +424,7 @@ indirect_light([0],[0],[0]);
 			translation([-384,-512+(1024.0/12.0)*(x+0.5),0]); box(12,48,2, true); end();
 		}
 	end();
-	
+
 	// Trottoir
 	translation([0,-512,0]); box(512,1024,10); end();
 	bounding();
@@ -423,26 +433,27 @@ indirect_light([0],[0],[0]);
 			translation([-2,-512+32*x+1,0]); box(12,30,12); end();
 		}
 	end();
-	
+
 	// Streetlamp
 	translation([48,320,10]); streetlamp(); end();
-	
+
 	// Car
 	translation([-128,128,0]); car(); end();
-	
+
 	// MailBox
 	translation([128,-448,10]); mailBox(); end();
-	
+
 	// Building
 	translation([384,-512,10]); building(); end();
-	
+
 	// Barrier
 	translation([192,-512,10]); barrier(); end();
-	
+
 	// Stairs
 	translation([256,-384,10]); stairs(); end();
-	
+
 	// Man
 	//translation([64, -64, 176]); rotation([0,0,-82]); scale([0.24]); mesh("../models/man.stl"); end(); end(); end();
+
 end();
 end();

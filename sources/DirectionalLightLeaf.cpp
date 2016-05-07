@@ -20,7 +20,7 @@ RT::Color RT::DirectionalLightLeaf::preview(Math::Matrix<4, 4> const & transform
   if (intersection.material.color == 0.f || intersection.material.direct.diffuse == 0.f)
     return RT::Color(0.f);
 
-  return intersection.material.color * intersection.material.direct.diffuse * _color * std::fmax(RT::Ray::cos(intersection.normal.d(), Math::Vector<4>(transformation * Math::Vector<4>(-1.f, 0.f, 0.f, 0.f))), 0.f);
+  return intersection.material.color * intersection.material.direct.diffuse * _color * std::max(RT::Ray::cos(intersection.normal.d(), Math::Vector<4>(transformation * Math::Vector<4>(-1.f, 0.f, 0.f, 0.f))), (double)0.f);
 }
 
 RT::Color RT::DirectionalLightLeaf::render(Math::Matrix<4, 4> const & transformation, RT::Scene const * scene, RT::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite, unsigned int) const
@@ -36,7 +36,7 @@ RT::Color RT::DirectionalLightLeaf::render(Math::Matrix<4, 4> const & transforma
     n *= -1.f;
     inside = true;
   }
-  
+
   std::list<RT::Ray>	rays;
   unsigned int		quality = intersection.material.direct.quality > recursivite ? intersection.material.direct.quality - recursivite : 0;
 
@@ -50,14 +50,14 @@ RT::Color RT::DirectionalLightLeaf::render(Math::Matrix<4, 4> const & transforma
 
   // Calculate reflection ray
   Math::Vector<4>	r = intersection.normal.p() - ray.p() - n * 2.f * (n.x() * (intersection.normal.p().x() - ray.p().x()) + n.y() * (intersection.normal.p().y() - ray.p().y()) + n.z() * (intersection.normal.p().z() - ray.p().z())) / (n.x() * n.x() + n.y() * n.y() + n.z() * n.z());
-  
+
   // Render generated rays
   RT::Color		diffuse, specular;
   for (RT::Ray const & it : rays)
   {
     std::list<RT::Intersection>	intersect = scene->csg()->render(it);
     RT::Color			light = _color;
-    
+
     // Render light
     while (!intersect.empty() && intersect.front().distance < 0.f)
       intersect.pop_front();
@@ -68,11 +68,11 @@ RT::Color RT::DirectionalLightLeaf::render(Math::Matrix<4, 4> const & transforma
     }
 
     // Apply light to diffuse component
-    diffuse += light * std::fabs(RT::Ray::cos(n, it.d()));
+    diffuse += light * std::abs(RT::Ray::cos(n, it.d()));
 
     // Apply light to specular component
     if (inside == false)
-      specular += light * std::pow(std::fmax(RT::Ray::cos(r, it.d()), 0.f), intersection.material.direct.shininess);
+      specular += light * std::pow(std::max(RT::Ray::cos(r, it.d()), (double)0.f), intersection.material.direct.shininess);
   }
 
   return diffuse / (double)rays.size() * intersection.material.color * intersection.material.direct.diffuse * (1.f - intersection.material.transparency.intensity) * (1.f - intersection.material.reflection.intensity)

@@ -20,7 +20,7 @@ void	    RT::AbstractRaytracer::start()
 
   // Stop running threads
   stop();
-  
+
   // Start new rendering thread
   _active = true;
   _thread = new std::thread(&RT::AbstractRaytracer::begin, this);

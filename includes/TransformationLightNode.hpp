@@ -1,12 +1,12 @@
 #ifndef _TRANSFORMATION_LIGHT_NODE_HPP_
 #define _TRANSFORMATION_LIGHT_NODE_HPP_
 
-#include "AbstractLightNode.hpp"
+#include "UnionLightNode.hpp"
 #include "Matrix.hpp"
 
 namespace RT
 {
-  class TransformationLightNode : public RT::AbstractLightNode
+  class TransformationLightNode : public RT::UnionLightNode
   {
   private:
     Math::Matrix<4, 4>	_transformation;	// Transformation applied to sub-tree

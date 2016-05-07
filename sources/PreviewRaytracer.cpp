@@ -36,7 +36,7 @@ void	RT::PreviewRaytracer::begin()
   // Launch rendering threads
   for (unsigned int i = 0; i < _scene->config().threadNumber; i++)
     threads.push_back(std::thread((void(RT::PreviewRaytracer::*)())(&RT::PreviewRaytracer::preview), this));
-  
+
   // Wait for rendering threads to finish
   for (std::thread & it : threads)
     it.join();
@@ -69,14 +69,14 @@ void	RT::PreviewRaytracer::preview()
 void	RT::PreviewRaytracer::preview(unsigned int zone)
 {
   unsigned int	size = _grid[zone];
-  
+
   // Lock grid zone
   _grid[zone] = RT::Config::Raytracer::BlockSize + 1;
 
   // Calcul zone coordinates (x, y)
   unsigned int	x = zone % (_scene->image().getSize().x / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().x % RT::Config::Raytracer::BlockSize ? 1 : 0)) * RT::Config::Raytracer::BlockSize;
   unsigned int	y = zone / (_scene->image().getSize().x / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().x % RT::Config::Raytracer::BlockSize ? 1 : 0)) * RT::Config::Raytracer::BlockSize;
-  
+
   // Render zone
   for (unsigned int a = 0; a < RT::Config::Raytracer::BlockSize && active(); a += size)
     for (unsigned int b = 0; b < RT::Config::Raytracer::BlockSize && active(); b += size)
@@ -89,7 +89,7 @@ void	RT::PreviewRaytracer::preview(unsigned int zone)
 	    if (x + a + c < _scene->image().getSize().x && y + b + d < _scene->image().getSize().y)
 	      _scene->image().setPixel(x + a + c, y + b + d, clr.sfml());
       }
-  
+
   if (active())
     _grid[zone] = size / 2;
   else
@@ -104,7 +104,7 @@ RT::Color	RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
   ray.d().x() = (double)_scene->image().getSize().x;
   ray.d().y() = (double)_scene->image().getSize().x / 2 - x + 0.5f;
   ray.d().z() = (double)_scene->image().getSize().y / 2 - y + 0.5f;
-  
+
   // Virtual reality
   if (_scene->vr().offset != 0.f)
   {
@@ -139,12 +139,12 @@ RT::Color	RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
       ray.d().z() *= distortion;
     }
   }
-  
+
   ray = (_scene->camera() * ray).normalize();
 
   // Render intersections using ray
   std::list<RT::Intersection>	intersect = _scene->csg()->render(ray);
-  
+
   // Delete back intersections
   while (!intersect.empty() && intersect.front().distance < 0)
     intersect.pop_front();
@@ -154,7 +154,7 @@ RT::Color	RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
     // Check for a correctly oriented normal
     if (RT::Ray::cos(ray.d(), intersect.front().normal.d()) < 0.f)
       return _scene->light()->preview(Math::Matrix<4, 4>::identite(), _scene, ray, intersect.front(), 0);
-    // Return an error color if wrong normal
+  // Return an error color if wrong normal
     else
       return RT::Color(1.f, (x / 2 + y / 5) / 2 % 2 ? 0.54f : 0.12f, (x / 2 + y / 5) / 2 % 2 ? 0.54f : 0.12f);
   else
@@ -163,17 +163,8 @@ RT::Color	RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
 
 double	  RT::PreviewRaytracer::progress() const
 {
-  unsigned int  r = 0;
-  unsigned int  n = 1;
-  
-  for (unsigned int a = RT::Config::Raytracer::BlockSize; a > 0; a /= 2)
-  {
-    for (unsigned int b = 0; b < _grid.size(); b++)
-      if (_grid[b] == a / 2)
-	r += n * n;
-
-    n *= 2;
-  }
-
-  return (double)r / (double)(_scene->image().getSize().x * _scene->image().getSize().y);
+  for (unsigned int i : _grid)
+    if (i != 0)
+      return 0.f;
+  return 1.f;
 }

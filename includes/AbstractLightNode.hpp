@@ -16,9 +16,9 @@ namespace RT
     AbstractLightNode();
     virtual ~AbstractLightNode();
 
-    virtual void		push(RT::AbstractLightTree *);	// Add a CSG tree to sub-trees list
-    virtual void		pop();				// Pop last CSG tree from sub-trees list
-    virtual bool		empty() const;			// Return true if no children in list
+    virtual void	push(RT::AbstractLightTree *);	// Add a CSG tree to sub-trees list
+    virtual void	pop();				// Pop last CSG tree from sub-trees list
+    virtual bool	empty() const;			// Return true if no children in list
   };
 };
 

@@ -15,25 +15,25 @@ std::vector<double>	RT::ConeCsgLeaf::intersection(RT::Ray const & ray) const
 {
   std::vector<double>	result, tmp;
   RT::Ray		r = ray;
-  
+
   // Apply centering to ray
   if (_center == true)
     r.p().z() += _h / 2.f;
 
   // If cylinder
   if (_r1 == _r2)
-    tmp = Math::Utils::solve(
+    tmp = Math::solve(
       std::pow(r.d().x(), 2) + std::pow(r.d().y(), 2),
       2.f * (r.p().x() * r.d().x() + r.p().y() * r.d().y()),
       std::pow(r.p().x(), 2) + std::pow(r.p().y(), 2) - std::pow(_r1, 2)
-      );
+    );
   // If cone
   else
-    tmp = Math::Utils::solve(
+    tmp = Math::solve(
       std::pow(r.d().x(), 2) + std::pow(r.d().y(), 2) - std::pow(r.d().z() * (_r2 - _r1), 2) / std::pow(_h, 2),
       2.f * (r.p().x() * r.d().x() + r.p().y() * r.d().y() - r.p().z() * r.d().z() * std::pow((_r2 - _r1) / _h, 2) - r.d().z() * _r1 * (_r2 - _r1) / _h),
       std::pow(r.p().x(), 2) + std::pow(r.p().y(), 2) - std::pow(r.p().z() * (_r2 - _r1) / _h, 2) - 2.f * r.p().z() * _r1 * (_r2 - _r1) / _h - std::pow(_r1, 2)
-      );
+    );
 
   // Stop if no intersection with infinite cone/cylinder
   if (tmp.size() == 0)
@@ -43,7 +43,7 @@ std::vector<double>	RT::ConeCsgLeaf::intersection(RT::Ray const & ray) const
   for (double it : tmp)
     if (r.p().z() + it * r.d().z() >= 0.f && r.p().z() + it * r.d().z() <= _h)
       result.push_back(it);
-  
+
   if (r.d().z() != 0.f)
   {
     // Calculate top and bottom disk intersections
@@ -73,7 +73,7 @@ Math::Vector<4>	RT::ConeCsgLeaf::normal(Math::Vector<4> const & pt) const
   if (p.z() > Math::Shift && p.z() < _h - Math::Shift)
   {
     double	x = _r1 + (_r2 - _r1) * p.z() / _h - _r2;
-    
+
     return Math::Vector<4>(2.f * p.x(), 2.f * p.y(), x + _r2 > 0 ? -2.f * std::sqrt(p.x() * p.x() + p.y() * p.y()) * (-x) / (_h - p.z()) : +2.f * std::sqrt(p.x() * p.x() + p.y() * p.y()) * (-x) / (_h - p.z()), 0.f);
   }
   // If intersection with top/base disk

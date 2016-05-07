@@ -13,7 +13,7 @@ namespace RT
   {
   private:
     virtual std::list<RT::Intersection>	renderChildren(RT::Ray const &, unsigned int) const = 0;	// Render children
-    
+
   protected:
     std::list<RT::AbstractCsgTree *>	_children;	// List of children CSG tree
 

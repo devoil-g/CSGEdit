@@ -51,8 +51,9 @@ RT::Window::Window()
 
   // Set window icon
   _window.setIcon((unsigned int)std::sqrt(sizeof(icon) / sizeof(*icon)), (unsigned int)std::sqrt(sizeof(icon) / sizeof(*icon)), (const sf::Uint8 *)icon);
-  
+
 #ifdef _WIN32
+  // Get system handle of window
   CoInitialize(nullptr);
   CoCreateInstance(CLSID_TaskbarList, nullptr, CLSCTX_INPROC_SERVER, IID_ITaskbarList3, (void **)&_taskbar);
   if (_taskbar == nullptr)
@@ -87,6 +88,7 @@ bool				RT::Window::update()
   // Reset mouse wheel ticks
   _mouse.wheel = 0;
 
+  // Process pending events
   while (_window.pollEvent(event))
   {
     // Stop if window closed
@@ -119,6 +121,8 @@ bool				RT::Window::update()
   _mouse.x = sf::Mouse::getPosition(_window).x;
   _mouse.ry = sf::Mouse::getPosition(_window).y - _mouse.y;
   _mouse.y = sf::Mouse::getPosition(_window).y;
+
+  // Get mouse buttons only if window focus
   if (_focus)
   {
     _mouse.left = sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
@@ -144,18 +148,23 @@ void				RT::Window::display()
 void				RT::Window::draw(sf::Image const & image)
 {
   sf::Texture	texture;
-  
+
+  // Load image as texture
+  texture.setSmooth(true);
   if (texture.loadFromImage(image) == false)
     throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
-
+  
+  // Load texture as sprite
   sf::Sprite	sprite(texture);
   float		scale = std::min(1.f, std::min((float)_window.getSize().x / (float)image.getSize().x, (float)_window.getSize().y / (float)image.getSize().y));
   float		pos_x = (((float)_window.getSize().x - ((float)image.getSize().x * scale)) / 2.f);
   float		pos_y = (((float)_window.getSize().y - ((float)image.getSize().y * scale)) / 2.f);
-  
+
+  // Position sprite in window
   sprite.scale(sf::Vector2f(scale, scale));
   sprite.setPosition(sf::Vector2f(pos_x, pos_y));
 
+  // Draw sprite
   _window.draw(sprite);
 }
 
