@@ -19,7 +19,7 @@ namespace RT
     double			distance;	// Distance of intersection
     RT::Material		material;	// Material to apply
 
-    bool  operator<(RT::Intersection const & i) const	// Compare distances to sort intersections list
+    inline bool  operator<(RT::Intersection const & i) const	// Compare distances to sort intersections list
     {
       return distance < i.distance;
     }

@@ -9,13 +9,17 @@ namespace RT
   class MaterialCsgNode : public RT::UnionCsgNode
   {
   private:
-    RT::Material const		_material;	// Material applied to sub-node
+    RT::Material		_material;	// Material applied to sub-node
 
     std::list<RT::Intersection>	renderChildren(RT::Ray const &, unsigned int) const override;	// Render sub-tree
 
   public:
     MaterialCsgNode(RT::Material const &);
     ~MaterialCsgNode();
+
+    // Setter/getter of material
+    RT::Material &		material() { return _material; };
+    RT::Material const &	material() const { return _material; };
   };
 };
 

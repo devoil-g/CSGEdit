@@ -18,7 +18,10 @@ namespace RT
 
     virtual void	push(RT::AbstractLightTree *);	// Add a CSG tree to sub-trees list
     virtual void	pop();				// Pop last CSG tree from sub-trees list
-    virtual bool	empty() const;			// Return true if no children in list
+
+    // Getter of children list
+    std::list<RT::AbstractLightTree *> &	children() { return _children; };
+    std::list<RT::AbstractLightTree *> const &	children() const { return _children; };
   };
 };
 

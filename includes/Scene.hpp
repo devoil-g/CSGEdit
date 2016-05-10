@@ -70,7 +70,7 @@ namespace RT
     RT::Scene::Config				_config;	// System configuration
     RT::Scene::AntiAliasing			_antialiasing;	// Anti-aliasing parameters
     RT::Scene::DephOfField			_dof;		// Deph of field parameters
-    RT::Scene::VirtualReality			_vr;	// Anaglyph3D parameters
+    RT::Scene::VirtualReality			_vr;		// Anaglyph3D parameters
 
   public:
     Scene();

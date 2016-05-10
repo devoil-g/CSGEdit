@@ -58,6 +58,8 @@ namespace RT
     // Scope utlilites
     void	scopeStart(RT::AbstractCsgNode *);	// Push a new scope in stack
     void	scopeEnd();				// Pop last scope in stack
+    void	scopeSimplifyCsg();			// Simplify a current CSG node
+    void	scopeSimplifyLight();			// Simplify a current light node
 
     // Primitives
     void	primitiveBox(double, double, double, bool);									// Push a box in top scope

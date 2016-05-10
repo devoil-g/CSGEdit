@@ -50,8 +50,7 @@ bool	RT::ControlState::update(sf::Time)
     // Update scene
     RT::SceneLibrary::Instance().update();
 
-    // Save camera and set previous camera position
-    _camera = _scene->camera();
+    // Set previous camera position
     _scene->camera() = camera;
 
     // Start preview rendering
@@ -191,6 +190,9 @@ bool	RT::ControlState::update(sf::Time)
       std::cout << "[" << RT::Config::Window::Title << "] Opening file '" << _file << "'." << std::endl;
 
       RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Indeterminate);
+
+      // Restore previous scene default camera
+      _scene->camera() = _camera;
 
       // Load new scene
       _scene = RT::SceneLibrary::Instance().get(_file);

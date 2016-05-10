@@ -1,12 +1,12 @@
 // Camera set-up
-camera([-512, -512, +512], [0, 34, 45], [1,1,1]);
-camera([-2048, -2048, +2048+128+64], [0, 34, 45], [2,1,1]);
+camera([-768, -768, +768], [0, 34, 45], [1,1,1]);
+//camera([-2048, -2048, +2048+128+64], [0, 34, 45], [2,1,1]);
 resolution(640, 640);
 antialiasing(0,2);
 
 // Lights
-rotation([0, 60, 30]); directional_light([64], 8.4); end();
-occlusion_light([48], 32);
+rotation([0, 60, 30]); directional_light([128], 8.4); end();
+occlusion_light([64], 32);
 
 def	streetlamp()
 {
@@ -24,7 +24,7 @@ def	streetlamp()
 			translation([-124,0,512+64-24]); box(128,64,32, true); end();
 		end();
 	
-		translation([-124,0,512+64]); scale([1.42,1,1]); rotation([0,90,0]); point_light([128], 16, 0, 15,25); end(); end(); end();
+		//translation([-124,0,512+64]); scale([1.42,1,1]); rotation([0,90,0]); point_light([128], 16, 0, 15,25); end(); end(); end();
 	end();
 }
 
@@ -244,6 +244,52 @@ def	building()
 		end();
 	}
 	
+	def	large_window()
+	{
+		// Front window
+		translation([0,64,0]);
+			difference();
+				translation([0,0,32]); box(8,128,224); end();
+				translation([-2,8,40]); box(6,112,56); end();
+				translation([-2,8,104]); box(6,112,144); end();
+			end();
+			
+			difference();
+				translation([2,8,40]); box(2,112,56); end();
+				
+				for (var x = 0; x < 12; ++x) {
+					translation([2,-8 + x*12,64]); rotation([-30,0,0]); rotation([0,0,45]); box(0.5,0.5,96, true); end(); end(); end();
+				}
+			end();
+			
+			intersection();
+				translation([sqrt(8),0,96]); box(4,128,160); end();
+				
+				union();
+					translation([4,12,176]); rotation([0,0,45]); box(3,3,136, true); end(); end();
+					translation([4,64,176]); rotation([0,0,45]); box(3,3,136, true); end(); end();
+					translation([4,116,176]); rotation([0,0,45]); box(3,3,136, true); end(); end();
+				
+					translation([4,64,108]); rotation([0,45,0]); box(3,104,3, true); end(); end();
+					translation([4,64,192]); rotation([0,45,0]); box(3,104,3, true); end(); end();
+					translation([4,64,244]); rotation([0,45,0]); box(3,104,3, true); end(); end();
+				end();
+			end();
+			intersection();
+				translation([sqrt(12),0,96]); box(4,128,160); end();
+				
+				union();
+					translation([4,38,176]); rotation([0,0,45]); box(sqrt(2),sqrt(2),136, true); end(); end();
+					translation([4,90,176]); rotation([0,0,45]); box(sqrt(2),sqrt(2),136, true); end(); end();
+				
+					translation([4,64,136]); rotation([0,45,0]); box(sqrt(2),104,sqrt(2), true); end(); end();
+					translation([4,64,164]); rotation([0,45,0]); box(sqrt(2),104,sqrt(2), true); end(); end();
+					translation([4,64,219]); rotation([0,45,0]); box(sqrt(2),104,sqrt(2), true); end(); end();
+				end();
+			end();
+		end();
+	}
+	
 	difference();
 		box(128,1024,896);
 		
@@ -265,25 +311,17 @@ def	building()
 	translation([0,128+1280/3.0,512]); window(); end();
 	translation([0,768,512]); window(); end();
 	
-	translation([-60, 512, 288]); box(2,136,192, true); end();
-	translation([-30, 414, 288]); rotation([0,0,+45]); box(2,60*sqrt(2),192, true); end(); end();
-	translation([-30, 610, 288]); rotation([0,0,-45]); box(2,60*sqrt(2),192, true); end(); end();
-	
-	var myTan = tan(22.5/360.0*2.0*3.14159265359) * 4;
-	translation([-4,384-myTan,192]); rotation([0,0,45]); box(8,8,192); end(); end();
-	translation([-4,384-myTan,192]); rotation([0,0,0]); box(8,8,192); end(); end();
-	translation([-64,444-myTan,192]); rotation([0,0,0]); box(8,8,192); end(); end();
-	translation([-64,444-myTan,192]); rotation([0,0,-45]); box(8,8,192); end(); end();
-	translation([-64,580+myTan,192]); rotation([0,0,-45]); box(8,8,192); end(); end();
-	translation([-64,580+myTan,192]); rotation([0,0,-90]); box(8,8,192); end(); end();
-	translation([-4,640+myTan,192]); rotation([0,0,-90]); box(8,8,192); end(); end();
-	translation([-4,640+myTan,192]); rotation([0,0,-135]); box(8,8,192); end(); end();
+	color([255,192,192]);
+	translation([-64,384,128]); large_window(); end();
+	end();
 	
 	// Brick wall
-	translation([-4,0,0]); bounding();
+	translation([-4,0,0]); intersection();
 		box(5,1024,128);
 		
+		union();
 		translation([0, 0, 7*16]); box(4,1024,16); end();
+		translation([3, 0, 0]); box(1,1024,7*16); end();
 		for (var y = 0; y < 7; ++y) {
 			bounding();
 				translation([2, 0, y*16]); box(3,1024,14); end();
@@ -293,6 +331,7 @@ def	building()
 				}
 			end();
 		}
+		end();
 	end(); end();
 }
 
@@ -416,44 +455,52 @@ def	stairs()
 direct_light([255],[255],[255], 8.4);
 indirect_light([0],[0],[0]);
 
-	// Route
-	translation([0,0,-64]); box(1024,1024,128,true); end();
-	bounding();
-		translation([-384,0,1]); rotation([90,0,0]); cylinder(6.1,1024,true); end(); end();
-		for (var x = 0; x < 12; ++x) {
-			translation([-384,-512+(1024.0/12.0)*(x+0.5),0]); box(12,48,2, true); end();
-		}
+intersection();
+	translation([0,0,512-128]); box(1024,1024,1024+32,true); end();
+	
+	union();
+		
+		// Route
+		translation([0,0,-64]); box(1024,1024,128,true); end();
+		bounding();
+			translation([-384,0,1]); rotation([90,0,0]); cylinder(6.1,1024,true); end(); end();
+			for (var x = 0; x < 12; ++x) {
+				translation([-384,-512+(1024.0/12.0)*(x+0.5),0]); box(12,48,2, true); end();
+			}
+		end();
+		
+		// Trottoir
+		translation([0,-512,0]); box(512,1024,10); end();
+		bounding();
+			translation([4,0,6]); rotation([90,0,0]); cylinder(8.5,1024,true); end(); end();
+			for (var x = 0; x < 32; ++x) {
+				translation([-2,-512+32*x+1,0]); box(12,30,12); end();
+			}
+		end();
+		
+		// Streetlamp
+		translation([48,320,10]); streetlamp(); end();
+		
+		// Car
+		translation([-128,128,0]); rotation([0,0,180]); car(); end(); end();
+		
+		// MailBox
+		translation([128,-448,10]); mailBox(); end();
+		
+		// Building
+		translation([384,-512,10]); building(); end();
+		
+		// Barrier
+		translation([192,-512,10]); barrier(); end();
+		
+		// Stairs
+		translation([256,-384,10]); stairs(); end();
+		
+		// Man
+		//translation([64, -64, 176]); rotation([0,0,-82]); scale([0.24]); mesh("../models/man.stl"); end(); end(); end();
+		
 	end();
-
-	// Trottoir
-	translation([0,-512,0]); box(512,1024,10); end();
-	bounding();
-		translation([4,0,6]); rotation([90,0,0]); cylinder(8.5,1024,true); end(); end();
-		for (var x = 0; x < 32; ++x) {
-			translation([-2,-512+32*x+1,0]); box(12,30,12); end();
-		}
-	end();
-
-	// Streetlamp
-	translation([48,320,10]); streetlamp(); end();
-
-	// Car
-	translation([-128,128,0]); car(); end();
-
-	// MailBox
-	translation([128,-448,10]); mailBox(); end();
-
-	// Building
-	translation([384,-512,10]); building(); end();
-
-	// Barrier
-	translation([192,-512,10]); barrier(); end();
-
-	// Stairs
-	translation([256,-384,10]); stairs(); end();
-
-	// Man
-	//translation([64, -64, 176]); rotation([0,0,-82]); scale([0.24]); mesh("../models/man.stl"); end(); end(); end();
+end();
 
 end();
 end();

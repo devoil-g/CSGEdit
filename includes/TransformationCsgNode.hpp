@@ -17,7 +17,9 @@ namespace RT
     TransformationCsgNode(Math::Matrix<4, 4> const &);
     ~TransformationCsgNode();
 
-    Math::Matrix<4, 4>		transformation() const;	// Return transformation matrix of node
+    // Getter/setter of transformation matrix
+    Math::Matrix<4, 4> &	transformation() { return _transformation; };
+    Math::Matrix<4, 4> const &	transformation() const { return _transformation; };
   };
 };
 

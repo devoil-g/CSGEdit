@@ -46,8 +46,3 @@ void	RT::AbstractCsgNode::pop()
   else
     throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 }
-
-bool	RT::AbstractCsgNode::empty() const
-{
-  return _children.empty();
-}

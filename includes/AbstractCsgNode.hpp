@@ -23,9 +23,12 @@ namespace RT
 
     std::list<RT::Intersection>	render(RT::Ray const &, unsigned int) const override;	// Render a list of intersection from the sub-tree according to ray
 
-    virtual void		push(RT::AbstractCsgTree *);	// Add a CSG tree to sub-trees list
-    virtual void		pop();				// Pop last CSG tree from sub-trees list
-    virtual bool		empty() const;			// Return true if no children in list
+    virtual void	push(RT::AbstractCsgTree *);	// Add a CSG tree to sub-trees list
+    virtual void	pop();				// Pop last CSG tree from sub-trees list
+
+    // Getter of children list
+    std::list<RT::AbstractCsgTree *> &		children() { return _children; };
+    std::list<RT::AbstractCsgTree *> const &	children() const { return _children; };
   };
 };
 

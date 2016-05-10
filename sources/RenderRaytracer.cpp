@@ -114,8 +114,8 @@ void	RT::RenderRaytracer::antialiasing()
       sobel[x + y * _scene->image().getSize().x] = std::sqrt(clr.r + clr.g + clr.b);
 
       // Get minimum and maximum values
-      sobel_min = sobel_min < sobel[x + y * _scene->image().getSize().x] ? sobel_min : sobel[x + y * _scene->image().getSize().x];
-      sobel_max = sobel_max > sobel[x + y * _scene->image().getSize().x] ? sobel_max : sobel[x + y * _scene->image().getSize().x];
+      sobel_min = (std::min)(sobel_min, sobel[x + y * _scene->image().getSize().x]);
+      sobel_max = (std::max)(sobel_max, sobel[x + y * _scene->image().getSize().x]);
     }
 
   // If no edge detected, cancel
@@ -123,9 +123,8 @@ void	RT::RenderRaytracer::antialiasing()
     return;
 
   // Set antialiasing to maximum for borders
-  for (unsigned int i = 0; i < _antialiasing.size(); i++)
-    _antialiasing[i] = _scene->antialiasing().post;
-
+  std::fill(_antialiasing.begin(), _antialiasing.end(), _scene->antialiasing().post);
+  
   // Apply sobel to antialiasing image
   for (int a = _scene->antialiasing().post; a >= 0; a--)
     for (unsigned int x = 1; x < _scene->image().getSize().x - 1; x++)
@@ -140,10 +139,10 @@ void	RT::RenderRaytracer::antialiasing()
   std::fill(_grid.begin(), _grid.end(), 1);
   _status = Second;
 
+  // Add post anti-aliasing ray to total
   for (unsigned int aa : _antialiasing)
     if (aa != 0)
       _rayTotal += (unsigned int)std::pow(_scene->antialiasing().live + 1 + aa, 2);
-
 }
 
 void	RT::RenderRaytracer::render()
@@ -197,16 +196,15 @@ void	RT::RenderRaytracer::render(unsigned int zone)
   // Render zone
   for (unsigned int a = 0; a < RT::Config::Raytracer::BlockSize && active(); a += size)
     for (unsigned int b = 0; b < RT::Config::Raytracer::BlockSize && active(); b += size)
-      if (x + a < _scene->image().getSize().x && y + b < _scene->image().getSize().y)
-      {
+      if (x + a < _scene->image().getSize().x && y + b < _scene->image().getSize().y && _antialiasing[(x + a) + (y + b) * _scene->image().getSize().x] > 0)
 	if (_status == First)
 	{
-	  if ((size == RT::Config::Raytracer::BlockSize || a % (size * 2) != 0 || b % (size * 2) != 0) && _antialiasing[(x + a) + (y + b) * _scene->image().getSize().x] > 0)
+	  if ((size == RT::Config::Raytracer::BlockSize || a % (size * 2) != 0 || b % (size * 2) != 0))
 	  {
 	    _scene->image().setPixel(x + a, y + b, renderAntialiasing(x + a, y + b, _scene->antialiasing().live).sfml());
 	    ray += (unsigned int)std::pow(_scene->antialiasing().live + 1, 2);
 	    _antialiasing[(x + a) + (y + b) * _scene->image().getSize().x] = 0;
-	    
+
 	    for (unsigned int c = 0; c < size; c++)
 	      for (unsigned int d = 0; d < size; d++)
 		if (x + a + c < _scene->image().getSize().x && y + b + d < _scene->image().getSize().y)
@@ -215,17 +213,13 @@ void	RT::RenderRaytracer::render(unsigned int zone)
 	}
 	else
 	{
-	  if (_antialiasing[(x + a) + (y + b) * _scene->image().getSize().x] > 0)
-	  {
-	    _scene->image().setPixel(x + a, y + b, renderAntialiasing(x + a, y + b, _scene->antialiasing().live + _antialiasing[(x + a) + (y + b) * _scene->image().getSize().x]).sfml());
-	    ray += (unsigned int)std::pow(_scene->antialiasing().live + 1 + _antialiasing[(x + a) + (y + b) * _scene->image().getSize().x], 2);
-	    _antialiasing[(x + a) + (y + b) * _scene->image().getSize().x] = 0;
+	  _scene->image().setPixel(x + a, y + b, renderAntialiasing(x + a, y + b, _scene->antialiasing().live + _antialiasing[(x + a) + (y + b) * _scene->image().getSize().x]).sfml());
+	  ray += (unsigned int)std::pow(_scene->antialiasing().live + 1 + _antialiasing[(x + a) + (y + b) * _scene->image().getSize().x], 2);
+	  _antialiasing[(x + a) + (y + b) * _scene->image().getSize().x] = 0;
 
-	    if (a != 0 && a != RT::Config::Raytracer::BlockSize - 1 && b != 0 && b != RT::Config::Raytracer::BlockSize - 1)
-	      _scene->hud().setPixel(x + a, y + b, RT::Color(0.f).sfml(0.f));
-	  }
+	  if (a != 0 && a != RT::Config::Raytracer::BlockSize - 1 && b != 0 && b != RT::Config::Raytracer::BlockSize - 1)
+	    _scene->hud().setPixel(x + a, y + b, RT::Color(0.f).sfml(0.f));
 	}
-      }
 
   // Erase zone box
   for (unsigned int a = 0; a < RT::Config::Raytracer::BlockSize; a++)
@@ -645,7 +639,7 @@ RT::Color RT::RenderRaytracer::renderLightIndirect(RT::Ray const & ray, RT::Inte
     specular = specular / nb_ray * intersection.material.indirect.specular * 2.f * Math::Pi;
   }
 
-  return intersection.material.color * (diffuse + specular);
+  return intersection.material.color * diffuse + specular;
 }
 
 double	  RT::RenderRaytracer::progress() const

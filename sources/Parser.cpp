@@ -271,7 +271,7 @@ void	RT::Parser::scopeUnion()
 
 void	RT::Parser::scopeTransformation(std::vector<std::vector<double>> const & v)
 {
-  Math::Matrix<4, 4>			matrix;
+  Math::Matrix<4, 4>	matrix;
 
   if (v.size() != 4)
     throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
@@ -419,16 +419,19 @@ void	RT::Parser::scopeEnd()
   if (_csg.size() > 1 && _light.size() > 1)
   {
     // Delete CSG tree if no children
-    if (_csg.top()->empty())
+    if (_csg.top()->children().empty())
     {
       _csg.pop();
       _csg.top()->pop();
     }
     else
+    {
+      scopeSimplifyCsg();
       _csg.pop();
+    }
 
-    // Delete Light tree if no children
-    if (_light.top()->empty())
+    // Delete light tree if no children
+    if (_light.top()->children().empty())
     {
       RT::AbstractLightNode * top = _light.top();
 
@@ -437,10 +440,52 @@ void	RT::Parser::scopeEnd()
 	_light.top()->pop();
     }
     else
+    {
+      scopeSimplifyLight();
       _light.pop();
+    }
   }
   else
     throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+}
+
+void	RT::Parser::scopeSimplifyCsg()
+{
+  // Simplify multiple transformation node
+  if (dynamic_cast<RT::TransformationCsgNode *>(_csg.top()) != nullptr && _csg.top()->children().size() == 1 && dynamic_cast<RT::TransformationCsgNode *>(_csg.top()->children().front()) != nullptr)
+  {
+    dynamic_cast<RT::TransformationCsgNode *>(_csg.top())->transformation() *= dynamic_cast<RT::TransformationCsgNode *>(_csg.top()->children().front())->transformation();
+    _csg.top()->children().splice(_csg.top()->children().end(), dynamic_cast<RT::TransformationCsgNode *>(_csg.top()->children().front())->children());
+    delete _csg.top()->children().front();
+    _csg.top()->children().pop_front();
+
+    return;
+  }
+
+  // Simplify multiple material node
+  if (dynamic_cast<RT::MaterialCsgNode *>(_csg.top()) != nullptr && _csg.top()->children().size() == 1 && dynamic_cast<RT::MaterialCsgNode *>(_csg.top()->children().front()) != nullptr)
+  {
+    dynamic_cast<RT::MaterialCsgNode *>(_csg.top())->material() *= dynamic_cast<RT::MaterialCsgNode *>(_csg.top()->children().front())->material();
+    _csg.top()->children().splice(_csg.top()->children().end(), dynamic_cast<RT::MaterialCsgNode *>(_csg.top()->children().front())->children());
+    delete _csg.top()->children().front();
+    _csg.top()->children().pop_front();
+
+    return;
+  }
+}
+
+void	RT::Parser::scopeSimplifyLight()
+{
+  // Simplify multiple transformation node
+  if (dynamic_cast<RT::TransformationLightNode *>(_light.top()) != nullptr && _light.top()->children().size() == 1 && dynamic_cast<RT::TransformationLightNode *>(_light.top()->children().front()) != nullptr)
+  {
+    dynamic_cast<RT::TransformationLightNode *>(_light.top())->transformation() *= dynamic_cast<RT::TransformationLightNode *>(_light.top()->children().front())->transformation();
+    _light.top()->children().splice(_light.top()->children().end(), dynamic_cast<RT::TransformationLightNode *>(_light.top()->children().front())->children());
+    delete _light.top()->children().front();
+    _light.top()->children().pop_front();
+
+    return;
+  }
 }
 
 void	RT::Parser::primitiveBox(double x, double y, double z, bool center)
@@ -482,7 +527,7 @@ void	RT::Parser::primitiveTriangle(std::vector<double> const & p0, std::vector<d
   if (p0.size() != 3 || p1.size() != 3 || p2.size() != 3)
     throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
-  primitivePush(new RT::TriangleCsgLeaf(std::tuple<double, double, double>(p0[0], p0[1], p0[2]), std::tuple<double, double, double>(p1[0], p1[1], p1[2]), std::tuple<double, double, double>(p2[0], p2[1], p2[2])));
+  primitivePush(new RT::TriangleCsgLeaf({ p0[0], p0[1], p0[2] }, { p1[0], p1[1], p1[2] }, { p2[0], p2[1], p2[2] }));
 }
 
 void	RT::Parser::primitivePush(RT::AbstractCsgTree * tree)

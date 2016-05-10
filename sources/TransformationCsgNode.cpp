@@ -21,8 +21,3 @@ std::list<RT::Intersection>	RT::TransformationCsgNode::renderChildren(RT::Ray co
 
   return result;
 }
-
-Math::Matrix<4, 4>  RT::TransformationCsgNode::transformation() const
-{
-  return _transformation;
-}

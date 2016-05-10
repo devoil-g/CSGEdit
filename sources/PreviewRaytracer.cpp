@@ -102,8 +102,8 @@ RT::Color	RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
 
   // Calcul ray according to (x, y) coordinates
   ray.d().x() = (double)_scene->image().getSize().x;
-  ray.d().y() = (double)_scene->image().getSize().x / 2 - x + 0.5f;
-  ray.d().z() = (double)_scene->image().getSize().y / 2 - y + 0.5f;
+  ray.d().y() = (double)_scene->image().getSize().x / 2.f - x + 0.5f;
+  ray.d().z() = (double)_scene->image().getSize().y / 2.f - y + 0.5f;
 
   // Virtual reality
   if (_scene->vr().offset != 0.f)
@@ -146,7 +146,7 @@ RT::Color	RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
   std::list<RT::Intersection>	intersect = _scene->csg()->render(ray);
 
   // Delete back intersections
-  while (!intersect.empty() && intersect.front().distance < 0)
+  while (!intersect.empty() && intersect.front().distance < 0.f)
     intersect.pop_front();
 
   // Calcul intersection color if it exist, otherwise return black
