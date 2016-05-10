@@ -1,4 +1,4 @@
-#include <exception>
+#include <stdexcept>
 
 #include "Material.hpp"
 #include "Math.hpp"
@@ -18,7 +18,7 @@ RT::Material const &	RT::Material::getMaterial(std::string const & name)
   if (_material.find(name) != _material.end())
     return _material[name];
   else
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 }
 
 void			RT::Material::setMaterial(std::string const & name, RT::Material const & material)

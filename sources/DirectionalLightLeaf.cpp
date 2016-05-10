@@ -1,4 +1,4 @@
-#include <exception>
+#include <stdexcept>
 
 #include "DirectionalLightLeaf.hpp"
 #include "Scene.hpp"
@@ -8,7 +8,7 @@ RT::DirectionalLightLeaf::DirectionalLightLeaf(RT::Color const & color, double a
 {
   // Check values
   if (_angle < 0.f || _angle >= 90.f)
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 }
 
 RT::DirectionalLightLeaf::~DirectionalLightLeaf()

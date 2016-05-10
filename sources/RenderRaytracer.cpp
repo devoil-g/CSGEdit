@@ -1,12 +1,12 @@
 #include <iostream>
 
 #ifdef _WIN32
-#include <exception>
+#include <stdexcept>
 #include <windows.h>
 #endif
 
 #ifdef _DEBUG
-#include <exception>
+#include <stdexcept>
 #endif
 
 #include "RenderRaytracer.hpp"
@@ -49,7 +49,7 @@ void	RT::RenderRaytracer::begin()
 #ifdef _WIN32
   // Prevent the system to hibernate (Vista+ & XP requests)
   if (SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED) == NULL && SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED) == NULL)
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 #endif
 
   std::list<std::thread>  threads;
@@ -499,7 +499,7 @@ RT::Color RT::RenderRaytracer::renderTransparency(RT::Ray const & ray, RT::Inter
 
 #ifdef _DEBUG
   if (result.empty())
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 #endif
 
   RT::Ray	r = RT::Ray(normal.p() - normal.d() * Math::Shift, ray.d() + normal.d() * result.front()).normalize();

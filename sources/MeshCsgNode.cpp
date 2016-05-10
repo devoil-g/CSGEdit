@@ -1,4 +1,4 @@
-#include <exception>
+#include <stdexcept>
 #include <fstream>
 
 #include "MeshCsgNode.hpp"
@@ -20,7 +20,7 @@ RT::MeshCsgNode::MeshCsgNode(std::string const & path)
   if (extension(path.substr(path.rfind('.'))))
     (this->*_extension.find(path.substr(path.rfind('.')))->second)(path);
   else
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 }
 
 RT::MeshCsgNode::~MeshCsgNode()
@@ -53,7 +53,7 @@ void	RT::MeshCsgNode::loadStl(std::string const & path)
   // DO NOT SUPPORT ASCII STL
 
   if (!file.good())
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   // Render header (80 bytes)
   file.read(header, 80);
@@ -61,7 +61,7 @@ void	RT::MeshCsgNode::loadStl(std::string const & path)
   // Read number of triangles (4 bytes)
   file.read((char *)&n_tri, sizeof(unsigned int));
   if (n_tri > 16384)
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   // Get all triangles (50 bytes each)
   for (unsigned int i = 0; i < n_tri; i++)
@@ -86,7 +86,7 @@ void		RT::MeshCsgNode::push(RT::AbstractCsgTree * node)
   if (dynamic_cast<RT::TriangleCsgLeaf *>(node))
     RT::AbstractCsgNode::push(node);
   else
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   std::vector<std::tuple<double, double, double>> pts;
 

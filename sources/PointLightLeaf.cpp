@@ -1,4 +1,4 @@
-#include <exception>
+#include <stdexcept>
 
 #include "PointLightLeaf.hpp"
 #include "Scene.hpp"
@@ -8,13 +8,13 @@ RT::PointLightLeaf::PointLightLeaf(RT::Color const & color, double radius, doubl
 {
   // Check values
   if (_radius < 0.f)
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
   if (_intensity < 0.f)
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
   if (_angle1 < 0.f || _angle1 > 180.f)
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
   if (_angle2 < 0.f || _angle2 > 180.f)
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 }
 
 RT::PointLightLeaf::~PointLightLeaf()

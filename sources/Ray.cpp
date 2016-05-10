@@ -5,7 +5,7 @@ double		RT::Ray::cos(Math::Vector<4> const & A, Math::Vector<4> const & B)
 #ifdef _DEBUG
   // Should not happen
   if (A.x() * A.x() + A.y() * A.y() + A.z() * A.z() == 0 || B.x() * B.x() + B.y() * B.y() + B.z() * B.z() == 0)
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 #endif
 
   return RT::Ray::scalaire(A, B) / std::sqrt((A.x() * A.x() + A.y() * A.y() + A.z() * A.z()) * (B.x() * B.x() + B.y() * B.y() + B.z() * B.z()));

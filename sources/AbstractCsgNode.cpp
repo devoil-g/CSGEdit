@@ -1,4 +1,4 @@
-#include <exception>
+#include <stdexcept>
 
 #include "AbstractCsgNode.hpp"
 
@@ -15,7 +15,7 @@ std::list<RT::Intersection>	RT::AbstractCsgNode::render(RT::Ray const & ray, uns
 {
 #ifdef _DEBUG
   if (_children.empty())
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 #endif
 
   std::list<RT::Intersection>	result = renderChildren(ray, deph);
@@ -33,7 +33,7 @@ void	RT::AbstractCsgNode::push(RT::AbstractCsgTree * node)
   if (node)
     _children.push_back(node);
   else
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 }
 
 void	RT::AbstractCsgNode::pop()
@@ -44,5 +44,5 @@ void	RT::AbstractCsgNode::pop()
     _children.pop_back();
   }
   else
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 }

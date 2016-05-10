@@ -1,4 +1,4 @@
-#include <exception>
+#include <stdexcept>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 
@@ -57,7 +57,7 @@ RT::Window::Window()
   CoInitialize(nullptr);
   CoCreateInstance(CLSID_TaskbarList, nullptr, CLSCTX_INPROC_SERVER, IID_ITaskbarList3, (void **)&_taskbar);
   if (_taskbar == nullptr)
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 #endif
 }
 
@@ -152,7 +152,7 @@ void				RT::Window::draw(sf::Image const & image)
   // Load image as texture
   texture.setSmooth(true);
   if (texture.loadFromImage(image) == false)
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
   
   // Load texture as sprite
   sf::Sprite	sprite(texture);

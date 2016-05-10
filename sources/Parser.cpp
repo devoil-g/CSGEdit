@@ -1,6 +1,6 @@
 #include <chaiscript/chaiscript.hpp>
 #include <chaiscript/chaiscript_stdlib.hpp>
-#include <exception>
+#include <stdexcept>
 #include <functional>
 #include <iostream>
 
@@ -176,7 +176,7 @@ RT::Parser::Parser()
     else if (v.size() == 3)
       return RT::Color(chaiscript::Boxed_Number(v[0]).get_as<double>() / 255.f, chaiscript::Boxed_Number(v[1]).get_as<double>() / 255.f, chaiscript::Boxed_Number(v[2]).get_as<double>() / 255.f);
     else
-      throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+      throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
   }
   ));
 
@@ -218,7 +218,7 @@ RT::Scene	RT::Parser::parse(std::string const & path)
 
       // Check for invalid scope at end of file
       if (_csg.size() != 1 || _light.size() != 1)
-	throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+	throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
     }
   }
   catch (std::exception e)
@@ -246,7 +246,7 @@ void	RT::Parser::include(std::string const & path)
 {
   // Fail if maximum include/import deph reached
   if (_files.size() > RT::Config::Parser::MaxFileDeph)
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   // Parsing file
   _files.push(directory(_files.top()).append(path));
@@ -274,12 +274,12 @@ void	RT::Parser::scopeTransformation(std::vector<std::vector<double>> const & v)
   Math::Matrix<4, 4>	matrix;
 
   if (v.size() != 4)
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
   else
     for (unsigned int row = 0; row < 4; row++)
     {
       if (v[row].size() != 4)
-	throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+	throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
       else
 	for (unsigned int col = 0; col < 4; col++)
 	  matrix(row, col) = v[row][col];
@@ -291,7 +291,7 @@ void	RT::Parser::scopeTransformation(std::vector<std::vector<double>> const & v)
 void	RT::Parser::scopeTranslation(std::vector<double> const & v)
 {
   if (v.size() != 3)
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   scopeStart(new RT::TransformationCsgNode(Math::Matrix<4, 4>::translation(v[0], v[1], v[2])));
 }
@@ -299,7 +299,7 @@ void	RT::Parser::scopeTranslation(std::vector<double> const & v)
 void	RT::Parser::scopeMirror(std::vector<double> const & v)
 {
   if (v.size() != 3)
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   scopeStart(new RT::TransformationCsgNode(Math::Matrix<4, 4>::reflection(v[0], v[1], v[2])));
 }
@@ -307,7 +307,7 @@ void	RT::Parser::scopeMirror(std::vector<double> const & v)
 void	RT::Parser::scopeRotation(std::vector<double> const & v)
 {
   if (v.size() != 3)
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   scopeStart(new RT::TransformationCsgNode(Math::Matrix<4, 4>::rotation(v[0], v[1], v[2])));
 }
@@ -319,7 +319,7 @@ void	RT::Parser::scopeScale(std::vector<double> const & v)
   else if (v.size() == 3)
     scopeStart(new RT::TransformationCsgNode(Math::Matrix<4, 4>::scale(v[0], v[1], v[1])));
   else
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 }
 
 void	RT::Parser::scopeShear(double xy, double xz, double yx, double yz, double zx, double zy)
@@ -446,7 +446,7 @@ void	RT::Parser::scopeEnd()
     }
   }
   else
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 }
 
 void	RT::Parser::scopeSimplifyCsg()
@@ -522,10 +522,10 @@ void	RT::Parser::primitiveTriangle(std::vector<double> const & p0, std::vector<d
 {
   // If not in a mesh scope, error
   if (dynamic_cast<RT::MeshCsgNode *>(_csg.top()) == nullptr)
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   if (p0.size() != 3 || p1.size() != 3 || p2.size() != 3)
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   primitivePush(new RT::TriangleCsgLeaf({ p0[0], p0[1], p0[2] }, { p1[0], p1[1], p1[2] }, { p2[0], p2[1], p2[2] }));
 }
@@ -558,7 +558,7 @@ void	RT::Parser::lightPush(RT::AbstractLightTree * light)
 void	RT::Parser::settingCamera(std::vector<double> const & t, std::vector<double> const & r, std::vector<double> const & s)
 {
   if (t.size() != 3 || r.size() != 3 || s.size() != 3)
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   // Set camera only if in main file
   if (_files.size() == 1)

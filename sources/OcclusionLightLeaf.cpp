@@ -1,4 +1,4 @@
-#include <exception>
+#include <stdexcept>
 
 #include "OcclusionLightLeaf.hpp"
 #include "Scene.hpp"
@@ -7,7 +7,7 @@ RT::OcclusionLightLeaf::OcclusionLightLeaf(RT::Color const & color, double radiu
   : _color(color), _radius(radius)
 {
   if (_radius < 0.f)
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 }
 
 RT::OcclusionLightLeaf::~OcclusionLightLeaf()

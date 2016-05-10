@@ -1,4 +1,4 @@
-#include <exception>
+#include <stdexcept>
 #include <iostream>
 
 #include "RenderPauseState.hpp"
@@ -10,7 +10,7 @@ RT::RenderState::RenderState(RT::Scene * scene)
   : _elapsed(), _render(), _scene(scene), _wait(RT::Config::RenderState::Refresh)
 {
   if (_scene == nullptr)
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   _render.load(scene);
   _render.start();

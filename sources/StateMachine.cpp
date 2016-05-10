@@ -1,4 +1,4 @@
-#include <exception>
+#include <stdexcept>
 
 #include "Color.hpp"
 #include "StateMachine.hpp"
@@ -59,7 +59,7 @@ void  RT::StateMachine::swap(RT::AbstractState * state)
   else
   {
     _lock.unlock();
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
   }
 
   _lock.unlock();
@@ -75,7 +75,7 @@ void  RT::StateMachine::push(RT::AbstractState * state)
   else
   {
     _lock.unlock();
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
   }
 
   _lock.unlock();
@@ -94,7 +94,7 @@ void  RT::StateMachine::pop()
   else
   {
     _lock.unlock();
-    throw std::exception((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
   }
 
   _lock.unlock();

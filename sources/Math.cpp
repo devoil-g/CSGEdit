@@ -1,7 +1,7 @@
 #include <random>
 
 #ifdef _DEBUG
-#include <exception>
+#include <stdexcept>
 #endif
 
 #include "Math.hpp"
