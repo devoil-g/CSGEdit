@@ -37,7 +37,7 @@ std::list<RT::Intersection>	RT::MeshCsgNode::renderChildren(RT::Ray const & ray,
   std::list<RT::Intersection>	result;
 
   // Iterate through triangles to get intersections
-  for (RT::AbstractCsgTree const * it : _children)
+  for (RT::AbstractCsgTree const * it : children())
     result.merge(it->render(ray, deph));
 
   return result;
@@ -90,7 +90,7 @@ void		RT::MeshCsgNode::push(RT::AbstractCsgTree * node)
 
   std::vector<std::tuple<double, double, double>> pts;
 
-  for (RT::AbstractCsgTree const * it : _children)
+  for (RT::AbstractCsgTree const * it : children())
   {
     std::vector<std::tuple<double, double, double>> pt = dynamic_cast<RT::TriangleCsgLeaf const *>(it)->points();
 

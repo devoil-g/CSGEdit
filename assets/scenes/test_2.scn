@@ -1,11 +1,19 @@
 // Camera set-up
-camera([-570, 68, 470], [0, 39.8, -7.2], [1,1,1]);
+camera([-420, 48, 400], [0, 39.8, -7.2], [1,1,1]);
 resolution(640, 360);
 antialiasing(0,2);
 
 // Lights
-translation([256,256,256]); rotation([0, 45, 225]); point_light([255], 25, 0, 15,25); end(); end();
+rotation([0, 60, 50]); directional_light([192]); end();
+occlusion_light([64], 64);
 
-indirect_light([0],[0],[0]);
-box(512,512,10, true)
+indirect([0],[0],[0]);
+	box(256,256,1, true);
+	
+	rotation([0,0,30]); translation([0,0,1]); scale([128]); translation([0,0,0.5]);
+		difference();
+			box(1, true);
+			maxdeph_light(0); import("menger.scn"); end();
+		end();
+	end(); end(); end(); end();
 end();

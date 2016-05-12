@@ -9,6 +9,7 @@ SET(SAMPLE_SRCS
 
 	./sources/AbstractCsgNode.cpp
 	./sources/BoundingCsgNode.cpp
+	./sources/DephCsgNode.cpp
 	./sources/DifferenceCsgNode.cpp
 	./sources/IntersectionCsgNode.cpp
 	./sources/MaterialCsgNode.cpp
@@ -30,6 +31,7 @@ SET(SAMPLE_SRCS
 	./sources/ExternLightTree.cpp
 
 	./sources/AbstractLightNode.cpp
+	./sources/DephLightNode.cpp
 	./sources/TransformationLightNode.cpp
 	./sources/UnionLightNode.cpp
 
@@ -72,6 +74,7 @@ SET(SAMPLE_HDRS
 
 	./includes/AbstractCsgNode.hpp
 	./includes/BoundingCsgNode.hpp
+	./includes/DephCsgNode.hpp
 	./includes/DifferenceCsgNode.hpp
 	./includes/IntersectionCsgNode.hpp
 	./includes/MaterialCsgNode.hpp
@@ -93,6 +96,7 @@ SET(SAMPLE_HDRS
 	./includes/ExternLightTree.hpp
 
 	./includes/AbstractLightNode.hpp
+	./includes/DephLightNode.hpp
 	./includes/TransformationLightNode.hpp
 	./includes/UnionLightNode.hpp
 	

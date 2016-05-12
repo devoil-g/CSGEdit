@@ -4,6 +4,7 @@
 #include <chaiscript/chaiscript.hpp>
 #include <stack>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "AbstractCsgNode.hpp"
@@ -18,18 +19,17 @@ namespace RT
   {
     namespace Parser
     {
-      unsigned int const	MaxFileDeph(8);	// Maximum deph of included/imported files
+      unsigned int const	MaxFileDeph(8);	// Maximum deph of included files
     };
   };
 
   class Parser
   {
   private:
-    std::stack<RT::AbstractCsgNode *>	_csg;		// Stack of scopes
-    std::stack<RT::AbstractLightNode *>	_light;		// Stack of scopes
-    std::stack<std::string>		_files;		// Stack of loaded files
-    chaiscript::ChaiScript		_script;	// Stack of scripts
-    RT::Scene				_scene;		// Scene being currently loaded
+    std::stack<std::pair<RT::AbstractCsgNode *, RT::AbstractLightNode *>>	_scope;		// Stack of scopes
+    std::stack<std::string>							_files;		// Stack of loaded files
+    chaiscript::ChaiScript							_script;	// Stack of scripts
+    RT::Scene									_scene;		// Scene being currently loaded
 
     Parser();
     ~Parser();
@@ -53,13 +53,18 @@ namespace RT
     void	scopeTransparency(double, double, double, unsigned int);					// Push a transparency material in scope
     void	scopeReflection(double, double, unsigned int);							// Push a reflection material in scope
     // Scope others
-    void	scopeBounding();	// Push a bounding node in scope
-    void	scopeMesh();		// Push a mesh node in scope
+    void	scopeBounding();		// Push a bounding node in scope
+    void	scopeMesh();			// Push a mesh node in scope
+    void	scopeDeph(unsigned int);	// Push a deph limit in scope
+    void	scopeDephCsg(unsigned int);	// Push a CSG deph limit in scope
+    void	scopeDephLight(unsigned int);	// Push a light deph limit in scope
     // Scope utlilites
-    void	scopeStart(RT::AbstractCsgNode *);	// Push a new scope in stack
-    void	scopeEnd();				// Pop last scope in stack
-    void	scopeSimplifyCsg();			// Simplify a current CSG node
-    void	scopeSimplifyLight();			// Simplify a current light node
+    void	scopeStart(RT::AbstractCsgNode *);				// Push a new scope in stack
+    void	scopeStart(RT::AbstractLightNode *);				// Push a new scope in stack
+    void	scopeStart(RT::AbstractCsgNode *, RT::AbstractLightNode *);	// Push a new scope in stack
+    void	scopeEnd();							// Pop last scope in stack
+    void	scopeSimplify(RT::AbstractCsgNode *);				// Simplify a CSG node
+    void	scopeSimplify(RT::AbstractLightNode *);				// Simplify a light node
 
     // Primitives
     void	primitiveBox(double, double, double, bool);									// Push a box in top scope

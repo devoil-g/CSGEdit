@@ -8,10 +8,10 @@ RT::DifferenceCsgNode::~DifferenceCsgNode()
 
 std::list<RT::Intersection>	RT::DifferenceCsgNode::renderChildren(RT::Ray const & ray, unsigned int deph) const
 {
-  std::list<RT::Intersection>	result = _children.front()->render(ray, deph);
+  std::list<RT::Intersection>	result = children().front()->render(ray, deph);
 
   // Iterate through sub-tree to get intersections
-  for (std::list<RT::AbstractCsgTree *>::const_iterator it = std::next(_children.begin()); result.empty() == false && it != _children.end(); it++)
+  for (std::list<RT::AbstractCsgTree *>::const_iterator it = std::next(children().begin()); result.empty() == false && it != children().end(); it++)
   {
     std::list<RT::Intersection>	node = (*it)->render(ray, deph);
 

@@ -137,7 +137,7 @@ int	main(int argc, char ** argv)
       MB_OK | MB_ICONSTOP
     );
 #else
-    std::cerr << "[Exception]: " << exception.what() << std::endl;
+    std::cerr << "[Exception]: " << e.what() << std::endl;
 #endif
     return EXIT_FAILURE;
   }

@@ -33,7 +33,7 @@ RT::SceneLibrary::Time	RT::SceneLibrary::time(std::string const & file) const
 #else
   struct stat	st;
 
-  if (stat(_file.c_str(), &st) < 0)
+  if (stat(file.c_str(), &st) < 0)
     throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   return st.st_mtime;
@@ -47,7 +47,7 @@ void			RT::SceneLibrary::load(std::string const & file)
 
   // Save preview/rendered image for soft transition
   sf::Image save = _library[file].second.image();
-
+  
   // Load file
   _library[file].second.clear();
   _library[file].second = RT::Parser::load(file);
@@ -77,7 +77,7 @@ bool			RT::SceneLibrary::change() const
 #ifdef _WIN32
     if (it.second.first.dwHighDateTime < t.dwHighDateTime || (it.second.first.dwHighDateTime == t.dwHighDateTime && it.second.first.dwLowDateTime < t.dwLowDateTime))
 #else
-    if (_library[it.first].first < t)
+    if (it.second.first < t)
 #endif
       return true;
   }

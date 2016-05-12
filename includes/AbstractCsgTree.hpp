@@ -8,14 +8,6 @@
 
 namespace RT
 {
-  namespace Config
-  {
-    namespace Csg
-    {
-      unsigned int const	MaxDeph(8);	// Maximum of sub-file CSG tree rendered
-    };
-  };
-
   class AbstractCsgTree
   {
   public:

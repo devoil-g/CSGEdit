@@ -12,7 +12,7 @@ namespace RT
 
   public:
     UnionCsgNode();
-    ~UnionCsgNode();
+    virtual ~UnionCsgNode();
   };
 };
 

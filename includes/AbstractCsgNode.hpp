@@ -12,10 +12,9 @@ namespace RT
   class AbstractCsgNode : public RT::AbstractCsgTree
   {
   private:
-    virtual std::list<RT::Intersection>	renderChildren(RT::Ray const &, unsigned int) const = 0;	// Render children
-
-  protected:
     std::list<RT::AbstractCsgTree *>	_children;	// List of children CSG tree
+
+    virtual std::list<RT::Intersection>	renderChildren(RT::Ray const &, unsigned int) const = 0;	// Render children
 
   public:
     AbstractCsgNode();
@@ -27,8 +26,8 @@ namespace RT
     virtual void	pop();				// Pop last CSG tree from sub-trees list
 
     // Getter of children list
-    std::list<RT::AbstractCsgTree *> &		children() { return _children; };
-    std::list<RT::AbstractCsgTree *> const &	children() const { return _children; };
+    inline std::list<RT::AbstractCsgTree *> &		children() { return _children; };
+    inline std::list<RT::AbstractCsgTree *> const &	children() const { return _children; };
   };
 };
 

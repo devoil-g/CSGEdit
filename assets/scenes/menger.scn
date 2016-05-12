@@ -1,0 +1,39 @@
+maxdeph(5); bounding();
+	sphere(sqrt(3)/2.0);
+	
+	box(1.0/3.0,1.0/3.0,1.1, true);
+	box(1.0/3.0,1.1,1.0/3.0, true);
+	box(1.1,1.0/3.0,1.0/3.0, true);
+	
+	scale([1.0/3.0]);
+		translation([+1,+1,+1]); import("menger.scn"); end();
+		translation([+1,+1,0]); import("menger.scn"); end();
+		translation([+1,+1,-1]); import("menger.scn"); end();
+		translation([+1,0,+1]); import("menger.scn"); end();
+		translation([+1,0,0]); import("menger.scn"); end();
+		translation([+1,0,-1]); import("menger.scn"); end();
+		translation([+1,-1,+1]); import("menger.scn"); end();
+		translation([+1,-1,0]); import("menger.scn"); end();
+		translation([+1,-1,-1]); import("menger.scn"); end();
+		
+		translation([0,+1,+1]); import("menger.scn"); end();
+		translation([0,+1,0]); import("menger.scn"); end();
+		translation([0,+1,-1]); import("menger.scn"); end();
+		translation([0,0,+1]); import("menger.scn"); end();
+		translation([0,0,0]); import("menger.scn"); end();
+		translation([0,0,-1]); import("menger.scn"); end();
+		translation([0,-1,+1]); import("menger.scn"); end();
+		translation([0,-1,0]); import("menger.scn"); end();
+		translation([0,-1,-1]); import("menger.scn"); end();
+		
+		translation([-1,+1,+1]); import("menger.scn"); end();
+		translation([-1,+1,0]); import("menger.scn"); end();
+		translation([-1,+1,-1]); import("menger.scn"); end();
+		translation([-1,0,+1]); import("menger.scn"); end();
+		translation([-1,0,0]); import("menger.scn"); end();
+		translation([-1,0,-1]); import("menger.scn"); end();
+		translation([-1,-1,+1]); import("menger.scn"); end();
+		translation([-1,-1,0]); import("menger.scn"); end();
+		translation([-1,-1,-1]); import("menger.scn"); end();
+	end();
+end(); end();

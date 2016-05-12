@@ -11,6 +11,14 @@
 // CSG tree
 #include "EmptyCsgTree.hpp"
 #include "ExternCsgTree.hpp"
+#include "BoundingCsgNode.hpp"
+#include "DephCsgNode.hpp"
+#include "DifferenceCsgNode.hpp"
+#include "IntersectionCsgNode.hpp"
+#include "MaterialCsgNode.hpp"
+#include "MeshCsgNode.hpp"
+#include "TransformationCsgNode.hpp"
+#include "UnionCsgNode.hpp"
 #include "BoxCsgLeaf.hpp"
 #include "ConeCsgLeaf.hpp"
 #include "MobiusCsgLeaf.hpp"
@@ -18,17 +26,11 @@
 #include "TangleCsgLeaf.hpp"
 #include "TorusCsgLeaf.hpp"
 #include "TriangleCsgLeaf.hpp"
-#include "BoundingCsgNode.hpp"
-#include "DifferenceCsgNode.hpp"
-#include "IntersectionCsgNode.hpp"
-#include "MaterialCsgNode.hpp"
-#include "MeshCsgNode.hpp"
-#include "TransformationCsgNode.hpp"
-#include "UnionCsgNode.hpp"
 
 // Light tree
 #include "EmptyLightTree.hpp"
 #include "ExternLightTree.hpp"
+#include "DephLightNode.hpp"
 #include "TransformationLightNode.hpp"
 #include "UnionLightNode.hpp"
 #include "DirectionalLightLeaf.hpp"
@@ -36,7 +38,7 @@
 #include "PointLightLeaf.hpp"
 
 RT::Parser::Parser()
-  : _csg({ new RT::UnionCsgNode() }), _light({ new RT::UnionLightNode() }), _files(), _script(chaiscript::Std_Lib::library()), _scene()
+  : _scope({ { new RT::UnionCsgNode(), new RT::UnionLightNode() } }), _files(), _script(chaiscript::Std_Lib::library()), _scene()
 {
   // Set up script parser
   // Scope CSG
@@ -53,12 +55,12 @@ RT::Parser::Parser()
   // Scope materials
   _script.add(chaiscript::fun(&RT::Parser::scopeMaterial, this), "material");
   _script.add(chaiscript::fun(&RT::Parser::scopeColor, this), "color");
-  _script.add(chaiscript::fun(std::function<void(RT::Color const &, RT::Color const &, RT::Color const &)>(std::bind(&RT::Parser::scopeDirect, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, 1.f, RT::Config::Material::Quality))), "direct_light");
-  _script.add(chaiscript::fun(std::function<void(RT::Color const &, RT::Color const &, RT::Color const &, double)>(std::bind(&RT::Parser::scopeDirect, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, RT::Config::Material::Quality))), "direct_light");
-  _script.add(chaiscript::fun(std::function<void(RT::Color const &, RT::Color const &, RT::Color const &, double, unsigned int)>(std::bind(&RT::Parser::scopeDirect, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5))), "direct_light");
-  _script.add(chaiscript::fun(std::function<void(RT::Color const &, RT::Color const &, RT::Color const &)>(std::bind(&RT::Parser::scopeIndirect, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, 1.f, RT::Config::Material::Quality))), "indirect_light");
-  _script.add(chaiscript::fun(std::function<void(RT::Color const &, RT::Color const &, RT::Color const &, double)>(std::bind(&RT::Parser::scopeIndirect, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, RT::Config::Material::Quality))), "indirect_light");
-  _script.add(chaiscript::fun(std::function<void(RT::Color const &, RT::Color const &, RT::Color const &, double, unsigned int)>(std::bind(&RT::Parser::scopeIndirect, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5))), "indirect_light");
+  _script.add(chaiscript::fun(std::function<void(RT::Color const &, RT::Color const &, RT::Color const &)>(std::bind(&RT::Parser::scopeDirect, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, 1.f, RT::Config::Material::Quality))), "direct");
+  _script.add(chaiscript::fun(std::function<void(RT::Color const &, RT::Color const &, RT::Color const &, double)>(std::bind(&RT::Parser::scopeDirect, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, RT::Config::Material::Quality))), "direct");
+  _script.add(chaiscript::fun(std::function<void(RT::Color const &, RT::Color const &, RT::Color const &, double, unsigned int)>(std::bind(&RT::Parser::scopeDirect, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5))), "direct");
+  _script.add(chaiscript::fun(std::function<void(RT::Color const &, RT::Color const &, RT::Color const &)>(std::bind(&RT::Parser::scopeIndirect, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, 1.f, RT::Config::Material::Quality))), "indirect");
+  _script.add(chaiscript::fun(std::function<void(RT::Color const &, RT::Color const &, RT::Color const &, double)>(std::bind(&RT::Parser::scopeIndirect, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, RT::Config::Material::Quality))), "indirect");
+  _script.add(chaiscript::fun(std::function<void(RT::Color const &, RT::Color const &, RT::Color const &, double, unsigned int)>(std::bind(&RT::Parser::scopeIndirect, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5))), "indirect");
   _script.add(chaiscript::fun(std::function<void(double)>(std::bind(&RT::Parser::scopeTransparency, this, std::placeholders::_1, 1.f, 0.f, RT::Config::Material::Quality))), "transparency");
   _script.add(chaiscript::fun(std::function<void(double, double)>(std::bind(&RT::Parser::scopeTransparency, this, std::placeholders::_1, std::placeholders::_2, 0.f, RT::Config::Material::Quality))), "transparency");
   _script.add(chaiscript::fun(std::function<void(double, double, double)>(std::bind(&RT::Parser::scopeTransparency, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, RT::Config::Material::Quality))), "transparency");
@@ -69,6 +71,9 @@ RT::Parser::Parser()
   // Scope others
   _script.add(chaiscript::fun(&RT::Parser::scopeBounding, this), "bounding");
   _script.add(chaiscript::fun(&RT::Parser::scopeMesh, this), "mesh");
+  _script.add(chaiscript::fun(&RT::Parser::scopeDeph, this), "maxdeph");
+  _script.add(chaiscript::fun(&RT::Parser::scopeDephCsg, this), "maxdeph_csg");
+  _script.add(chaiscript::fun(&RT::Parser::scopeDephLight, this), "maxdeph_light");
   // Scope utilities
   _script.add(chaiscript::fun(&RT::Parser::scopeEnd, this), "end");
   // Primitives
@@ -181,8 +186,8 @@ RT::Parser::Parser()
   ));
 
   // Assign CSG / Light node to scene
-  _scene.csg() = _csg.top();
-  _scene.light() = _light.top();
+  _scene.csg() = _scope.top().first;
+  _scene.light() = _scope.top().second;
 }
 
 RT::Parser::~Parser()
@@ -217,8 +222,20 @@ RT::Scene	RT::Parser::parse(std::string const & path)
       _script.eval_file(path);
 
       // Check for invalid scope at end of file
-      if (_csg.size() != 1 || _light.size() != 1)
+      if (_scope.size() != 1)
 	throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+
+      // Check for empty scene
+      if (_scope.top().first->children().empty())
+      {
+	delete _scene.csg();
+	_scene.csg() = new RT::EmptyCsgTree();
+      }
+      if (_scope.top().second->children().empty())
+      {
+	delete _scene.light();
+	_scene.light() = new RT::EmptyLightTree();
+      }
     }
   }
   catch (std::exception e)
@@ -238,13 +255,13 @@ RT::Scene	RT::Parser::parse(std::string const & path)
 
 void	RT::Parser::import(std::string const & path)
 {
-  _csg.top()->push(new RT::ExternCsgTree(RT::SceneLibrary::Instance().get(directory(_files.top()).append(path))->csg()));
-  _light.top()->push(new RT::ExternLightTree(RT::SceneLibrary::Instance().get(directory(_files.top()).append(path))->light()));
+  _scope.top().first->push(new RT::ExternCsgTree(RT::SceneLibrary::Instance().get(directory(_files.top()).append(path))->csg()));
+  _scope.top().second->push(new RT::ExternLightTree(RT::SceneLibrary::Instance().get(directory(_files.top()).append(path))->light()));
 }
 
 void	RT::Parser::include(std::string const & path)
 {
-  // Fail if maximum include/import deph reached
+  // Fail if maximum include deph reached
   if (_files.size() > RT::Config::Parser::MaxFileDeph)
     throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
@@ -285,7 +302,7 @@ void	RT::Parser::scopeTransformation(std::vector<std::vector<double>> const & v)
 	  matrix(row, col) = v[row][col];
     }
 
-  scopeStart(new RT::TransformationCsgNode(matrix));
+  scopeStart(new RT::TransformationCsgNode(matrix), new RT::TransformationLightNode(matrix));
 }
 
 void	RT::Parser::scopeTranslation(std::vector<double> const & v)
@@ -293,7 +310,7 @@ void	RT::Parser::scopeTranslation(std::vector<double> const & v)
   if (v.size() != 3)
     throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
-  scopeStart(new RT::TransformationCsgNode(Math::Matrix<4, 4>::translation(v[0], v[1], v[2])));
+  scopeStart(new RT::TransformationCsgNode(Math::Matrix<4, 4>::translation(v[0], v[1], v[2])), new RT::TransformationLightNode(Math::Matrix<4, 4>::translation(v[0], v[1], v[2])));
 }
 
 void	RT::Parser::scopeMirror(std::vector<double> const & v)
@@ -301,7 +318,7 @@ void	RT::Parser::scopeMirror(std::vector<double> const & v)
   if (v.size() != 3)
     throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
-  scopeStart(new RT::TransformationCsgNode(Math::Matrix<4, 4>::reflection(v[0], v[1], v[2])));
+  scopeStart(new RT::TransformationCsgNode(Math::Matrix<4, 4>::reflection(v[0], v[1], v[2])), new RT::TransformationLightNode(Math::Matrix<4, 4>::reflection(v[0], v[1], v[2])));
 }
 
 void	RT::Parser::scopeRotation(std::vector<double> const & v)
@@ -309,22 +326,22 @@ void	RT::Parser::scopeRotation(std::vector<double> const & v)
   if (v.size() != 3)
     throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
-  scopeStart(new RT::TransformationCsgNode(Math::Matrix<4, 4>::rotation(v[0], v[1], v[2])));
+  scopeStart(new RT::TransformationCsgNode(Math::Matrix<4, 4>::rotation(v[0], v[1], v[2])), new RT::TransformationLightNode(Math::Matrix<4, 4>::rotation(v[0], v[1], v[2])));
 }
 
 void	RT::Parser::scopeScale(std::vector<double> const & v)
 {
   if (v.size() == 1)
-    scopeStart(new RT::TransformationCsgNode(Math::Matrix<4, 4>::scale(v[0], v[0], v[0])));
+    scopeStart(new RT::TransformationCsgNode(Math::Matrix<4, 4>::scale(v[0], v[0], v[0])), new RT::TransformationLightNode(Math::Matrix<4, 4>::scale(v[0], v[0], v[0])));
   else if (v.size() == 3)
-    scopeStart(new RT::TransformationCsgNode(Math::Matrix<4, 4>::scale(v[0], v[1], v[1])));
+    scopeStart(new RT::TransformationCsgNode(Math::Matrix<4, 4>::scale(v[0], v[1], v[1])), new RT::TransformationLightNode(Math::Matrix<4, 4>::scale(v[0], v[1], v[1])));
   else
     throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 }
 
 void	RT::Parser::scopeShear(double xy, double xz, double yx, double yz, double zx, double zy)
 {
-  scopeStart(new RT::TransformationCsgNode(Math::Matrix<4, 4>::shear(xy, xz, yx, yz, zx, zy)));
+  scopeStart(new RT::TransformationCsgNode(Math::Matrix<4, 4>::shear(xy, xz, yx, yz, zx, zy)), new RT::TransformationLightNode(Math::Matrix<4, 4>::shear(xy, xz, yx, yz, zx, zy)));
 }
 
 void	RT::Parser::scopeMaterial(std::string const & material)
@@ -395,95 +412,92 @@ void	RT::Parser::scopeMesh()
   scopeStart(new RT::MeshCsgNode());
 }
 
+void	RT::Parser::scopeDeph(unsigned int deph)
+{
+  scopeStart(new RT::DephCsgNode(deph), new RT::DephLightNode(deph));
+}
+
+void	RT::Parser::scopeDephCsg(unsigned int deph)
+{
+  scopeStart(new RT::DephCsgNode(deph));
+}
+
+void	RT::Parser::scopeDephLight(unsigned int deph)
+{
+  scopeStart(new RT::DephLightNode(deph));
+}
+
 void	RT::Parser::scopeStart(RT::AbstractCsgNode * node)
 {
-  _csg.top()->push(node);
-  _csg.push(node);
+  _scope.top().first->push(node);
+  _scope.push({ node, _scope.top().second });
+}
 
-  // Synchronise CSG and Light tree scope
-  if (dynamic_cast<RT::TransformationCsgNode *>(node))
-  {
-    RT::TransformationLightNode * light = new RT::TransformationLightNode(dynamic_cast<RT::TransformationCsgNode *>(node)->transformation());
+void	RT::Parser::scopeStart(RT::AbstractLightNode * node)
+{
+  _scope.top().second->push(node);
+  _scope.push({ _scope.top().first, node });
+}
 
-    _light.top()->push(light);
-    _light.push(light);
-  }
-  else
-  {
-    _light.push(_light.top());
-  }
+void	RT::Parser::scopeStart(RT::AbstractCsgNode * csg, RT::AbstractLightNode * light)
+{
+  _scope.top().first->push(csg);
+  _scope.top().second->push(light);
+  _scope.push({ csg, light });
 }
 
 void	RT::Parser::scopeEnd()
 {
-  if (_csg.size() > 1 && _light.size() > 1)
-  {
-    // Delete CSG tree if no children
-    if (_csg.top()->children().empty())
-    {
-      _csg.pop();
-      _csg.top()->pop();
-    }
-    else
-    {
-      scopeSimplifyCsg();
-      _csg.pop();
-    }
-
-    // Delete light tree if no children
-    if (_light.top()->children().empty())
-    {
-      RT::AbstractLightNode * top = _light.top();
-
-      _light.pop();
-      if (_light.top() != top)
-	_light.top()->pop();
-    }
-    else
-    {
-      scopeSimplifyLight();
-      _light.pop();
-    }
-  }
-  else
+  if (_scope.size() <= 1)
     throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
+
+  RT::AbstractCsgNode *		csg = _scope.top().first;
+  RT::AbstractLightNode *	light = _scope.top().second;
+
+  _scope.pop();
+  
+  if (_scope.top().first != csg)
+    if (csg->children().empty())
+      _scope.top().first->pop();
+    else
+      scopeSimplify(csg);
+
+  if (_scope.top().second != light)
+    if (light->children().empty())
+      _scope.top().second->pop();
+    else
+      scopeSimplify(light);
 }
 
-void	RT::Parser::scopeSimplifyCsg()
+void	RT::Parser::scopeSimplify(RT::AbstractCsgNode * csg)
 {
   // Simplify multiple transformation node
-  if (dynamic_cast<RT::TransformationCsgNode *>(_csg.top()) != nullptr && _csg.top()->children().size() == 1 && dynamic_cast<RT::TransformationCsgNode *>(_csg.top()->children().front()) != nullptr)
+  if (dynamic_cast<RT::TransformationCsgNode *>(csg) != nullptr && csg->children().size() == 1 && dynamic_cast<RT::TransformationCsgNode *>(csg->children().front()) != nullptr)
   {
-    dynamic_cast<RT::TransformationCsgNode *>(_csg.top())->transformation() *= dynamic_cast<RT::TransformationCsgNode *>(_csg.top()->children().front())->transformation();
-    _csg.top()->children().splice(_csg.top()->children().end(), dynamic_cast<RT::TransformationCsgNode *>(_csg.top()->children().front())->children());
-    delete _csg.top()->children().front();
-    _csg.top()->children().pop_front();
-
+    dynamic_cast<RT::TransformationCsgNode *>(csg)->transformation() *= dynamic_cast<RT::TransformationCsgNode *>(csg->children().front())->transformation();
+    csg->children().splice(csg->children().begin(), dynamic_cast<RT::TransformationCsgNode *>(csg->children().front())->children());
+    csg->pop();
     return;
   }
 
   // Simplify multiple material node
-  if (dynamic_cast<RT::MaterialCsgNode *>(_csg.top()) != nullptr && _csg.top()->children().size() == 1 && dynamic_cast<RT::MaterialCsgNode *>(_csg.top()->children().front()) != nullptr)
+  if (dynamic_cast<RT::MaterialCsgNode *>(csg) != nullptr && csg->children().size() == 1 && dynamic_cast<RT::MaterialCsgNode *>(csg->children().front()) != nullptr)
   {
-    dynamic_cast<RT::MaterialCsgNode *>(_csg.top())->material() *= dynamic_cast<RT::MaterialCsgNode *>(_csg.top()->children().front())->material();
-    _csg.top()->children().splice(_csg.top()->children().end(), dynamic_cast<RT::MaterialCsgNode *>(_csg.top()->children().front())->children());
-    delete _csg.top()->children().front();
-    _csg.top()->children().pop_front();
-
+    dynamic_cast<RT::MaterialCsgNode *>(csg)->material() *= dynamic_cast<RT::MaterialCsgNode *>(csg->children().front())->material();
+    csg->children().splice(csg->children().begin(), dynamic_cast<RT::MaterialCsgNode *>(csg->children().front())->children());
+    csg->pop();
     return;
   }
 }
 
-void	RT::Parser::scopeSimplifyLight()
+void	RT::Parser::scopeSimplify(RT::AbstractLightNode * light)
 {
   // Simplify multiple transformation node
-  if (dynamic_cast<RT::TransformationLightNode *>(_light.top()) != nullptr && _light.top()->children().size() == 1 && dynamic_cast<RT::TransformationLightNode *>(_light.top()->children().front()) != nullptr)
+  if (dynamic_cast<RT::TransformationLightNode *>(light) != nullptr && light->children().size() == 1 && dynamic_cast<RT::TransformationLightNode *>(light->children().front()) != nullptr)
   {
-    dynamic_cast<RT::TransformationLightNode *>(_light.top())->transformation() *= dynamic_cast<RT::TransformationLightNode *>(_light.top()->children().front())->transformation();
-    _light.top()->children().splice(_light.top()->children().end(), dynamic_cast<RT::TransformationLightNode *>(_light.top()->children().front())->children());
-    delete _light.top()->children().front();
-    _light.top()->children().pop_front();
-
+    dynamic_cast<RT::TransformationLightNode *>(light)->transformation() *= dynamic_cast<RT::TransformationLightNode *>(light->children().front())->transformation();
+    light->children().splice(light->children().begin(), dynamic_cast<RT::TransformationLightNode *>(light->children().front())->children());
+    light->pop();
     return;
   }
 }
@@ -521,7 +535,7 @@ void	RT::Parser::primitiveTorus(double r1, double r2)
 void	RT::Parser::primitiveTriangle(std::vector<double> const & p0, std::vector<double> const & p1, std::vector<double> const & p2)
 {
   // If not in a mesh scope, error
-  if (dynamic_cast<RT::MeshCsgNode *>(_csg.top()) == nullptr)
+  if (dynamic_cast<RT::MeshCsgNode *>(_scope.top().first) == nullptr)
     throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   if (p0.size() != 3 || p1.size() != 3 || p2.size() != 3)
@@ -532,7 +546,7 @@ void	RT::Parser::primitiveTriangle(std::vector<double> const & p0, std::vector<d
 
 void	RT::Parser::primitivePush(RT::AbstractCsgTree * tree)
 {
-  _csg.top()->push(tree);
+  _scope.top().first->push(tree);
 }
 
 void	RT::Parser::lightDirectional(RT::Color const & clr, double angle)
@@ -552,7 +566,7 @@ void	RT::Parser::lightPoint(RT::Color const & clr, double radius, double intensi
 
 void	RT::Parser::lightPush(RT::AbstractLightTree * light)
 {
-  _light.top()->push(light);
+  _scope.top().second->push(light);
 }
 
 void	RT::Parser::settingCamera(std::vector<double> const & t, std::vector<double> const & r, std::vector<double> const & s)

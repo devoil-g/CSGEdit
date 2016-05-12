@@ -35,6 +35,7 @@ namespace Math
 	for (unsigned int col = 0; col < cCol; col++)
 	  if ((*this)(row, col) != m(row, col))
 	    return false;
+
       return true;
     }
 
@@ -49,6 +50,7 @@ namespace Math
       if (row >= cRow || col >= cCol)
 	throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 #endif
+
       return _matrix[row][col];
     };
 
@@ -58,6 +60,7 @@ namespace Math
       if (row >= cRow || col >= cCol)
 	throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 #endif
+
       return _matrix[row][col];
     };
 
@@ -95,6 +98,7 @@ namespace Math
       if (v == 0.f)
 	throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 #endif
+
       for (unsigned int row = 0; row < cRow; row++)
 	for (unsigned int col = 0; col < cCol; col++)
 	  (*this)(row, col) /= v;

@@ -8,14 +8,6 @@
 
 namespace RT
 {
-  namespace Config
-  {
-    namespace Light
-    {
-      unsigned int const	MaxDeph(8);	// Maximum of sub-file light tree rendered
-    };
-  };
-
   class Scene;
 
   class AbstractLightTree

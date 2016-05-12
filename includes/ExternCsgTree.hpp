@@ -5,10 +5,18 @@
 
 namespace RT
 {
+  namespace Config
+  {
+    namespace Csg
+    {
+      unsigned int const	MaxDeph(8);	// Maximum of sub-file CSG tree rendered
+    };
+  };
+
   class ExternCsgTree : public RT::AbstractCsgTree
   {
   private:
-    RT::AbstractCsgTree const * const &	_tree;	// Pointer to a mesh in MeshManager
+    RT::AbstractCsgTree const * const &	_tree;	// Pointer to a csg tree
 
   public:
     ExternCsgTree(RT::AbstractCsgTree const * const &);

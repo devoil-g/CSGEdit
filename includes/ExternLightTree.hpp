@@ -5,10 +5,18 @@
 
 namespace RT
 {
+  namespace Config
+  {
+    namespace Light
+    {
+      unsigned int const	MaxDeph(8);	// Maximum of sub-file light tree rendered
+    };
+  };
+
   class ExternLightTree : public RT::AbstractLightTree
   {
   private:
-    RT::AbstractLightTree const * const &	_tree;	// Pointer to a mesh in MeshManager
+    RT::AbstractLightTree const * const &	_tree;	// Pointer to a light tree
 
   public:
     ExternLightTree(RT::AbstractLightTree const * const &);

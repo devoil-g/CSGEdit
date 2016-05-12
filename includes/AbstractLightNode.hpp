@@ -9,7 +9,7 @@ namespace RT
 {
   class AbstractLightNode : public RT::AbstractLightTree
   {
-  protected:
+  private:
     std::list<RT::AbstractLightTree *>	_children;	// List of children CSG tree
 
   public:
@@ -20,8 +20,8 @@ namespace RT
     virtual void	pop();				// Pop last CSG tree from sub-trees list
 
     // Getter of children list
-    std::list<RT::AbstractLightTree *> &	children() { return _children; };
-    std::list<RT::AbstractLightTree *> const &	children() const { return _children; };
+    inline std::list<RT::AbstractLightTree *> &		children() { return _children; };
+    inline std::list<RT::AbstractLightTree *> const &	children() const { return _children; };
   };
 };
 

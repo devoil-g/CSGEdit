@@ -452,8 +452,8 @@ def	stairs()
 	end();
 }
 
-direct_light([255],[255],[255], 8.4);
-indirect_light([0],[0],[0]);
+direct([255],[255],[255], 8.4);
+indirect([0],[0],[0]);
 
 intersection();
 	translation([0,0,512-128]); box(1024,1024,1024+32,true); end();

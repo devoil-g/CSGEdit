@@ -144,7 +144,7 @@ RT::Color	RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
 
   // Render intersections using ray
   std::list<RT::Intersection>	intersect = _scene->csg()->render(ray);
-
+  
   // Delete back intersections
   while (!intersect.empty() && intersect.front().distance < 0.f)
     intersect.pop_front();

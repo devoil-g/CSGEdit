@@ -11,10 +11,10 @@ std::list<RT::Intersection>	RT::UnionCsgNode::renderChildren(RT::Ray const & ray
   std::list<RT::Intersection>	result;
 
   // Iterate through sub-tree to get intersections
-  for (RT::AbstractCsgTree const * it : _children)
+  for (RT::AbstractCsgTree const * it : children())
   {
     std::list<RT::Intersection>	node = it->render(ray, deph);
-
+    
     // Merge current node with final result
     std::list<RT::Intersection>::iterator	it_r = result.begin(), it_n = node.begin();
     bool					inside_r = false, inside_n = false;

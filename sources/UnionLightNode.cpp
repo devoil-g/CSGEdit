@@ -11,7 +11,7 @@ RT::Color	RT::UnionLightNode::preview(Math::Matrix<4, 4> const & transformation,
   RT::Color	clr = 0.f;
 
   // Iterate through children
-  for (RT::AbstractLightTree const * it : _children)
+  for (RT::AbstractLightTree const * it : children())
     clr += it->preview(transformation, scene, ray, intersection, recursivite, deph);
 
   return clr;
@@ -22,7 +22,7 @@ RT::Color	RT::UnionLightNode::render(Math::Matrix<4, 4> const & transformation, 
   RT::Color	clr = 0.f;
 
   // Iterate through children
-  for (RT::AbstractLightTree const * it : _children)
+  for (RT::AbstractLightTree const * it : children())
     clr += it->render(transformation, scene, ray, intersection, recursivite, deph);
 
   return clr;
