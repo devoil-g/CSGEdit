@@ -11,11 +11,11 @@ namespace RT
   private:
     RT::Material		_material;	// Material applied to sub-node
 
-    std::list<RT::Intersection>	renderChildren(RT::Ray const &, unsigned int) const override;	// Render sub-tree
-
   public:
     MaterialCsgNode(RT::Material const &);
     ~MaterialCsgNode();
+
+    std::list<RT::Intersection>	render(RT::Ray const &, unsigned int) const override;	// Render sub-tree
 
     // Setter/getter of material
     RT::Material &		material() { return _material; };

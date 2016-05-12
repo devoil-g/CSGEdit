@@ -7,9 +7,9 @@ RT::MaterialCsgNode::MaterialCsgNode(RT::Material const & material)
 RT::MaterialCsgNode::~MaterialCsgNode()
 {}
 
-std::list<RT::Intersection> RT::MaterialCsgNode::renderChildren(RT::Ray const & ray, unsigned int deph) const
+std::list<RT::Intersection> RT::MaterialCsgNode::render(RT::Ray const & ray, unsigned int deph) const
 {
-  std::list<RT::Intersection> result = RT::UnionCsgNode::renderChildren(ray, deph);
+  std::list<RT::Intersection> result = RT::UnionCsgNode::render(ray, deph);
 
   // Atribute intersections and apply material to children
   for (RT::Intersection & it : result)

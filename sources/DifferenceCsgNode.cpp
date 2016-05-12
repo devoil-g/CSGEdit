@@ -6,7 +6,7 @@ RT::DifferenceCsgNode::DifferenceCsgNode()
 RT::DifferenceCsgNode::~DifferenceCsgNode()
 {}
 
-std::list<RT::Intersection>	RT::DifferenceCsgNode::renderChildren(RT::Ray const & ray, unsigned int deph) const
+std::list<RT::Intersection>	RT::DifferenceCsgNode::render(RT::Ray const & ray, unsigned int deph) const
 {
   std::list<RT::Intersection>	result = children().front()->render(ray, deph);
 

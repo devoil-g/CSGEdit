@@ -14,13 +14,11 @@ namespace RT
   private:
     std::list<RT::AbstractCsgTree *>	_children;	// List of children CSG tree
 
-    virtual std::list<RT::Intersection>	renderChildren(RT::Ray const &, unsigned int) const = 0;	// Render children
-
   public:
     AbstractCsgNode();
     virtual ~AbstractCsgNode();
 
-    std::list<RT::Intersection>	render(RT::Ray const &, unsigned int) const override;	// Render a list of intersection from the sub-tree according to ray
+    virtual std::list<RT::Intersection>	render(RT::Ray const &, unsigned int) const = 0;	// Render a list of intersection from the sub-tree according to ray
 
     virtual void	push(RT::AbstractCsgTree *);	// Add a CSG tree to sub-trees list
     virtual void	pop();				// Pop last CSG tree from sub-trees list

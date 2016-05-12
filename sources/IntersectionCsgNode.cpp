@@ -6,7 +6,7 @@ RT::IntersectionCsgNode::IntersectionCsgNode()
 RT::IntersectionCsgNode::~IntersectionCsgNode()
 {}
 
-std::list<RT::Intersection>	RT::IntersectionCsgNode::renderChildren(RT::Ray const & ray, unsigned int deph) const
+std::list<RT::Intersection>	RT::IntersectionCsgNode::render(RT::Ray const & ray, unsigned int deph) const
 {
   std::list<RT::Intersection>	result = children().front()->render(ray, deph);
 

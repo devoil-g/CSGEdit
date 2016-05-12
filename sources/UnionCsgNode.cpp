@@ -6,7 +6,7 @@ RT::UnionCsgNode::UnionCsgNode()
 RT::UnionCsgNode::~UnionCsgNode()
 {}
 
-std::list<RT::Intersection>	RT::UnionCsgNode::renderChildren(RT::Ray const & ray, unsigned int deph) const
+std::list<RT::Intersection>	RT::UnionCsgNode::render(RT::Ray const & ray, unsigned int deph) const
 {
   std::list<RT::Intersection>	result;
 

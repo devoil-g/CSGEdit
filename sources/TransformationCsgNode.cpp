@@ -7,9 +7,9 @@ RT::TransformationCsgNode::TransformationCsgNode(Math::Matrix<4, 4> const & tran
 RT::TransformationCsgNode::~TransformationCsgNode()
 {}
 
-std::list<RT::Intersection>	RT::TransformationCsgNode::renderChildren(RT::Ray const & ray, unsigned int deph) const
+std::list<RT::Intersection>	RT::TransformationCsgNode::render(RT::Ray const & ray, unsigned int deph) const
 {
-  std::list<RT::Intersection>	result = RT::UnionCsgNode::renderChildren(_transformation.inverse() * ray, deph);
+  std::list<RT::Intersection>	result = RT::UnionCsgNode::render(_transformation.inverse() * ray, deph);
 
   // Inverse transformation
   for (RT::Intersection & it : result)

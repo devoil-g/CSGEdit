@@ -31,7 +31,7 @@ std::list<RT::Intersection>	RT::AbstractCsgLeaf::render(RT::Ray const & ray, uns
     norm.d() = normal(norm.p());
 
     // Push intersection data to intersections list
-    result.push_back(RT::Intersection(this, norm, it));
+    result.push_back(RT::Intersection(norm, it));
   }
 
   return result;

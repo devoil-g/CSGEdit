@@ -16,18 +16,17 @@ namespace RT
 
     RT::AbstractCsgTree const *	_bound;	// Bounding sphere containing mesh faces (for acceleration purpose)
 
-    std::list<RT::Intersection>	renderChildren(RT::Ray const &, unsigned int) const override;	// Render sub-tree
-
-    void	loadStl(std::string const &);			// Load a .stl file
+    void	loadStl(std::string const &);	// Load a .stl file
 
   public:
     MeshCsgNode();
     MeshCsgNode(std::string const &);
     ~MeshCsgNode();
 
-    void			push(RT::AbstractCsgTree *) override;	// Push a triangle in mesh
+    std::list<RT::Intersection>	render(RT::Ray const &, unsigned int) const override;	// Render sub-tree
 
-    static bool			extension(std::string const &);	// Return true if extension supported
+    void			push(RT::AbstractCsgTree *) override;	// Push a triangle in mesh
+    static bool			extension(std::string const &);		// Return true if extension supported
   };
 };
 

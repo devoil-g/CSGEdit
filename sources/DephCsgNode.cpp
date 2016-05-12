@@ -7,10 +7,10 @@ RT::DephCsgNode::DephCsgNode(unsigned int deph)
 RT::DephCsgNode::~DephCsgNode()
 {}
 
-std::list<RT::Intersection>	RT::DephCsgNode::renderChildren(RT::Ray const & ray, unsigned int deph) const
+std::list<RT::Intersection>	RT::DephCsgNode::render(RT::Ray const & ray, unsigned int deph) const
 {
   if (deph < _deph)
-    return RT::UnionCsgNode::renderChildren(ray, deph);
+    return RT::UnionCsgNode::render(ray, deph);
   else
     return std::list<RT::Intersection>();
 }
