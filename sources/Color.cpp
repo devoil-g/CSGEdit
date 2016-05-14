@@ -114,12 +114,12 @@ RT::Color &	RT::Color::operator/=(RT::Color const & clr)
   return *this;
 }
 
-bool  RT::Color::operator==(RT::Color const & clr) const
+bool		RT::Color::operator==(RT::Color const & clr) const
 {
   return r == clr.r && g == clr.g && b == clr.b;
 }
 
-bool  RT::Color::operator!=(RT::Color const & clr) const
+bool		RT::Color::operator!=(RT::Color const & clr) const
 {
   return r != clr.r || g != clr.g || b != clr.b;
 }

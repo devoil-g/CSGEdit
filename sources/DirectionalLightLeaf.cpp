@@ -14,7 +14,7 @@ RT::DirectionalLightLeaf::DirectionalLightLeaf(RT::Color const & color, double a
 RT::DirectionalLightLeaf::~DirectionalLightLeaf()
 {}
 
-RT::Color RT::DirectionalLightLeaf::preview(Math::Matrix<4, 4> const & transformation, RT::Scene const *, RT::Ray const &, RT::Intersection const & intersection, unsigned int, unsigned int) const
+RT::Color		RT::DirectionalLightLeaf::preview(Math::Matrix<4, 4> const & transformation, RT::Scene const *, RT::Ray const &, RT::Intersection const & intersection, unsigned int, unsigned int) const
 {
   // If no ambient light, stop
   if (intersection.material.color == 0.f || intersection.material.direct.diffuse == 0.f)
@@ -23,7 +23,7 @@ RT::Color RT::DirectionalLightLeaf::preview(Math::Matrix<4, 4> const & transform
   return intersection.material.color * intersection.material.direct.diffuse * _color * std::max(RT::Ray::cos(intersection.normal.d(), Math::Vector<4>(transformation * Math::Vector<4>(-1.f, 0.f, 0.f, 0.f))), (double)0.f);
 }
 
-RT::Color RT::DirectionalLightLeaf::render(Math::Matrix<4, 4> const & transformation, RT::Scene const * scene, RT::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite, unsigned int) const
+RT::Color		RT::DirectionalLightLeaf::render(Math::Matrix<4, 4> const & transformation, RT::Scene const * scene, RT::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite, unsigned int) const
 {
   if (intersection.material.direct.diffuse == 0.f && intersection.material.direct.specular == 0.f)
     return RT::Color(0.f);

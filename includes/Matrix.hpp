@@ -1,10 +1,6 @@
 #ifndef _MATRIX_HPP_
 #define _MATRIX_HPP_
 
-#include <cstring>
-#include <sstream>
-#include <string>
-
 #ifdef _DEBUG
 #include <stdexcept>
 #endif
@@ -164,7 +160,7 @@ namespace Math
 
     static Math::Matrix<cRow, cCol>	identite()						// Generate identity matrix
     {
-      Math::Matrix<cRow, cCol>  matrix;
+      Math::Matrix<cRow, cCol>		matrix;
 
       // Compilation time error if invalid matrix
       static_assert(cRow == cCol, "Invalid matrix identite.");
@@ -178,8 +174,8 @@ namespace Math
     template<typename ... Doubles>
     static Math::Matrix<cRow, cCol>	translation(Doubles... args)				// Generate translation matrix
     {
-      Math::Matrix<cRow, cCol>	matrix = Math::Matrix<cRow, cCol>::identite();
-      double			transformation[]{ args... };
+      Math::Matrix<cRow, cCol>		matrix = Math::Matrix<cRow, cCol>::identite();
+      double				transformation[]{ args... };
 
       static_assert(cRow == cCol && cRow > 1, "Invalid translation matrix.");
       static_assert(sizeof(transformation) / sizeof(double) == cRow - 1, "Invalid translation matrix parameters.");
@@ -193,8 +189,8 @@ namespace Math
     template<typename ... Doubles>
     static Math::Matrix<cRow, cCol>	scale(Doubles... args)					// Generate scaling matrix
     {
-      Math::Matrix<cRow, cCol>	matrix = Math::Matrix<cRow, cCol>::identite();
-      double			transformation[]{ args... };
+      Math::Matrix<cRow, cCol>		matrix = Math::Matrix<cRow, cCol>::identite();
+      double				transformation[]{ args... };
 
       static_assert(cRow == cCol && cRow > 1, "Invalid scale matrix.");
       static_assert((sizeof(transformation) / sizeof(double) == cRow - 1) || (sizeof(transformation) / sizeof(double) == 1), "Invalid scale matrix parameters.");

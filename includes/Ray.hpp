@@ -1,7 +1,6 @@
 #ifndef _RAY_HPP_
 #define _RAY_HPP_
 
-#include "Matrix.hpp"
 #include "Vector.hpp"
 
 namespace RT

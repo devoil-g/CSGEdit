@@ -60,7 +60,7 @@ std::vector<double>	RT::ConeCsgLeaf::intersection(RT::Ray const & ray) const
   return result;
 }
 
-Math::Vector<4>	RT::ConeCsgLeaf::normal(Math::Vector<4> const & pt) const
+Math::Vector<4>		RT::ConeCsgLeaf::normal(Math::Vector<4> const & pt) const
 {
   Math::Vector<4>	p;
 

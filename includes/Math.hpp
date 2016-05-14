@@ -13,11 +13,6 @@
 # define M_PI	3.14159265358979323846
 #endif
 
-namespace RT
-{
-  class AbstractCsgTree;
-};
-
 namespace Math
 {
   void			initialize();		// Initialize math module
@@ -43,8 +38,6 @@ namespace Math
     {
       return (r * Math::Pi) / 180.f;
     }
-
-    RT::AbstractCsgTree const *	BoundingSphere(std::vector<std::tuple<double, double, double> > const &);	// Generate a bounding sphere from points
   };
 
   class Random

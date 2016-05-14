@@ -24,8 +24,8 @@ std::vector<double>	RT::BoxCsgLeaf::intersection(RT::Ray const & ray) const
   if (r.d().x() != 0.f)
   {
     // Calculate intersection distance
-    double	x1 = (-r.p().x()) / r.d().x();
-    double	x2 = (_x - r.p().x()) / r.d().x();
+    double		x1 = (-r.p().x()) / r.d().x();
+    double		x2 = (_x - r.p().x()) / r.d().x();
 
     // Push intersections if inside faces
     if (r.p().y() + x1 * r.d().y() >= 0.f &&
@@ -44,8 +44,8 @@ std::vector<double>	RT::BoxCsgLeaf::intersection(RT::Ray const & ray) const
   if (r.d().y() != 0.f)
   {
     // Calculate intersection distance
-    double	y1 = (-r.p().y()) / r.d().y();
-    double	y2 = (_y - r.p().y()) / r.d().y();
+    double		y1 = (-r.p().y()) / r.d().y();
+    double		y2 = (_y - r.p().y()) / r.d().y();
 
     // Push intersections if inside faces
     if (r.p().x() + y1 * r.d().x() >= 0.f &&
@@ -64,8 +64,8 @@ std::vector<double>	RT::BoxCsgLeaf::intersection(RT::Ray const & ray) const
   if (r.d().z() != 0.f)
   {
     // Calculate intersection distance
-    double	z1 = (-r.p().z()) / r.d().z();
-    double	z2 = (_z - r.p().z()) / r.d().z();
+    double		z1 = (-r.p().z()) / r.d().z();
+    double		z2 = (_z - r.p().z()) / r.d().z();
 
     // Push intersections if inside faces
     if (r.p().x() + z1 * r.d().x() >= 0.f &&
@@ -83,7 +83,7 @@ std::vector<double>	RT::BoxCsgLeaf::intersection(RT::Ray const & ray) const
   return result;
 }
 
-Math::Vector<4>	RT::BoxCsgLeaf::normal(Math::Vector<4> const & pt) const
+Math::Vector<4>		RT::BoxCsgLeaf::normal(Math::Vector<4> const & pt) const
 {
   Math::Vector<4>	p = pt;
 

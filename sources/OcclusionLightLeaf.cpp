@@ -13,18 +13,18 @@ RT::OcclusionLightLeaf::OcclusionLightLeaf(RT::Color const & color, double radiu
 RT::OcclusionLightLeaf::~OcclusionLightLeaf()
 {}
 
-RT::Color RT::OcclusionLightLeaf::preview(Math::Matrix<4, 4> const &, RT::Scene const *, RT::Ray const &, RT::Intersection const & intersection, unsigned int, unsigned int) const
+RT::Color		RT::OcclusionLightLeaf::preview(Math::Matrix<4, 4> const &, RT::Scene const *, RT::Ray const &, RT::Intersection const & intersection, unsigned int, unsigned int) const
 {
   return intersection.material.color * intersection.material.direct.ambient * _color;
 }
 
-RT::Color RT::OcclusionLightLeaf::render(Math::Matrix<4, 4> const &, RT::Scene const * scene, RT::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite, unsigned int) const
+RT::Color		RT::OcclusionLightLeaf::render(Math::Matrix<4, 4> const &, RT::Scene const * scene, RT::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite, unsigned int) const
 {
   // If no ambient light, stop
   if (intersection.material.direct.ambient == 0.f || intersection.material.transparency.intensity == 1.f || intersection.material.reflection.intensity == 1.f)
     return RT::Color(0.f);
 
-  unsigned int	quality = intersection.material.direct.quality > recursivite ? intersection.material.direct.quality - recursivite : 0;
+  unsigned int		quality = intersection.material.direct.quality > recursivite ? intersection.material.direct.quality - recursivite : 0;
 
   // If quality to basic
   if (quality <= 1 || _radius == 0.f)
@@ -36,8 +36,8 @@ RT::Color RT::OcclusionLightLeaf::render(Math::Matrix<4, 4> const &, RT::Scene c
     n *= -1;
 
   // Calculate rotation angles of normal
-  double	ry = -std::asin(n.z());
-  double	rz = 0;
+  double		ry = -std::asin(n.z());
+  double		rz = 0;
 
   if (n.x() != 0 || n.y() != 0)
     rz = n.y() > 0 ?
@@ -45,14 +45,14 @@ RT::Color RT::OcclusionLightLeaf::render(Math::Matrix<4, 4> const &, RT::Scene c
     -std::acos(n.x() / std::sqrt(n.x() * n.x() + n.y() * n.y()));
 
   // Rotation matrix to get ray to point of view
-  Math::Matrix<4, 4>  matrix = Math::Matrix<4, 4>::rotation(0, Math::Utils::RadToDeg(ry), Math::Utils::RadToDeg(rz));
+  Math::Matrix<4, 4>	matrix = Math::Matrix<4, 4>::rotation(0, Math::Utils::RadToDeg(ry), Math::Utils::RadToDeg(rz));
 
   // Point origin right above intersection
   Math::Vector<4>	p = intersection.normal.p() + n * Math::Shift;
 
   // Generate and render occlusion rays
-  unsigned int	nb_ray = 0;
-  RT::Color	ambient = 0.f;
+  unsigned int		nb_ray = 0;
+  RT::Color		ambient = 0.f;
 
   for (double a = Math::Random::rand(Math::Pi / (2.f * quality)); a < Math::Pi / 2.f; a += Math::Pi / (2.f * quality))
     for (double b = Math::Random::rand(2.f * Math::Pi / (std::cos(a) * quality * 2.f + 1.f)); b < 2.f * Math::Pi; b += (2.f * Math::Pi) / (std::cos(a) * quality * 2.f + 1.f))

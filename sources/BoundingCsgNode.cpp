@@ -18,7 +18,7 @@ std::list<RT::Intersection>	RT::BoundingCsgNode::render(RT::Ray const & ray, uns
     return RT::UnionCsgNode::render(ray, deph);
 }
 
-void	RT::BoundingCsgNode::push(RT::AbstractCsgTree * node)
+void				RT::BoundingCsgNode::push(RT::AbstractCsgTree * node)
 {
   // Push sub-tree in list if not nullptr
   if (node && _bound == nullptr)

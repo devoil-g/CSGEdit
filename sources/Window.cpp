@@ -66,7 +66,7 @@ RT::Window::~Window()
 
 RT::Window &			RT::Window::Instance()
 {
-  static RT::Window singleton;
+  static RT::Window		singleton;
 
   // Return unique instance (singleton)
   return singleton;
@@ -79,7 +79,7 @@ sf::RenderWindow &		RT::Window::window()
 
 bool				RT::Window::update()
 {
-  sf::Event event;
+  sf::Event			event;
 
   // Clear pressed/released key maps
   _pressed.clear();
@@ -147,7 +147,7 @@ void				RT::Window::display()
 
 void				RT::Window::draw(sf::Image const & image)
 {
-  sf::Texture	texture;
+  sf::Texture			texture;
 
   // Load image as texture
   texture.setSmooth(true);
@@ -155,10 +155,10 @@ void				RT::Window::draw(sf::Image const & image)
     throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
   
   // Load texture as sprite
-  sf::Sprite	sprite(texture);
-  float		scale = std::min(1.f, std::min((float)_window.getSize().x / (float)image.getSize().x, (float)_window.getSize().y / (float)image.getSize().y));
-  float		pos_x = (((float)_window.getSize().x - ((float)image.getSize().x * scale)) / 2.f);
-  float		pos_y = (((float)_window.getSize().y - ((float)image.getSize().y * scale)) / 2.f);
+  sf::Sprite			sprite(texture);
+  float				scale = std::min(1.f, std::min((float)_window.getSize().x / (float)image.getSize().x, (float)_window.getSize().y / (float)image.getSize().y));
+  float				pos_x = (((float)_window.getSize().x - ((float)image.getSize().x * scale)) / 2.f);
+  float				pos_y = (((float)_window.getSize().y - ((float)image.getSize().y * scale)) / 2.f);
 
   // Position sprite in window
   sprite.scale(sf::Vector2f(scale, scale));

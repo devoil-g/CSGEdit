@@ -14,7 +14,7 @@ bool	RT::AbstractRaytracer::active() const
   return _active;
 }
 
-void	    RT::AbstractRaytracer::start()
+void	RT::AbstractRaytracer::start()
 {
   _lock.lock();
 
@@ -28,7 +28,7 @@ void	    RT::AbstractRaytracer::start()
   _lock.unlock();
 }
 
-void	    RT::AbstractRaytracer::stop()
+void	RT::AbstractRaytracer::stop()
 {
   _lock.lock();
 

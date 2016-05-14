@@ -8,7 +8,7 @@ namespace RT
   class DephCsgNode : public RT::UnionCsgNode
   {
   private:
-    unsigned int const	_deph;	// Maximum deph before interrupting rendering
+    unsigned int const		_deph;	// Maximum deph before interrupting rendering
 
   public:
     DephCsgNode(unsigned int);

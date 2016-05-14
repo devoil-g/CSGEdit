@@ -23,7 +23,7 @@ RT::RenderPauseState::RenderPauseState(RT::RenderRaytracer & render, RT::Scene *
 RT::RenderPauseState::~RenderPauseState()
 {}
 
-bool  RT::RenderPauseState::update(sf::Time)
+bool	RT::RenderPauseState::update(sf::Time)
 {
   // Stop rendering, getting back to control state
   if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::Escape))
@@ -46,7 +46,7 @@ bool  RT::RenderPauseState::update(sf::Time)
   return false;
 }
 
-void  RT::RenderPauseState::draw()
+void	RT::RenderPauseState::draw()
 {
   RT::Window::Instance().draw(_image);
 }

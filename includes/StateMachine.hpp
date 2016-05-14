@@ -28,7 +28,7 @@ namespace RT
     ~StateMachine();
 
   public:
-    static RT::StateMachine & Instance();
+    static RT::StateMachine &	Instance();	// Return unique instance (singleton)
 
     void	run();				// Run state machine
 

@@ -12,7 +12,7 @@ RT::Material::Material()
 RT::Material::~Material()
 {}
 
-RT::Material const &	RT::Material::getMaterial(std::string const & name)
+RT::Material const &		RT::Material::getMaterial(std::string const & name)
 {
   // Check if material exist
   if (_material.find(name) != _material.end())
@@ -21,7 +21,7 @@ RT::Material const &	RT::Material::getMaterial(std::string const & name)
     throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 }
 
-void			RT::Material::setMaterial(std::string const & name, RT::Material const & material)
+void				RT::Material::setMaterial(std::string const & name, RT::Material const & material)
 {
   _material[name] = material;
 }
@@ -31,7 +31,7 @@ void			RT::Material::initialize()
   // Set default materials here
 }
 
-RT::Material &		RT::Material::operator*=(RT::Material const & material)
+RT::Material &			RT::Material::operator*=(RT::Material const & material)
 {
   // Multiply two materials
   color *= material.color;
@@ -43,12 +43,12 @@ RT::Material &		RT::Material::operator*=(RT::Material const & material)
   return *this;
 }
 
-RT::Material		RT::Material::operator*(RT::Material const & material) const
+RT::Material			RT::Material::operator*(RT::Material const & material) const
 {
   return RT::Material(*this) *= material;
 }
 
-RT::Material::Light &	RT::Material::Light::operator*=(RT::Material::Light const & light)
+RT::Material::Light &		RT::Material::Light::operator*=(RT::Material::Light const & light)
 {
   // Multiply two lights
   ambient *= light.ambient;
@@ -60,7 +60,7 @@ RT::Material::Light &	RT::Material::Light::operator*=(RT::Material::Light const 
   return *this;
 }
 
-RT::Material::Light	RT::Material::Light::operator*(RT::Material::Light const & light) const
+RT::Material::Light		RT::Material::Light::operator*(RT::Material::Light const & light) const
 {
   return RT::Material::Light(*this) *= light;
 }

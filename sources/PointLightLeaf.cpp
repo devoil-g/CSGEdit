@@ -20,28 +20,28 @@ RT::PointLightLeaf::PointLightLeaf(RT::Color const & color, double radius, doubl
 RT::PointLightLeaf::~PointLightLeaf()
 {}
 
-RT::Color	RT::PointLightLeaf::preview(Math::Matrix<4, 4> const & transformation, RT::Scene const *, RT::Ray const &, RT::Intersection const & intersection, unsigned int, unsigned int) const
+RT::Color		RT::PointLightLeaf::preview(Math::Matrix<4, 4> const & transformation, RT::Scene const *, RT::Ray const &, RT::Intersection const & intersection, unsigned int, unsigned int) const
 {
   // If no diffuse light, stop
   if (intersection.material.color == 0.f || intersection.material.direct.diffuse == 0.f)
     return RT::Color(0.f);
 
   // Calculate relative position of intersection
-  RT::Ray	normal = transformation.inverse() * intersection.normal;
+  RT::Ray		normal = transformation.inverse() * intersection.normal;
 
   // Calculate normal cosinus with light ray
-  double	diffuse = RT::Ray::cos(normal.d(), Math::Vector<4>(-1.f, 0.f, 0.f, 0.f));
+  double		diffuse = RT::Ray::cos(normal.d(), Math::Vector<4>(-1.f, 0.f, 0.f, 0.f));
   if (diffuse < 0.f)
     return RT::Color(0.f);
 
   // Intensity of light
-  double	intensity = _intensity == 0.f ? 1.f : ((_intensity * _intensity) / (normal.p().x() * normal.p().x() + normal.p().y() * normal.p().y() + normal.p().z() * normal.p().z()));
+  double		intensity = _intensity == 0.f ? 1.f : ((_intensity * _intensity) / (normal.p().x() * normal.p().x() + normal.p().y() * normal.p().y() + normal.p().z() * normal.p().z()));
 
   if (_angle1 == 0.f && _angle2 == 0.f)
     return intersection.material.color * intersection.material.direct.diffuse * intensity * diffuse * _color;
   else
   {
-    double	angle = Math::Utils::RadToDeg(RT::Ray::angle(Math::Vector<4>(1.f, 0.f, 0.f, 0.f), normal.p()));
+    double		angle = Math::Utils::RadToDeg(RT::Ray::angle(Math::Vector<4>(1.f, 0.f, 0.f, 0.f), normal.p()));
 
     if (angle < _angle1)
       return intersection.material.color * intersection.material.direct.diffuse * intensity * diffuse * _color;
@@ -52,7 +52,7 @@ RT::Color	RT::PointLightLeaf::preview(Math::Matrix<4, 4> const & transformation,
   }
 }
 
-RT::Color RT::PointLightLeaf::render(Math::Matrix<4, 4> const & transformation, RT::Scene const * scene, RT::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite, unsigned int) const
+RT::Color		RT::PointLightLeaf::render(Math::Matrix<4, 4> const & transformation, RT::Scene const * scene, RT::Ray const & ray, RT::Intersection const & intersection, unsigned int recursivite, unsigned int) const
 {
   if (intersection.material.direct.diffuse == 0.f && intersection.material.direct.specular == 0.f)
     return RT::Color(0.f);

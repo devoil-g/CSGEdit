@@ -19,17 +19,17 @@ RT::StateMachine::~StateMachine()
   }
 }
 
-RT::StateMachine &  RT::StateMachine::Instance()
+RT::StateMachine &	RT::StateMachine::Instance()
 {
-  static StateMachine singleton;
+  static StateMachine	singleton;
 
   // Return unique instance (singleton)
   return singleton;
 }
 
-void  RT::StateMachine::run()
+void			RT::StateMachine::run()
 {
-  sf::Clock clock;
+  sf::Clock		clock;
 
   while (RT::Window::Instance().window().isOpen())
   {
@@ -46,7 +46,7 @@ void  RT::StateMachine::run()
   }
 }
 
-void  RT::StateMachine::swap(RT::AbstractState * state)
+void			RT::StateMachine::swap(RT::AbstractState * state)
 {
   _lock.lock();
 
@@ -65,7 +65,7 @@ void  RT::StateMachine::swap(RT::AbstractState * state)
   _lock.unlock();
 }
 
-void  RT::StateMachine::push(RT::AbstractState * state)
+void			RT::StateMachine::push(RT::AbstractState * state)
 {
   _lock.lock();
 
@@ -81,7 +81,7 @@ void  RT::StateMachine::push(RT::AbstractState * state)
   _lock.unlock();
 }
 
-void  RT::StateMachine::pop()
+void			RT::StateMachine::pop()
 {
   _lock.lock();
 
@@ -100,7 +100,7 @@ void  RT::StateMachine::pop()
   _lock.unlock();
 }
 
-bool  RT::StateMachine::empty() const
+bool			RT::StateMachine::empty() const
 {
   return _states.size() == 1;
 }
@@ -111,11 +111,11 @@ RT::StateMachine::DefaultState::DefaultState()
 RT::StateMachine::DefaultState::~DefaultState()
 {}
 
-bool  RT::StateMachine::DefaultState::update(sf::Time)
+bool			RT::StateMachine::DefaultState::update(sf::Time)
 {
   // Always return true
   return true;
 }
 
-void  RT::StateMachine::DefaultState::draw()
+void			RT::StateMachine::DefaultState::draw()
 {}

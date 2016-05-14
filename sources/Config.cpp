@@ -17,7 +17,7 @@ namespace RT
   };
 };
 
-void  RT::Config::initialize(int argc, char **argv)
+void		RT::Config::initialize(int argc, char **argv)
 {
 #ifdef _WIN32
   HMODULE	handle;

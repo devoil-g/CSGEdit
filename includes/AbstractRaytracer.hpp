@@ -21,7 +21,7 @@ namespace RT
   {
   private:
     std::recursive_mutex	_lock;			// Lock for start & stop
-    std::thread *		_thread;		// List of active threads
+    std::thread *		_thread;		// Main rendering threads
     bool			_active;		// True to continue rendering, false to stop
 
     virtual void		begin() = 0;		// Method called once when start()

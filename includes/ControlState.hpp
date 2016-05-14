@@ -22,8 +22,8 @@ namespace RT
     ControlState(std::string const &);
     ~ControlState();
 
-    bool  			update(sf::Time) override;	// Wait for input or scene change
-    void  			draw() override;		// Display raytracer image
+    bool			update(sf::Time) override;	// Wait for input or scene change
+    void			draw() override;		// Display raytracer image
   };
 };
 

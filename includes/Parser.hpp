@@ -4,7 +4,6 @@
 #include <chaiscript/chaiscript.hpp>
 #include <stack>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "AbstractCsgNode.hpp"

@@ -1,11 +1,9 @@
 #ifndef _ABSTRACT_CSG_LEAF_HPP_
 #define _ABSTRACT_CSG_LEAF_HPP_
 
-#include <list>
 #include <vector>
 
 #include "AbstractCsgTree.hpp"
-#include "Intersection.hpp"
 #include "Ray.hpp"
 #include "Vector.hpp"
 

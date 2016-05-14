@@ -51,9 +51,9 @@ Math::Matrix<4, 4>	Math::Matrix<4, 4>::inverse() const
 }
 
 template<>
-Math::Matrix<3, 3>    Math::Matrix<3, 3>::reflection(double x, double y)
+Math::Matrix<3, 3>	Math::Matrix<3, 3>::reflection(double x, double y)
 {
-  Math::Matrix<3, 3>  matrix = Math::Matrix<3, 3>::identite();
+  Math::Matrix<3, 3>	matrix = Math::Matrix<3, 3>::identite();
 
   // Generate a reflection matrix
   matrix(0, 0) = 1.f - 2.f * x * x;
@@ -65,7 +65,7 @@ Math::Matrix<3, 3>    Math::Matrix<3, 3>::reflection(double x, double y)
 }
 
 template<>
-Math::Matrix<4, 4>    Math::Matrix<4, 4>::reflection(double x, double y, double z)
+Math::Matrix<4, 4>	Math::Matrix<4, 4>::reflection(double x, double y, double z)
 {
   Math::Matrix<4, 4>	matrix = Math::Matrix<4, 4>::identite();
 
@@ -84,7 +84,7 @@ Math::Matrix<4, 4>    Math::Matrix<4, 4>::reflection(double x, double y, double 
 }
 
 template<>
-Math::Matrix<3, 3>    Math::Matrix<3, 3>::rotation(double z)
+Math::Matrix<3, 3>	Math::Matrix<3, 3>::rotation(double z)
 {
   Math::Matrix<3, 3>	matrix = Math::Matrix<3, 3>::identite();
 
@@ -101,7 +101,7 @@ Math::Matrix<3, 3>    Math::Matrix<3, 3>::rotation(double z)
 }
 
 template<>
-Math::Matrix<4, 4>    Math::Matrix<4, 4>::rotation(double x, double y, double z)
+Math::Matrix<4, 4>	Math::Matrix<4, 4>::rotation(double x, double y, double z)
 {
   Math::Matrix<4, 4>	m_x = Math::Matrix<4, 4>::identite();
   Math::Matrix<4, 4>	m_y = Math::Matrix<4, 4>::identite();
@@ -130,11 +130,11 @@ Math::Matrix<4, 4>    Math::Matrix<4, 4>::rotation(double x, double y, double z)
 }
 
 template<>
-Math::Matrix<4, 4>    Math::Matrix<4, 4>::rotation(double a, double x, double y, double z)
+Math::Matrix<4, 4>	Math::Matrix<4, 4>::rotation(double a, double x, double y, double z)
 {
-  Math::Matrix<4, 4>  matrix = Math::Matrix<4, 4>::identite();
+  Math::Matrix<4, 4>	matrix = Math::Matrix<4, 4>::identite();
 
-  double	      l = std::sqrt(x * x + y * y + z * z);
+  double		l = std::sqrt(x * x + y * y + z * z);
 
 #ifdef _DEBUG
   // Should not happen
@@ -165,7 +165,7 @@ Math::Matrix<4, 4>    Math::Matrix<4, 4>::rotation(double a, double x, double y,
 }
 
 template<>
-Math::Matrix<4, 4>    Math::Matrix<4, 4>::shear(double xy, double xz, double yx, double yz, double zx, double zy)
+Math::Matrix<4, 4>	Math::Matrix<4, 4>::shear(double xy, double xz, double yx, double yz, double zx, double zy)
 {
   Math::Matrix<4, 4>	matrix = Math::Matrix<4, 4>::identite();
 

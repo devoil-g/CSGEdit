@@ -17,7 +17,7 @@ std::vector<double>	RT::SphereCsgLeaf::intersection(RT::Ray const & ray) const
   );
 }
 
-Math::Vector<4>	RT::SphereCsgLeaf::normal(Math::Vector<4> const & pt) const
+Math::Vector<4>		RT::SphereCsgLeaf::normal(Math::Vector<4> const & pt) const
 {
   return pt;
 }

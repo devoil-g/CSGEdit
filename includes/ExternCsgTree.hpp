@@ -22,7 +22,7 @@ namespace RT
     ExternCsgTree(RT::AbstractCsgTree const * const &);
     ~ExternCsgTree();
 
-    std::list<RT::Intersection>	render(RT::Ray const &, unsigned int) const override;	// Render a list of intersection from the sub-tree according to ray
+    std::list<RT::Intersection>		render(RT::Ray const &, unsigned int) const override;	// Render a list of intersection from the sub-tree according to ray
   };
 };
 

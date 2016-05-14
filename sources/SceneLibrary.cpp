@@ -11,7 +11,7 @@ RT::SceneLibrary::~SceneLibrary()
   clear();
 }
 
-RT::SceneLibrary &	RT::SceneLibrary::Instance()
+RT::SceneLibrary &		RT::SceneLibrary::Instance()
 {
   static RT::SceneLibrary	singleton;
 
@@ -19,19 +19,19 @@ RT::SceneLibrary &	RT::SceneLibrary::Instance()
   return singleton;
 }
 
-RT::SceneLibrary::Time	RT::SceneLibrary::time(std::string const & file) const
+RT::SceneLibrary::Time		RT::SceneLibrary::time(std::string const & file) const
 {
   // Get file time structure depending of platform
 #ifdef WIN32
-  FILETIME  creation, lastaccess, lastwrite;
-  HANDLE    f = CreateFileA(file.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+  FILETIME  			creation, lastaccess, lastwrite;
+  HANDLE    			f = CreateFileA(file.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 
   if (f == nullptr || GetFileTime(f, &creation, &lastaccess, &lastwrite) == false || CloseHandle(f) == false)
     throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
   return lastwrite;
 #else
-  struct stat	st;
+  struct stat			st;
 
   if (stat(file.c_str(), &st) < 0)
     throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
@@ -40,13 +40,13 @@ RT::SceneLibrary::Time	RT::SceneLibrary::time(std::string const & file) const
 #endif
 }
 
-void			RT::SceneLibrary::load(std::string const & file)
+void				RT::SceneLibrary::load(std::string const & file)
 {
   // Update file time
   _library[file].first = time(file);
 
   // Save preview/rendered image for soft transition
-  sf::Image save = _library[file].second.image();
+  sf::Image			save = _library[file].second.image();
   
   // Load file
   _library[file].second.clear();
@@ -58,7 +58,7 @@ void			RT::SceneLibrary::load(std::string const & file)
       _library[file].second.image().setPixel(x, y, save.getPixel((unsigned int)((float)x / (float)_library[file].second.image().getSize().x * save.getSize().x), (unsigned int)((float)y / (float)_library[file].second.image().getSize().y * save.getSize().y)));
 }
 
-RT::Scene *		RT::SceneLibrary::get(std::string const & file)
+RT::Scene *			RT::SceneLibrary::get(std::string const & file)
 {
   // Load file if not in cache
   if (_library.find(file) == _library.end())
@@ -67,7 +67,7 @@ RT::Scene *		RT::SceneLibrary::get(std::string const & file)
   return &_library[file].second;
 }
 
-bool			RT::SceneLibrary::change() const
+bool				RT::SceneLibrary::change() const
 {
   // Search for a modified file
   for (std::pair<std::string, std::pair<RT::SceneLibrary::Time, RT::Scene>> const & it : _library)
@@ -85,7 +85,7 @@ bool			RT::SceneLibrary::change() const
   return false;
 }
 
-void			RT::SceneLibrary::update()
+void				RT::SceneLibrary::update()
 {
   // Reload modified files
   for (std::pair<std::string, std::pair<RT::SceneLibrary::Time, RT::Scene>> const & it : _library)
@@ -101,7 +101,7 @@ void			RT::SceneLibrary::update()
   }
 }
 
-void			RT::SceneLibrary::clear()
+void				RT::SceneLibrary::clear()
 {
   // Delete every scene loaded in library
   for (std::pair<std::string, std::pair<RT::SceneLibrary::Time, RT::Scene>> it : _library)

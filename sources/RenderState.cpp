@@ -26,10 +26,10 @@ RT::RenderState::~RenderState()
       _scene->hud().setPixel(x, y, RT::Color(0.f).sfml(0.f));
 }
 
-bool  RT::RenderState::update(sf::Time elapsed)
+bool			RT::RenderState::update(sf::Time elapsed)
 {
   // Get progress
-  double  progress = _render.progress();
+  double		progress = _render.progress();
   _elapsed += elapsed;
 
   // If rendering completed, stop, save image and pop state, getting back to control state
@@ -70,7 +70,7 @@ bool  RT::RenderState::update(sf::Time elapsed)
   // If timer over, update display
   if (_wait <= 0.f)
   {
-    unsigned int  remaining = (unsigned int)(_elapsed.asSeconds() / progress * (1.f - progress));
+    unsigned int	remaining = (unsigned int)(_elapsed.asSeconds() / progress * (1.f - progress));
     std::cout << "[Render] " << (int)(progress * 100.f) << "." << ((int)(progress * 1000.f)) % 10 << " % (" << remaining / 3600 << "h " << remaining % 3600 / 60 << "m " << remaining % 60 << "s remaining).    \r" << std::flush;
     RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Normal, progress);
   }
@@ -78,7 +78,7 @@ bool  RT::RenderState::update(sf::Time elapsed)
   return false;
 }
 
-void  RT::RenderState::draw()
+void			RT::RenderState::draw()
 {
   RT::Window::Instance().draw(_scene->image());
   RT::Window::Instance().draw(_scene->hud());

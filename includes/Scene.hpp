@@ -76,7 +76,7 @@ namespace RT
     Scene();
     ~Scene();
 
-    void	clear();	// Clear scene
+    void					clear();	// Clear scene
 
     // Getter and setter for all parameters
     sf::Image &					image() { return _image; };

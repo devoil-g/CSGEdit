@@ -14,24 +14,24 @@ namespace RT
     Color(sf::Color);
     ~Color();
 
-    double	r, g, b;				// Color components
+    double		r, g, b;				// Color components
 
-    sf::Color		sfml(double = 1.f) const;	// Convert RT::Color to sfml
-    RT::Color		grey() const;			// Return a grey-scaled color
-    RT::Color		normalize() const;		// Return a normalize color (component 0-1)
+    sf::Color		sfml(double = 1.f) const;		// Convert RT::Color to sfml
+    RT::Color		grey() const;				// Return a grey-scaled color
+    RT::Color		normalize() const;			// Return a normalize color (component 0-1)
 
-    RT::Color		operator+(Color const &) const;	// Color addition
-    RT::Color		operator-(Color const &) const;	// Color substraction
-    RT::Color		operator*(Color const &) const;	// Color produce
-    RT::Color		operator/(Color const &) const;	// Color division
+    RT::Color		operator+(Color const &) const;		// Color addition
+    RT::Color		operator-(Color const &) const;		// Color substraction
+    RT::Color		operator*(Color const &) const;		// Color produce
+    RT::Color		operator/(Color const &) const;		// Color division
 
-    RT::Color &		operator+=(Color const &);	// Color addition
-    RT::Color &		operator-=(Color const &);	// Color substraction
-    RT::Color &		operator*=(Color const &);	// Color produce
-    RT::Color &		operator/=(Color const &);	// Color division
+    RT::Color &		operator+=(Color const &);		// Color addition
+    RT::Color &		operator-=(Color const &);		// Color substraction
+    RT::Color &		operator*=(Color const &);		// Color produce
+    RT::Color &		operator/=(Color const &);		// Color division
 
-    bool	operator==(Color const &) const;	// Color comparison
-    bool	operator!=(Color const &) const;	// Color comparison
+    bool		operator==(Color const &) const;	// Color comparison
+    bool		operator!=(Color const &) const;	// Color comparison
   };
 };
 
