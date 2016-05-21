@@ -34,7 +34,7 @@ std::vector<double>	Math::solve(double a, double b, double c)
 
   // Solve equation
   double		d = b * b - 4.f * a * c;
-  if (d >= 0)
+  if (d >= 0.f)
     return{ (-b - std::sqrt(d)) / (2.f * a), (-b + std::sqrt(d)) / (2.f * a) };
   else
     return std::vector<double>();

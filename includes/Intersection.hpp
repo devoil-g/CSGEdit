@@ -6,8 +6,6 @@
 
 namespace RT
 {
-  class AbstractCsgTree;
-
   class Intersection
   {
   public:

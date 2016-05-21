@@ -109,7 +109,7 @@ void				RT::MeshCsgNode::bound()
   pts.sort();
   pts.unique();
 
-  BoundingSphere	ball(pts);
+  RT::MeshCsgNode::BoundingSphere	ball(pts);
 
   _x = std::get<0>(ball.center);
   _y = std::get<1>(ball.center);

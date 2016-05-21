@@ -70,7 +70,7 @@ void			RT::StateMachine::push(RT::AbstractState * state)
   _lock.lock();
 
   // Cancel if nullptr
-  if (state)
+  if (state != nullptr)
     _states.push(state);
   else
   {

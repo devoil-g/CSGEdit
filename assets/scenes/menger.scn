@@ -1,4 +1,4 @@
-maxdeph(6); bounding();
+maxdeph(4); bounding();
 	sphere(sqrt(3)/2.0);
 	
 	box(1.0/3.0,1.0/3.0,1.1, true);

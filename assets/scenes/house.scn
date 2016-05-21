@@ -1,0 +1,239 @@
+def	ground_block(r, h)
+{
+	translation([0,0,h / 2.0]); intersection();
+		box(r, r*1.2, h, true);
+		rotation([0,0,60]); box(r, r*1.2, h, true); end();
+		rotation([0,0,120]); box(r, r*1.2, h, true); end();
+	end(); end();
+}
+
+intersection();
+	translation([0,0,-24]); ground_block(512,600); end();
+	
+	union();
+		// Base
+		translation([0,0,-256]); box(1024,1024,512, true); end();
+		
+		// Sidewalk
+		translation([-64,0,0]); box(128,1024,16, true); end();
+		bounding();
+			translation([-125,0,0]); box(7,460,17, true); end();
+			
+			for (var x = 0; x < 20; ++x) {
+				translation([-125,-231 + x * 24,0]); box(7,22,17, true); end();
+			}
+		end();
+		
+		// Street Light
+		translation([-108,96,8]);
+			cylinder(5,36);
+			translation([0,0,36]); sphere(5); end();
+			difference();
+				cylinder(2.5,192);
+				translation([0,0,191]); rotation([0,10,0]); box(8, true); end(); end();
+			end();
+			translation([0,0,184]); rotation([0,10,0]); translation([-20,0,0]);
+				difference();
+					box(48,16,4, true);
+					translation([0,0,-1]); box(34,14,4, true); end();
+				end();
+				rotation([0,90,0]);
+					translation([0.5,-2.5,0]); cylinder(1,36, true); end();
+					translation([0.5,+2.5,0]); cylinder(1,36, true); end();
+				end();
+			end(); end(); end();
+		end();
+		
+		// Road
+		translation([-176, -128, 0]); cylinder(24, 0.5); end();
+		for (var x = 0; x < 6; ++x) {
+			translation([-224,-128 + x * 72,0]); box(8,22,1, true); end();
+		}
+		
+		// Car
+		translation([-168,104,0]); bounding();
+			translation([0,0,32]); box(56,128,64, true); end();
+			
+			translation([-24,-40,16]); rotation([0,90,0]); cylinder(14,8, true); end(); end();
+			translation([-24,+40,16]); rotation([0,90,0]); cylinder(14,8, true); end(); end();
+			translation([+24,-40,16]); rotation([0,90,0]); cylinder(14,8, true); end(); end();
+			translation([+24,+40,16]); rotation([0,90,0]); cylinder(14,8, true); end(); end();
+			
+			difference();
+				translation([0,0,28]); box(56,128,24, true); end();
+				
+				translation([-24,-40,16]); rotation([0,90,0]); cylinder(16,12, true); end(); end();
+				translation([-24,+40,16]); rotation([0,90,0]); cylinder(16,12, true); end(); end();
+				translation([+24,-40,16]); rotation([0,90,0]); cylinder(16,12, true); end(); end();
+				translation([+24,+40,16]); rotation([0,90,0]); cylinder(16,12, true); end(); end();
+			end();
+			
+			translation([0,0,52]); box(56,48,24, true); end();
+			translation([0,+6,52]); shear(0,0,0,-0.5,0,0); box(56,48,24, true); end(); end();
+			translation([0,-6,52]); shear(0,0,0,+0.5,0,0); box(56,48,24, true); end(); end();
+		end(); end();
+		
+		// Stairs
+		translation([-56,-128,8]);
+			box(56,64,40);
+			for (var x = 0; x < 4; ++x) {
+				translation([0,64 + x*12, 0]); box(56,12,32 - x*8); end();
+			}			
+		end();
+		
+		// Building front
+		bounding();
+			translation([-2,-300,0]); box(26,600,352); end();
+			
+			translation([-2,-300,8]); box(2,600,40); end();
+			
+			difference();
+				translation([0,-300,0]); box(24,600,352); end();
+				
+				translation([-4,-252,80]); box(32,56,72); end();
+				translation([-4,-124,48]); box(32,56,108); end();	// Porte
+				translation([-4,4,80]); box(32,56,72); end();
+				translation([-4,132,80]); box(32,56,72); end();
+				
+				translation([-4,-252,240]); box(32,56,72); end();
+				translation([-4,-124,240]); box(32,56,72); end();
+				translation([-4,4,240]); box(32,56,72); end();
+				translation([-4,132,240]); box(32,56,72); end();
+				
+				translation([10.5,-253,79]); box(3,58,74); end();
+				translation([10.5,3,79]); box(3,58,74); end();
+				translation([10.5,131,79]); box(3,58,74); end();
+				
+				translation([10.5,-253,239]); box(3,58,74); end();
+				translation([10.5,-125,239]); box(3,58,74); end();
+				translation([10.5,3,239]); box(3,58,74); end();
+				translation([10.5,131,239]); box(3,58,74); end();
+			end();
+			
+			transparency(0.84, 1.35);
+				translation([11,-252,80]); box(2,56,72); end();
+				translation([11,4,80]); box(2,56,72); end();
+				translation([11,132,80]); box(2,56,72); end();
+				
+				translation([11,-252,240]); box(2,56,72); end();
+				translation([11,-124,240]); box(2,56,72); end();
+				translation([11,4,240]); box(2,56,72); end();
+				translation([11,132,240]); box(2,56,72); end();
+			end();
+		end();
+		
+		// Under
+		translation([24,-300,0]);
+			for (var x = 0; x < 3; ++x) {
+				translation([x*84+32,0,0]); box(8,600,32); end();
+				translation([0,x*128+160,0]); box(300,8,32); end();
+			}
+		end();
+		
+		// First floor
+		translation([24,-300,32]); box(300,600,12); end();
+		translation([24,-36,44]);
+			difference();
+				box(300,8,144);
+				translation([32,-1,0]); box(96,10,108); end();
+			end();
+		end();
+		translation([224,-288,44]);
+			difference();
+				box(8,256,144);
+				translation([-1,144,0]); box(10,56,108); end();
+			end();
+		end();
+		
+		// Second floor
+		translation([24,-300,188]); box(300,600,12); end();
+		translation([24,92,200]);
+			difference();
+				box(256,8,140);
+				translation([24,-1,0]); box(56,10,112); end();
+			end();
+		end();
+		translation([24,-164,200]);
+			difference();
+				box(256,8,140);
+				translation([24,-1,0]); box(56,10,112); end();
+			end();
+		end();
+		translation([128,-300,200]);
+			box(8,136,140);
+		end();
+		translation([224,-300,200]);
+			difference();
+				box(8,600,140);
+				translation([-1,312,0]); box(10,56,112); end();
+			end();
+		end();
+		
+		// Third floor
+		translation([24,-300,340]); box(300,600,12); end();
+		
+		// Goutiere
+		translation([-6,240,16]);
+			difference();
+				cylinder(4,336);
+				translation([0,0,-1]); cylinder(3.5,338); end();
+			end();
+			for (var x = 0; x < 4; ++x) {
+				translation([0,0,24+x*96]);
+					cylinder(4.5,1);
+					translation([4.5,0,0]); box(4,1,1, true); end();
+				end();
+			}
+		end();
+		
+		// Toit
+		for (var x = 0; x < 10; ++x) {
+			translation([12,-292 + x*64,316]); rotation([0,-45,0]);
+				box(8,8,40);
+			end(); end();
+		}
+		difference();
+			translation([168,-300,531]);
+				rotation([0,135,0]); box(268,600,8); end();
+				rotation([0,45,0]); box(268,600,8); end();
+			end();
+			translation([31,-128,408]); box(130,56,64); end();
+			translation([31,+128,408]); box(130,56,64); end();
+		end();
+		translation([184,-124,352]); box(48,24,200); end();
+		translation([196,-112,552]); cylinder(6,24); end();
+		translation([220,-112,552]); cylinder(6,24); end();
+		
+		// Fenetre toit
+		translation([32,-136,352]);
+			difference();
+				union();
+					box(128,72,128);
+					difference();
+						translation([63,36,128]); rotation([45,0,0]); box(130,64,64, true); end(); end();
+						translation([-3,-14,0]); box(128,100,128); end();
+					end();
+				end();
+				translation([-1,8,56]); box(130,56,64); end();
+				translation([6.5,7.5,55.5]); box(3,57,65); end();
+				translation([-30,-14,0]); rotation([0,45,0]); box(300,100,300); end(); end();
+			end();
+			translation([7,8,56]); transparency(0.84, 1.35); box(2,56,64); end(); end();
+		end();
+		translation([32,120,352]);
+			difference();
+				union();
+					box(128,72,128);
+					difference();
+						translation([63,36,128]); rotation([45,0,0]); box(130,64,64, true); end(); end();
+						translation([-3,-14,0]); box(128,100,128); end();
+					end();
+				end();
+				translation([-1,8,56]); box(130,56,64); end();
+				translation([6.5,7.5,55.5]); box(3,57,65); end();
+				translation([-30,-14,0]); rotation([0,45,0]); box(300,100,300); end(); end();
+			end();
+			translation([7,8,56]); transparency(0.84, 1.35); box(2,56,64); end(); end();
+		end();
+	end();
+end();
