@@ -76,29 +76,29 @@ namespace RT
     Scene();
     ~Scene();
 
-    void					clear();	// Clear scene
+    void				clear();	// Clear scene
 
     // Getter and setter for all parameters
-    sf::Image &					image() { return _image; };
-    sf::Image &					hud() { return _hud; };
-    Math::Matrix<4, 4> &			camera() { return _camera; };
-    RT::AbstractCsgTree * &			csg() { return _csg; };
-    RT::AbstractLightTree * &			light() { return _light; };
-    RT::Scene::Config &				config() { return _config; };
-    RT::Scene::AntiAliasing &			antialiasing() { return _antialiasing; };
-    RT::Scene::DephOfField &			dof() { return _dof; };
-    RT::Scene::VirtualReality &			vr() { return _vr; };
+    sf::Image &				image() { return _image; };
+    sf::Image &				hud() { return _hud; };
+    Math::Matrix<4, 4> &		camera() { return _camera; };
+    RT::AbstractCsgTree * &		csg() { return _csg; };
+    RT::AbstractLightTree * &		light() { return _light; };
+    RT::Scene::Config &			config() { return _config; };
+    RT::Scene::AntiAliasing &		antialiasing() { return _antialiasing; };
+    RT::Scene::DephOfField &		dof() { return _dof; };
+    RT::Scene::VirtualReality &		vr() { return _vr; };
 
     // Const getter for all parameters
-    sf::Image const &				image() const { return _image; };
-    sf::Image const &				hud() const { return _hud; };
-    Math::Matrix<4, 4> const &			camera() const { return _camera; };
-    RT::AbstractCsgTree const * const &		csg() const { return _csg; };
-    RT::AbstractLightTree const * const &	light() const { return _light; };
-    RT::Scene::Config const &			config() const { return _config; };
-    RT::Scene::AntiAliasing const &		antialiasing() const { return _antialiasing; };
-    RT::Scene::DephOfField const &		dof() const { return _dof; };
-    RT::Scene::VirtualReality const &		vr() const { return _vr; };
+    sf::Image const &			image() const { return _image; };
+    sf::Image const &			hud() const { return _hud; };
+    Math::Matrix<4, 4> const &		camera() const { return _camera; };
+    RT::AbstractCsgTree const *		csg() const { return _csg; };
+    RT::AbstractLightTree const *	light() const { return _light; };
+    RT::Scene::Config const &		config() const { return _config; };
+    RT::Scene::AntiAliasing const &	antialiasing() const { return _antialiasing; };
+    RT::Scene::DephOfField const &	dof() const { return _dof; };
+    RT::Scene::VirtualReality const &	vr() const { return _vr; };
   };
 };
 

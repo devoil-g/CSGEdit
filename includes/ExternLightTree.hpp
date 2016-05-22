@@ -16,10 +16,10 @@ namespace RT
   class ExternLightTree : public RT::AbstractLightTree
   {
   private:
-    RT::AbstractLightTree const * const &	_tree;	// Pointer to a light tree
+    RT::AbstractLightTree const * const *	_tree;	// Pointer to a light tree
 
   public:
-    ExternLightTree(RT::AbstractLightTree const * const &);
+    ExternLightTree(RT::AbstractLightTree const * const *);
     ~ExternLightTree();
 
     RT::Color	preview(Math::Matrix<4, 4> const &, RT::Scene const *, RT::Ray const &, RT::Intersection const &, unsigned int, unsigned int) const override;	// Return preview lighting for given intersection

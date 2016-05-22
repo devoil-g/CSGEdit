@@ -497,10 +497,9 @@ RT::Color		RT::RenderRaytracer::renderTransparency(RT::Ray const & ray, RT::Inte
     (ray.d().x() * ray.d().x() + ray.d().y() * ray.d().y() + ray.d().z() * ray.d().z()) * (1.f - refraction * refraction)
   );
 
-#ifdef _DEBUG
+  // Force a value in case of error
   if (result.empty())
-    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
-#endif
+    result.push_back(0.f);
 
   RT::Ray	r = RT::Ray(normal.p() - normal.d() * Math::Shift, ray.d() + normal.d() * result.front()).normalize();
   normal.d() *= -1.f;

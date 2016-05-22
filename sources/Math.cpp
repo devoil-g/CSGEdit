@@ -1,8 +1,5 @@
+#include <ctime>
 #include <random>
-
-#ifdef _DEBUG
-#include <stdexcept>
-#endif
 
 #include "Math.hpp"
 
@@ -149,7 +146,7 @@ unsigned int	Math::Random::_cursor = 0;
 void		Math::Random::initialize()
 {
   // Set random generator to timestamp
-  std::default_random_engine			generator;
+  std::default_random_engine			generator((unsigned long)std::time(nullptr));
   std::uniform_real_distribution<double>	distribution(0.f, 1.f);
 
   // Fill random table

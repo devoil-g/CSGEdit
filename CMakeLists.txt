@@ -140,7 +140,7 @@ ADD_EXECUTABLE(CSGEdit ${SAMPLE_SRCS} ${SAMPLE_HDRS})
 TARGET_LINK_LIBRARIES(CSGEdit ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${CMAKE_DL_LIBS})
 
 IF (UNIX)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Ofast -Wall -Wextra")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Ofast -Wall -Wextra -fpermissive") # TODO: solve problems accepted by fpermissive
 ELSE (UNIX)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc /bigobj")
 ENDIF(UNIX)

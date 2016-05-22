@@ -255,8 +255,8 @@ RT::Scene	RT::Parser::parse(std::string const & path)
 
 void	RT::Parser::import(std::string const & path)
 {
-  _scope.top().first->push(new RT::ExternCsgTree(RT::SceneLibrary::Instance().get(directory(_files.top()).append(path))->csg()));
-  _scope.top().second->push(new RT::ExternLightTree(RT::SceneLibrary::Instance().get(directory(_files.top()).append(path))->light()));
+  _scope.top().first->push(new RT::ExternCsgTree(&RT::SceneLibrary::Instance().get(directory(_files.top()).append(path))->csg()));
+  _scope.top().second->push(new RT::ExternLightTree(&RT::SceneLibrary::Instance().get(directory(_files.top()).append(path))->light()));
 }
 
 void	RT::Parser::include(std::string const & path)
