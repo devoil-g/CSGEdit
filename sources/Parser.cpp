@@ -541,7 +541,7 @@ void	RT::Parser::primitiveTriangle(std::vector<double> const & p0, std::vector<d
   if (p0.size() != 3 || p1.size() != 3 || p2.size() != 3)
     throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 
-  primitivePush(new RT::TriangleCsgLeaf({ p0[0], p0[1], p0[2] }, { p1[0], p1[1], p1[2] }, { p2[0], p2[1], p2[2] }));
+  primitivePush(new RT::TriangleCsgLeaf(std::tuple<double, double, double>(p0[0], p0[1], p0[2]), std::tuple<double, double, double>(p1[0], p1[1], p1[2]), std::tuple<double, double, double>(p2[0], p2[1], p2[2])));
 }
 
 void	RT::Parser::primitivePush(RT::AbstractCsgTree * tree)

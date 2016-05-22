@@ -55,8 +55,8 @@ Math::Vector<4>	RT::TriangleCsgLeaf::normal(Math::Vector<4> const &) const
 std::vector<std::tuple<double, double, double>>	RT::TriangleCsgLeaf::points() const
 {
   return{
-    { std::get<0>(_p0), std::get<1>(_p0), std::get<2>(_p0) },
-    { std::get<0>(_p1), std::get<1>(_p1), std::get<2>(_p1) },
-    { std::get<0>(_p2), std::get<1>(_p2), std::get<2>(_p2) }
+    std::tuple<double, double, double>(std::get<0>(_p0), std::get<1>(_p0), std::get<2>(_p0)),
+    std::tuple<double, double, double>(std::get<0>(_p1), std::get<1>(_p1), std::get<2>(_p1)),
+    std::tuple<double, double, double>(std::get<0>(_p2), std::get<1>(_p2), std::get<2>(_p2))
   };
 }
