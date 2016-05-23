@@ -1,16 +1,27 @@
-#ifndef _RENDER_RAYTRACER_HPP_
-#define _RENDER_RAYTRACER_HPP_
+#ifndef _BASIC_RENDERER_HPP_
+#define _BASIC_RENDERER_HPP_
 
 #include <vector>
 
-#include "AbstractRaytracer.hpp"
+#include "AbstractRenderer.hpp"
 #include "Color.hpp"
 #include "Intersection.hpp"
 #include "Scene.hpp"
 
 namespace RT
 {
-  class RenderRaytracer : public RT::AbstractRaytracer
+  namespace Config
+  {
+    namespace Renderer
+    {
+      namespace Basic
+      {
+	unsigned int const	MaxRecursivite(3);	// Maximum of 'bounce' on a mirror
+      };
+    };
+  };
+
+  class BasicRenderer : public RT::AbstractRenderer
   {
   private:
     enum Pass
@@ -22,8 +33,8 @@ namespace RT
     std::vector<unsigned int>	_grid;		// Progression of scene to render
     std::vector<unsigned int>	_antialiasing;	// Post anti-alistd::asing level
     RT::Scene *			_scene;		// Scene to render
-    unsigned int		_rayTotal;	// Total number of ray to render
-    unsigned int		_rayRendered;	// Number of ray rendered
+    unsigned long		_rayTotal;	// Total number of ray to render
+    unsigned long		_rayRendered;	// Number of ray rendered
     Pass			_status;	// Status of pass (first or second)
 
     
@@ -37,15 +48,14 @@ namespace RT
     RT::Color	renderRay(RT::Ray const &, unsigned int = 0) const;					// Render a ray with CSG tree
     RT::Color	renderReflection(RT::Ray const &, RT::Intersection const &, unsigned int) const;	// Render reflection of ray  
     RT::Color	renderTransparency(RT::Ray const &, RT::Intersection const &, unsigned int) const;	// Render transparency
-    RT::Color	renderLightDirect(RT::Ray const &, RT::Intersection const &, unsigned int) const;	// Render direct light of an intersection
-    RT::Color	renderLightIndirect(RT::Ray const &, RT::Intersection const &, unsigned int) const;	// Render indirect light of an intersection
-
+    RT::Color	renderLight(RT::Ray const &, RT::Intersection const &, unsigned int) const;		// Render direct light of an intersection
+    
   public:
-    RenderRaytracer();
-    ~RenderRaytracer();
+    BasicRenderer();
+    ~BasicRenderer();
 
     void	load(RT::Scene *) override;	// Load a new scene
-    double	progress() const override;	// Return current progress (0-1)
+    double	progress() override;		// Return current progress (0-1)
   };
 };
 

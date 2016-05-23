@@ -1,30 +1,30 @@
 #include <iostream>
 #include <SFML/System/Clock.hpp>
 
-#include "PreviewRaytracer.hpp"
+#include "PreviewRenderer.hpp"
 
-RT::PreviewRaytracer::PreviewRaytracer()
+RT::PreviewRenderer::PreviewRenderer()
   : _grid(), _scene(nullptr)
 {}
 
-RT::PreviewRaytracer::~PreviewRaytracer()
+RT::PreviewRenderer::~PreviewRenderer()
 {
   stop();
 }
 
-void				RT::PreviewRaytracer::load(RT::Scene * scene)
+void				RT::PreviewRenderer::load(RT::Scene * scene)
 {
   stop();
 
   _scene = scene;
 
   // Reset zone grid
-  _grid.resize((_scene->image().getSize().x / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().x % RT::Config::Raytracer::BlockSize ? 1 : 0)) * (_scene->image().getSize().y / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().y % RT::Config::Raytracer::BlockSize ? 1 : 0)));
+  _grid.resize((_scene->image().getSize().x / RT::Config::Renderer::BlockSize + (_scene->image().getSize().x % RT::Config::Renderer::BlockSize ? 1 : 0)) * (_scene->image().getSize().y / RT::Config::Renderer::BlockSize + (_scene->image().getSize().y % RT::Config::Renderer::BlockSize ? 1 : 0)));
   for (unsigned int i = 0; i < _grid.size(); i++)
-    _grid[i] = RT::Config::Raytracer::BlockSize;
+    _grid[i] = RT::Config::Renderer::BlockSize;
 }
 
-void				RT::PreviewRaytracer::begin()
+void				RT::PreviewRenderer::begin()
 {
   // If nothing to render, cancel
   if (_grid.size() == 0)
@@ -35,7 +35,7 @@ void				RT::PreviewRaytracer::begin()
 
   // Launch rendering threads
   for (unsigned int i = 0; i < _scene->config().threadNumber; i++)
-    threads.push_back(std::thread((void(RT::PreviewRaytracer::*)())(&RT::PreviewRaytracer::preview), this));
+    threads.push_back(std::thread((void(RT::PreviewRenderer::*)())(&RT::PreviewRenderer::preview), this));
 
   // Wait for rendering threads to finish
   for (std::thread & it : threads)
@@ -45,7 +45,7 @@ void				RT::PreviewRaytracer::begin()
     std::cout << "[Preview] Rendered in " << clock.getElapsedTime().asMilliseconds() / 1000 << "." << clock.getElapsedTime().asMicroseconds() % 1000 << "s." << std::endl;
 }
 
-void				RT::PreviewRaytracer::preview()
+void				RT::PreviewRenderer::preview()
 {
   while (active())
   {
@@ -53,7 +53,7 @@ void				RT::PreviewRaytracer::preview()
     unsigned int		z = (unsigned int)_grid.size();
 
     // Find a zone to render
-    for (unsigned int a = RT::Config::Raytracer::BlockSize; a > 0 && z == _grid.size(); a /= 2)
+    for (unsigned int a = RT::Config::Renderer::BlockSize; a > 0 && z == _grid.size(); a /= 2)
       for (unsigned int b = 0; b < _grid.size() && z == _grid.size(); b++)
 	if (_grid[(r + b) % _grid.size()] == a)
 	  z = (r + b) % _grid.size();
@@ -66,21 +66,21 @@ void				RT::PreviewRaytracer::preview()
   }
 }
 
-void				RT::PreviewRaytracer::preview(unsigned int zone)
+void				RT::PreviewRenderer::preview(unsigned int zone)
 {
   unsigned int			size = _grid[zone];
 
   // Lock grid zone
-  _grid[zone] = RT::Config::Raytracer::BlockSize + 1;
+  _grid[zone] = RT::Config::Renderer::BlockSize + 1;
 
   // Calcul zone coordinates (x, y)
-  unsigned int			x = zone % (_scene->image().getSize().x / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().x % RT::Config::Raytracer::BlockSize ? 1 : 0)) * RT::Config::Raytracer::BlockSize;
-  unsigned int			y = zone / (_scene->image().getSize().x / RT::Config::Raytracer::BlockSize + (_scene->image().getSize().x % RT::Config::Raytracer::BlockSize ? 1 : 0)) * RT::Config::Raytracer::BlockSize;
+  unsigned int			x = zone % (_scene->image().getSize().x / RT::Config::Renderer::BlockSize + (_scene->image().getSize().x % RT::Config::Renderer::BlockSize ? 1 : 0)) * RT::Config::Renderer::BlockSize;
+  unsigned int			y = zone / (_scene->image().getSize().x / RT::Config::Renderer::BlockSize + (_scene->image().getSize().x % RT::Config::Renderer::BlockSize ? 1 : 0)) * RT::Config::Renderer::BlockSize;
 
   // Render zone
-  for (unsigned int a = 0; a < RT::Config::Raytracer::BlockSize && active(); a += size)
-    for (unsigned int b = 0; b < RT::Config::Raytracer::BlockSize && active(); b += size)
-      if ((size == RT::Config::Raytracer::BlockSize || a % (size * 2) != 0 || b % (size * 2) != 0) && x + a < _scene->image().getSize().x && y + b < _scene->image().getSize().y)
+  for (unsigned int a = 0; a < RT::Config::Renderer::BlockSize && active(); a += size)
+    for (unsigned int b = 0; b < RT::Config::Renderer::BlockSize && active(); b += size)
+      if ((size == RT::Config::Renderer::BlockSize || a % (size * 2) != 0 || b % (size * 2) != 0) && x + a < _scene->image().getSize().x && y + b < _scene->image().getSize().y)
       {
 	RT::Color clr = preview(x + a, y + b);
 
@@ -96,7 +96,7 @@ void				RT::PreviewRaytracer::preview(unsigned int zone)
     _grid[zone] = size;
 }
 
-RT::Color			RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
+RT::Color			RT::PreviewRenderer::preview(unsigned int x, unsigned int y) const
 {
   RT::Ray			ray;
 
@@ -161,7 +161,7 @@ RT::Color			RT::PreviewRaytracer::preview(unsigned int x, unsigned int y) const
     return RT::Color(0.f);
 }
 
-double				RT::PreviewRaytracer::progress() const
+double				RT::PreviewRenderer::progress()
 {
   for (unsigned int i : _grid)
     if (i != 0)

@@ -1,0 +1,22 @@
+// Camera set-up
+camera([-750, 0, 96], [0, 7, 0], [0.92,1,1]);
+resolution(512, 384);
+antialiasing(0,0);
+
+// Lights
+translation([0,0,208]); point_light([127]); end();
+occlusion_light([128]);
+
+translation([+256,0,0]); color([192,192,192]); box(8,512,512, true); end(); end();
+translation([-1024,0,0]); box(8,512,512, true); end();
+
+translation([0,-256,0]); color([128,128,192]); box(4096,8,512, true); end(); end();
+translation([0,+256,0]); color([192,128,128]); box(4096,8,512, true); end(); end();
+
+translation([0,0,-224]); color([192,192,192]); box(4096,512,8, true); end(); end();
+translation([0,0,+224]); color([192,192,192]); box(4096,512,8, true); end(); end();
+
+translation([+124,+124,-126]); sphere(92); end();
+translation([-28,-124,-126]); sphere(92); end();
+
+translation([-64,0,+224]); indirect([255*2, 255*1.8, 255*1.6]); cylinder(160,16, true); end(); end();

@@ -4,7 +4,7 @@
 #include <SFML/System/Time.hpp>
 
 #include "AbstractState.hpp"
-#include "RenderRaytracer.hpp"
+#include "AbstractRenderer.hpp"
 #include "Scene.hpp"
 
 namespace RT
@@ -20,17 +20,17 @@ namespace RT
   class RenderState : public RT::AbstractState
   {
   private:
-    sf::Time		_elapsed;	// Elapsed time to calculate remaining time
-    RT::RenderRaytracer	_render;	// Pointer to raytracer
-    RT::Scene *		_scene;		// Current scene
-    double		_wait;		// Time before progress update
+    sf::Time			_elapsed;	// Elapsed time to calculate remaining time
+    RT::AbstractRenderer *	_renderer;	// Basic renderer
+    RT::Scene *			_scene;		// Current scene
+    double			_wait;		// Time before progress update
 
   public:
-    RenderState(RT::Scene *);
+    RenderState(RT::AbstractRenderer *, RT::Scene *);
     ~RenderState();
 
-    bool  		update(sf::Time) override;	// Update progress in rendering
-    void  		draw() override;		// Display image
+    bool			update(sf::Time) override;	// Update progress in rendering
+    void			draw() override;		// Display image
   };
 };
 

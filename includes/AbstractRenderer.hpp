@@ -1,5 +1,5 @@
-#ifndef _ABSTRACT_RAYTRACER_HPP_
-#define _ABSTRACT_RAYTRACER_HPP_
+#ifndef _ABSTRACT_RENDERER_HPP_
+#define _ABSTRACT_RENDERER_HPP_
 
 #include <mutex>
 #include <thread>
@@ -10,14 +10,13 @@ namespace RT
 {
   namespace Config
   {
-    namespace Raytracer
+    namespace Renderer
     {
       unsigned int const	BlockSize(16);		// Size of a block of pixel rendered by a thread
-      unsigned int const	MaxRecursivite(3);	// Maximum of 'bounce' on a mirror
     };
   };
 
-  class AbstractRaytracer
+  class AbstractRenderer
   {
   private:
     std::recursive_mutex	_lock;			// Lock for start & stop
@@ -30,14 +29,14 @@ namespace RT
     bool			active() const;		// Return active status
 
   public:
-    AbstractRaytracer();
-    virtual ~AbstractRaytracer();
+    AbstractRenderer();
+    virtual ~AbstractRenderer();
 
     void			start();		// Start rendering threads
     void			stop();			// Stop rendering threads
 
     virtual void		load(RT::Scene *) = 0;	// Load a new scene
-    virtual double		progress() const = 0;	// Return current progress (0-1)
+    virtual double		progress() = 0;		// Return current progress (0-1)
   };
 };
 

@@ -1,6 +1,7 @@
 // Camera set-up
 camera([-512, 0, 384], [0, 33, 0], [1,1,1]);
 resolution(960, 540);
+resolution(320, 180);
 antialiasing(0,2);
 
 def	ground_block(r, h)
@@ -13,11 +14,11 @@ def	ground_block(r, h)
 }
 
 // Lights
-rotation([0, 70, 0]); rotation([0, 0, -20]); directional_light([255], 4.2); end(); end();
+//rotation([0, 70, 0]); rotation([0, 0, -20]); directional_light([255], 4.2); end(); end();
+translation([0,0,50000]); point_light([255]); end();
 occlusion_light([255], 32);
 
 direct([255 * 0.4],[255 * 0.6],[255 * 0.2], 8.4);
-indirect([0],[0],[0]);
 
 // Ground
 // translation([0,0,-1-8]); box(360,560,16, true); end();
@@ -326,5 +327,4 @@ translation([+42,+252 * cos(30.0 / 180.0 * pi),0]); bounding();
 	end(); end(); end();
 end(); end();
 
-end();
 end();

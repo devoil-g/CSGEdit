@@ -28,7 +28,7 @@ RT::Color		RT::OcclusionLightLeaf::render(Math::Matrix<4, 4> const &, RT::Scene 
 
   // If quality to basic
   if (quality <= 1 || _radius == 0.f)
-    return intersection.material.color * intersection.material.direct.ambient * (1.f - intersection.material.transparency.intensity) * (1.f - intersection.material.reflection.intensity);
+    return _color * intersection.material.color * intersection.material.direct.ambient * (1.f - intersection.material.transparency.intensity) * (1.f - intersection.material.reflection.intensity);
 
   // Inverse normal if necessary
   Math::Vector<4>	n = intersection.normal.d();

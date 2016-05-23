@@ -7,7 +7,6 @@ antialiasing(0,2);
 rotation([0, 60, 50]); directional_light([255]); end();
 occlusion_light([255], 64);
 
-indirect([0],[0],[0]);
 direct([0.4 * 255],[0.6 * 255],[0.2 * 255], 8.4);
 	box(256,256,1, true);
 	
@@ -17,5 +16,4 @@ direct([0.4 * 255],[0.6 * 255],[0.2 * 255], 8.4);
 			maxdeph_light(0); import("menger.scn"); end();
 		end();
 	end(); end(); end(); end();
-end();
 end();

@@ -48,7 +48,7 @@ namespace RT
     void	scopeMaterial(std::string const &);								// Push a material in scope
     void	scopeColor(RT::Color const &);									// Push a color material in scope
     void	scopeDirect(RT::Color const &, RT::Color const &, RT::Color const &, double, unsigned int);	// Push a direct light material in scope
-    void	scopeIndirect(RT::Color const &, RT::Color const &, RT::Color const &, double, unsigned int);	// Push an indirect light material in scope
+    void	scopeIndirect(RT::Color const &, unsigned int);							// Push an indirect light material in scope
     void	scopeTransparency(double, double, double, unsigned int);					// Push a transparency material in scope
     void	scopeReflection(double, double, unsigned int);							// Push a reflection material in scope
     // Scope others

@@ -41,7 +41,7 @@ namespace RT
 	throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
 #endif
 
-      return RT::Ray::scalaire(A, B) / std::sqrt((A.x() * A.x() + A.y() * A.y() + A.z() * A.z()) * (B.x() * B.x() + B.y() * B.y() + B.z() * B.z()));
+      return RT::Ray::scalar(A, B) / std::sqrt((A.x() * A.x() + A.y() * A.y() + A.z() * A.z()) * (B.x() * B.x() + B.y() * B.y() + B.z() * B.z()));
     }
 
     static inline double		angle(Math::Vector<4> const & A, Math::Vector<4> const & B)	// Calculate angle (radian) between two rays
@@ -49,12 +49,12 @@ namespace RT
       return std::acos(RT::Ray::cos(A, B));
     }
 
-    static inline double		scalaire(Math::Vector<4> const & A, Math::Vector<4> const & B)	// Apply scalaire to rays
+    static inline double		scalar(Math::Vector<4> const & A, Math::Vector<4> const & B)	// Apply scalar product to rays
     {
       return A.x() * B.x() + A.y() * B.y() + A.z() * B.z();
     }
 
-    static inline Math::Vector<4>	vectoriel(Math::Vector<4> const & A, Math::Vector<4> const & B)	// Apply vectoriel to rays
+    static inline Math::Vector<4>	cross(Math::Vector<4> const & A, Math::Vector<4> const & B)	// Apply vectoriel to rays
     {
       return Math::Vector<4>(A.y() * B.z() - A.z() * B.y(), A.z() * B.x() - A.x() * B.z(), A.x() * B.y() - A.y() * B.x(), (double)0.f);
     }

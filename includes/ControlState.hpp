@@ -5,7 +5,7 @@
 
 #include "AbstractState.hpp"
 #include "Matrix.hpp"
-#include "PreviewRaytracer.hpp"
+#include "PreviewRenderer.hpp"
 #include "Scene.hpp"
 
 namespace RT
@@ -13,17 +13,17 @@ namespace RT
   class ControlState : public RT::AbstractState
   {
   private:
-    RT::PreviewRaytracer	_preview;	// Raytracer for preview
-    RT::Scene *			_scene;		// Current scene
-    std::string			_file;		// Current file
-    Math::Matrix<4, 4>		_camera;	// Camera applied to current scene
+    RT::PreviewRenderer	_preview;	// Renderer for preview
+    RT::Scene *		_scene;		// Current scene
+    std::string		_file;		// Current file
+    Math::Matrix<4, 4>	_camera;	// Camera applied to current scene
 
   public:
     ControlState(std::string const &);
     ~ControlState();
 
-    bool			update(sf::Time) override;	// Wait for input or scene change
-    void			draw() override;		// Display raytracer image
+    bool		update(sf::Time) override;	// Wait for input or scene change
+    void		draw() override;		// Display raytracer image
   };
 };
 

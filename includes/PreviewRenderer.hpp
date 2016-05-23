@@ -1,15 +1,15 @@
-#ifndef _PREVIEW_RAYTRACER_HPP_
-#define _PREVIEW_RAYTRACER_HPP_
+#ifndef _PREVIEW_RENDERER_HPP_
+#define _PREVIEW_RENDERER_HPP_
 
 #include <vector>
 
-#include "AbstractRaytracer.hpp"
+#include "AbstractRenderer.hpp"
 #include "Color.hpp"
 #include "Scene.hpp"
 
 namespace RT
 {
-  class PreviewRaytracer : public RT::AbstractRaytracer
+  class PreviewRenderer : public RT::AbstractRenderer
   {
   private:
     std::vector<unsigned int>	_grid;	// Progression of scene to render
@@ -21,11 +21,11 @@ namespace RT
     RT::Color			preview(unsigned int, unsigned int) const;	// Render a pixel
 
   public:
-    PreviewRaytracer();
-    ~PreviewRaytracer();
+    PreviewRenderer();
+    ~PreviewRenderer();
 
     void			load(RT::Scene *) override;	// Load a new scene
-    double			progress() const override;	// Return current progress (0-1)
+    double			progress() override;		// Return current progress (0-1)
   };
 };
 

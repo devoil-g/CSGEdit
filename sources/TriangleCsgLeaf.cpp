@@ -13,7 +13,7 @@ RT::TriangleCsgLeaf::TriangleCsgLeaf(std::tuple<double, double, double> const & 
   _v1.z() = std::get<2>(_p2) - std::get<2>(_p0);
 
   // Pre-compute normal
-  _normal = RT::Ray::vectoriel(_v0, _v1);
+  _normal = RT::Ray::cross(_v0, _v1);
 }
 
 RT::TriangleCsgLeaf::~TriangleCsgLeaf()
@@ -30,13 +30,13 @@ std::vector<double>	RT::TriangleCsgLeaf::intersection(RT::Ray const & ray) const
 
   double		d = -(_normal.x() * ray.d().x() + _normal.y() * ray.d().y() + _normal.z() * ray.d().z());
 
-  Math::Vector<4>	vec1 = RT::Ray::vectoriel(v2, _v1);
+  Math::Vector<4>	vec1 = RT::Ray::cross(v2, _v1);
   double		a = -(vec1.x() * ray.d().x() + vec1.y() * ray.d().y() + vec1.z() * ray.d().z()) / d;
 
   if (a < 0.f || a > 1.f)
     return std::vector<double>();
 
-  Math::Vector<4>	vec2 = RT::Ray::vectoriel(_v0, v2);
+  Math::Vector<4>	vec2 = RT::Ray::cross(_v0, v2);
   double		b = -(vec2.x() * ray.d().x() + vec2.y() * ray.d().y() + vec2.z() * ray.d().z()) / d;
 
   // Push intersection if inside the triangle

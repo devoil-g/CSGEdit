@@ -1,19 +1,15 @@
-#include <stdexcept>
 #include <iostream>
 
-#include "RenderPauseState.hpp"
+#include "PauseState.hpp"
 #include "RenderState.hpp"
 #include "StateMachine.hpp"
 #include "Window.hpp"
 
-RT::RenderState::RenderState(RT::Scene * scene)
-  : _elapsed(), _render(), _scene(scene), _wait(RT::Config::RenderState::Refresh)
+RT::RenderState::RenderState(RT::AbstractRenderer * renderer, RT::Scene * scene)
+  : _elapsed(), _renderer(renderer), _scene(scene), _wait(RT::Config::RenderState::Refresh)
 {
-  if (_scene == nullptr)
-    throw std::runtime_error((std::string(__FILE__) + ": l." + std::to_string(__LINE__)).c_str());
-
-  _render.load(scene);
-  _render.start();
+  _renderer->load(scene);
+  _renderer->start();
 
   RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Normal, 0.f);
 }
@@ -29,13 +25,13 @@ RT::RenderState::~RenderState()
 bool			RT::RenderState::update(sf::Time elapsed)
 {
   // Get progress
-  double		progress = _render.progress();
+  double		progress = _renderer->progress();
   _elapsed += elapsed;
 
   // If rendering completed, stop, save image and pop state, getting back to control state
   if (progress == 1.f)
   {
-    _render.stop();
+    _renderer->stop();
     std::cout << "[Render] Completed in " << (int)_elapsed.asSeconds() / 3600 << "h " << (int)_elapsed.asSeconds() % 3600 / 60 << "m " << (int)_elapsed.asSeconds() % 60 << "s.        " << std::endl;
 
     // Save image
@@ -49,7 +45,9 @@ bool			RT::RenderState::update(sf::Time elapsed)
   // If ESC, interrupt rendering, getting back to control state
   if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::Escape))
   {
+    _renderer->stop();
     std::cout << "[Render] Interrupted at " << (int)(progress * 100.f) << "." << ((int)(progress * 1000.f)) % 10 << " % (" << (int)_elapsed.asSeconds() / 3600 << "h " << (int)_elapsed.asSeconds() % 3600 / 60 << "m " << (int)_elapsed.asSeconds() % 60 << "s elapsed).    " << std::endl;
+
     RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Error, progress);
     RT::StateMachine::Instance().pop();
     return false;
@@ -58,7 +56,7 @@ bool			RT::RenderState::update(sf::Time elapsed)
   // Get to pause state
   if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::P))
   {
-    RT::StateMachine::Instance().push(new RT::RenderPauseState(_render, _scene, _elapsed));
+    RT::StateMachine::Instance().push(new RT::PauseState(_renderer, _scene, _elapsed));
     return false;
   }
 

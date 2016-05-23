@@ -1,6 +1,8 @@
 #include <stdexcept>
 #include <iostream>
 
+#include "AdvancedRenderer.hpp"
+#include "BasicRenderer.hpp"
 #include "ControlState.hpp"
 #include "RenderState.hpp"
 #include "SceneLibrary.hpp"
@@ -205,11 +207,19 @@ bool	RT::ControlState::update(sf::Time)
 #endif
   }
 
-  // Launch render state
+  // Launch basic render state
   if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::Return))
   {
     _preview.stop();
-    RT::StateMachine::Instance().push(new RT::RenderState(_scene));
+    RT::StateMachine::Instance().push(new RT::RenderState(new RT::BasicRenderer(), _scene));
+    return false;
+  }
+
+  // Launch advanced render state
+  if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::BackSpace))
+  {
+    _preview.stop();
+    RT::StateMachine::Instance().push(new RT::RenderState(new RT::AdvancedRenderer(), _scene));
     return false;
   }
 

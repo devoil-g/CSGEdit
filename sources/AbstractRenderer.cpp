@@ -1,20 +1,20 @@
-#include "AbstractRaytracer.hpp"
+#include "AbstractRenderer.hpp"
 
-RT::AbstractRaytracer::AbstractRaytracer()
+RT::AbstractRenderer::AbstractRenderer()
   : _lock(), _thread(nullptr), _active(false)
 {}
 
-RT::AbstractRaytracer::~AbstractRaytracer()
+RT::AbstractRenderer::~AbstractRenderer()
 {
   stop();
 }
 
-bool	RT::AbstractRaytracer::active() const
+bool	RT::AbstractRenderer::active() const
 {
   return _active;
 }
 
-void	RT::AbstractRaytracer::start()
+void	RT::AbstractRenderer::start()
 {
   _lock.lock();
 
@@ -23,12 +23,12 @@ void	RT::AbstractRaytracer::start()
 
   // Start new rendering thread
   _active = true;
-  _thread = new std::thread(&RT::AbstractRaytracer::begin, this);
+  _thread = new std::thread(&RT::AbstractRenderer::begin, this);
 
   _lock.unlock();
 }
 
-void	RT::AbstractRaytracer::stop()
+void	RT::AbstractRenderer::stop()
 {
   _lock.lock();
 

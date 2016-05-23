@@ -40,9 +40,10 @@ SET(SAMPLE_SRCS
 	./sources/OcclusionLightLeaf.cpp
 	./sources/PointLightLeaf.cpp
 	
-	./sources/AbstractRaytracer.cpp
-	./sources/PreviewRaytracer.cpp
-	./sources/RenderRaytracer.cpp
+	./sources/AbstractRenderer.cpp
+	./sources/AdvancedRenderer.cpp
+	./sources/BasicRenderer.cpp
+	./sources/PreviewRenderer.cpp
 	
 	./sources/Color.cpp
 	./sources/Intersection.cpp
@@ -62,7 +63,7 @@ SET(SAMPLE_SRCS
 	./sources/AbstractState.cpp
 	./sources/ControlState.cpp
 	./sources/RenderState.cpp
-	./sources/RenderPauseState.cpp
+	./sources/PauseState.cpp
 
 	./sources/main.cpp
 )
@@ -105,10 +106,11 @@ SET(SAMPLE_HDRS
 	./includes/OcclusionLightLeaf.hpp
 	./includes/PointLightLeaf.hpp
 	
-	./includes/AbstractRaytracer.hpp
-	./includes/PreviewRaytracer.hpp
-	./includes/RenderRaytracer.hpp
-	
+	./includes/AbstractRenderer.hpp
+	./includes/AdvancedRenderer.hpp
+	./includes/BasicRenderer.hpp
+	./includes/PreviewRenderer.hpp
+
 	./includes/Color.hpp
 	./includes/Intersection.hpp
 	./includes/Material.hpp
@@ -127,7 +129,7 @@ SET(SAMPLE_HDRS
 	./includes/AbstractState.hpp
 	./includes/ControlState.hpp
 	./includes/RenderState.hpp
-	./includes/RenderPauseState.hpp
+	./includes/PauseState.hpp
 )
 
 SET(SFML_STATIC_LIBRARIES TRUE)

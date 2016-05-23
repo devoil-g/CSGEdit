@@ -30,7 +30,7 @@ RT::Color		RT::PointLightLeaf::preview(Math::Matrix<4, 4> const & transformation
   RT::Ray		normal = transformation.inverse() * intersection.normal;
 
   // Calculate normal cosinus with light ray
-  double		diffuse = RT::Ray::cos(normal.d(), Math::Vector<4>(-1.f, 0.f, 0.f, 0.f));
+  double		diffuse = RT::Ray::cos(normal.d(), normal.p() * -1.f);
   if (diffuse < 0.f)
     return RT::Color(0.f);
 

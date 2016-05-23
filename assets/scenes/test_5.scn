@@ -8,8 +8,6 @@ translation([-256,-256,512]); rotation([0, 60, 45]); point_light([255], 25, 0, 1
 occlusion_light([255], 32);
 
 direct([255 * 0.4],[255 * 0.6],[255 * 0.2], 4);
-indirect([0],[0],[0]);
 	box(512,512,10, true)
 	translation([0,0,64+5]); mobius(128,56); end();
-end();
 end();
