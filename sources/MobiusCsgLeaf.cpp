@@ -50,3 +50,11 @@ Math::Vector<4>		RT::MobiusCsgLeaf::normal(Math::Vector<4> const & pt) const
 {
   return Math::Vector<4>(2.f * pt.x() * pt.y() - 2.f * _r1 * pt.z() - 4.f * pt.x() * pt.z(), -_r1 * _r1 + pt.x() * pt.x() + 3.f * pt.y() * pt.y() - 4.f * pt.y() * pt.z() + pt.z() * pt.z(), -2.f * _r1 * pt.x() - 2.f * pt.x() * pt.x() - 2.f * pt.y() * pt.y() + 2.f * pt.y() * pt.z(), 0.f);
 }
+
+size_t			RT::MobiusCsgLeaf::build(std::vector<RT::OpenCL::Node> & nodes, std::vector<RT::OpenCL::Primitive> &, Math::Matrix<4, 4> const &, RT::Material const &, unsigned int) const
+{
+  nodes.push_back(RT::OpenCL::Node());
+  nodes.back().type = RT::OpenCL::Node::Type::TypeEmpty;
+
+  return nodes.size() - 1;
+}

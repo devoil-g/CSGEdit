@@ -15,7 +15,8 @@ namespace RT
     TransformationCsgNode(Math::Matrix<4, 4> const &);
     ~TransformationCsgNode();
 
-    std::list<RT::Intersection>	render(RT::Ray const &, unsigned int) const override;	// Render sub-tree
+    std::list<RT::Intersection>	render(RT::Ray const &, unsigned int) const override;															// Render sub-tree
+    size_t			build(std::vector<RT::OpenCL::Node> &, std::vector<RT::OpenCL::Primitive> &, Math::Matrix<4, 4> const &, RT::Material const &, unsigned int = 0) const override;	// Build OpenCL data structure
 
     // Getter/setter of transformation matrix
     Math::Matrix<4, 4> &	transformation() { return _transformation; };

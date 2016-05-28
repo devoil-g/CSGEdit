@@ -59,7 +59,7 @@ void			RT::BasicRenderer::begin()
     it.join();
 
   // If first pass done, initiate second pass
-  if (_status == First)
+  if (_status == First && _grid.size() != 0)
   {
     // Check if the first pass has been completed
     for (unsigned int i : _grid)
@@ -69,6 +69,8 @@ void			RT::BasicRenderer::begin()
     // Begin second pass
     std::cout << "[Render] First pass completed, begining second pass." << std::endl;
     antialiasing();
+
+    // Re-lauch rendering
     begin();
   }
 }
@@ -267,7 +269,7 @@ RT::Color		RT::BasicRenderer::renderVirtualReality(RT::Ray const & ray) const
 {
   // If no offset between eyes, skip VR
   if (_scene->vr().offset == 0.f)
-    return renderDephOfField((_scene->camera() * ray).normalize());
+    return renderDephOfField(ray.normalize());
 
   RT::Ray		vr = ray;
   double		center;
@@ -301,7 +303,7 @@ RT::Color		RT::BasicRenderer::renderVirtualReality(RT::Ray const & ray) const
     vr.d().z() *= distortion;
   }
 
-  return renderDephOfField((_scene->camera() * vr).normalize());
+  return renderDephOfField(vr.normalize());
 }
 
 RT::Color		RT::BasicRenderer::renderDephOfField(RT::Ray const & ray) const
@@ -311,37 +313,24 @@ RT::Color		RT::BasicRenderer::renderDephOfField(RT::Ray const & ray) const
     return renderRay(ray);
 
   unsigned int		nb_ray = 0;
-  Math::Matrix<4, 4>	rot = Math::Matrix<4, 4>::rotation(Math::Random::rand(360.f), Math::Random::rand(360.f), Math::Random::rand(360.f));
-  RT::Ray		pt = Math::Matrix<4, 4>::translation(ray.d().x() * _scene->dof().focal, ray.d().y() * _scene->dof().focal, ray.d().z() * _scene->dof().focal) * ray;
   RT::Color		clr;
 
   // Generate multiples ray inside aperture to simulate deph of field
-  for (double a = Math::Random::rand(_scene->dof().aperture / _scene->dof().quality); a < _scene->dof().aperture; a += _scene->dof().aperture / _scene->dof().quality)
-    for (double b = Math::Random::rand(Math::Pi / (_scene->dof().quality * 2)) - Math::Pi / 2.f; b < Math::Pi / 2.f; b += Math::Pi / _scene->dof().quality)
+  for (double distance = Math::Random::rand(1.f / _scene->dof().quality); distance < 1.f; distance += 1.f / _scene->dof().quality)
+    for (double angle = Math::Random::rand(2.f * Math::Pi / ((int)(_scene->dof().quality * 2.f * distance) + 1.f)); angle < 2.f * Math::Pi; angle += 2.f * Math::Pi / ((int)(_scene->dof().quality * 2.f * distance) + 1.f))
     {
-      int	nb = (int)(std::cos(b) * _scene->dof().quality * 2.f * (a / _scene->dof().aperture));
-      if (nb > 0)
-	for (double c = Math::Random::rand(Math::Pi * 2.f / nb); c < Math::Pi * 2.f; c += Math::Pi * 2.f / nb)
-	{
-	  RT::Ray	deph;
+      RT::Ray	deph;
 
-	  // Calcul point position in aperture sphere
-	  deph.p().x() = std::sin(b) * a;
-	  deph.p().y() = std::cos(c) * std::cos(b) * a;
-	  deph.p().z() = std::sin(c) * std::cos(b) * a;
+      deph.p().x() = ray.p().x();
+      deph.p().y() = std::cos(angle) * distance * (_scene->dof().aperture / 2.f) + ray.p().y();
+      deph.p().z() = std::sin(angle) * distance * (_scene->dof().aperture / 2.f) + ray.p().z();
 
-	  // Randomly rotate point to smooth rendered image
-	  deph.p() = rot * deph.p();
+      deph.d() = ray.p() + ray.d() * _scene->dof().focal - deph.p();
 
-	  // Calculate ray
-	  deph.p() = deph.p() + ray.p();
-	  deph.d() = pt.p() - deph.p();
+      // Sum rendered colors
+      clr += renderRay(deph.normalize());
 
-	  // Sum rendered colors
-	  clr += renderRay(deph.normalize());
-
-	  nb_ray++;
-	}
+      nb_ray++;
     }
 
   // Return average color
@@ -353,8 +342,10 @@ RT::Color		RT::BasicRenderer::renderRay(RT::Ray const & ray, unsigned int recurs
   if (recursivite > RT::Config::Renderer::Basic::MaxRecursivite)
     return RT::Color(0.f);
 
+  RT::Ray		r = (_scene->camera() * ray).normalize();
+
   // Render intersections list with CSG tree
-  std::list<RT::Intersection>	intersect = _scene->csg()->render(ray);
+  std::list<RT::Intersection>	intersect = _scene->csg()->render(r);
 
   // Drop intersection behind camera
   while (!intersect.empty() && intersect.front().distance < 0.f)
@@ -362,9 +353,9 @@ RT::Color		RT::BasicRenderer::renderRay(RT::Ray const & ray, unsigned int recurs
 
   // Calculate transparency, reflection and light
   if (!intersect.empty())
-    return renderReflection(ray, intersect.front(), recursivite)
-    + renderTransparency(ray, intersect.front(), recursivite)
-    + renderLight(ray, intersect.front(), recursivite);
+    return renderReflection(r, intersect.front(), recursivite)
+    + renderTransparency(r, intersect.front(), recursivite)
+    + renderLight(r, intersect.front(), recursivite);
   // If no intersection, return background color (black)
   else
     return RT::Color(0.f);

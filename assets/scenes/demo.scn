@@ -1,7 +1,6 @@
 // Camera set-up
 camera([-512, 0, 384], [0, 33, 0], [1,1,1]);
 resolution(960, 540);
-resolution(320, 180);
 antialiasing(0,2);
 
 def	ground_block(r, h)

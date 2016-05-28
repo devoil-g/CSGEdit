@@ -4,6 +4,7 @@
 #include "AdvancedRenderer.hpp"
 #include "BasicRenderer.hpp"
 #include "ControlState.hpp"
+#include "OpenCLRenderer.hpp"
 #include "RenderState.hpp"
 #include "SceneLibrary.hpp"
 #include "StateMachine.hpp"
@@ -220,6 +221,18 @@ bool	RT::ControlState::update(sf::Time)
   {
     _preview.stop();
     RT::StateMachine::Instance().push(new RT::RenderState(new RT::AdvancedRenderer(), _scene));
+    return false;
+  }
+
+  // Launch OpenCL render state
+  if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::RShift))
+  {
+    _preview.stop();
+
+    // Initialize OpenCL
+    try { RT::StateMachine::Instance().push(new RT::RenderState(new RT::OpenCLRenderer(), _scene)); }
+    catch (std::exception) {}
+
     return false;
   }
 

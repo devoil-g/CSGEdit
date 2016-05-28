@@ -21,3 +21,12 @@ Math::Vector<4>		RT::SphereCsgLeaf::normal(Math::Vector<4> const & pt) const
 {
   return pt;
 }
+
+size_t			RT::SphereCsgLeaf::build(std::vector<RT::OpenCL::Node> & nodes, std::vector<RT::OpenCL::Primitive> & primitives, Math::Matrix<4, 4> const & transformation, RT::Material const & material, unsigned int deph) const
+{
+  size_t		node = RT::AbstractCsgLeaf::build(nodes, primitives, transformation * Math::Matrix<4, 4>::scale(_r), material, deph);
+
+  primitives.back().type = RT::OpenCL::Primitive::Type::PrimitiveSphere;
+
+  return node;
+}

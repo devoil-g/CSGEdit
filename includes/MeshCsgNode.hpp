@@ -49,7 +49,8 @@ namespace RT
     MeshCsgNode(std::string const &);
     ~MeshCsgNode();
 
-    std::list<RT::Intersection>	render(RT::Ray const &, unsigned int) const override;	// Render sub-tree
+    std::list<RT::Intersection>	render(RT::Ray const &, unsigned int) const override;															// Render sub-tree
+    size_t			build(std::vector<RT::OpenCL::Node> &, std::vector<RT::OpenCL::Primitive> &, Math::Matrix<4, 4> const &, RT::Material const &, unsigned int = 0) const override;	// Build OpenCL data structure
 
     void	push(RT::AbstractCsgTree *) override;	// Push a triangle in mesh
     static bool	extension(std::string const &);		// Return true if extension supported

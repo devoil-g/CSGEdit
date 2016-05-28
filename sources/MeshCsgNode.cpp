@@ -237,3 +237,22 @@ bool				RT::MeshCsgNode::BoundingSphere::push(std::tuple<double, double, double>
 
   return true;
 }
+
+size_t				RT::MeshCsgNode::build(std::vector<RT::OpenCL::Node> & nodes, std::vector<RT::OpenCL::Primitive> & primitives, Math::Matrix<4, 4> const & transformation, RT::Material const & material, unsigned int deph) const
+{
+  size_t			id = children().front()->build(nodes, primitives, transformation, material, deph);
+
+  nodes.push_back(RT::OpenCL::Node());
+  nodes.back().type = RT::OpenCL::Node::Type::TypePrimitive;
+  nodes.back().data.primitive.index = (int)id;
+
+  size_t			node = nodes.size() - 1;
+
+  for (std::list<RT::AbstractCsgTree *>::const_iterator it = std::next(children().begin()); it != children().end(); it++)
+  {
+    primitives[id].data.triangle.index = (int)(*it)->build(nodes, primitives, transformation, material, deph);
+    id = (size_t)primitives[id].data.triangle.index;
+  }
+
+  return node;
+}

@@ -40,9 +40,10 @@ namespace RT
 #endif
       << "   [R]:                    Reload current file" << std::endl
       << "   [C]:                    Reset camera to initial position" << std::endl
-      << "   [P]:                    Restart preview rendering / pause rendering" << std::endl
+      << "   [P]:                    Force preview rendering / pause rendering" << std::endl
       << "   [Esc]:                  Quit / Interrupt rendering" << std::endl
-      << "   [Return]:               Start rendering" << std::endl
+      << "   [Return]:               Start basic rendering" << std::endl
+      << "   [Backspace]:            Start advanced rendering" << std::endl
       << std::endl
       << "  Camera control:" << std::endl
       << "   [Left mouse]:           Rotate camera" << std::endl
@@ -53,7 +54,7 @@ namespace RT
       << std::endl
       << "  HUD colors:" << std::endl
       << "   [Red]:                  Zone currently rendered" << std::endl
-      << "   [Blue]:                 Post antialiasing level (second pass)" << std::endl
+      << "   [Blue]:                 Post antialiasing level (basic renderer)" << std::endl
       << std::endl;
   }
 };

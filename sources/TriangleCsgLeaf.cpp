@@ -60,3 +60,48 @@ std::vector<std::tuple<double, double, double>>	RT::TriangleCsgLeaf::points() co
     std::tuple<double, double, double>(std::get<0>(_p2), std::get<1>(_p2), std::get<2>(_p2))
   };
 }
+
+size_t			RT::TriangleCsgLeaf::build(std::vector<RT::OpenCL::Node> &, std::vector<RT::OpenCL::Primitive> & primitives, Math::Matrix<4, 4> const & transformation, RT::Material const & material, unsigned int deph) const
+{
+  primitives.push_back(RT::OpenCL::Primitive());
+
+  Math::Matrix<4, 4>		matrix = transformation.inverse();
+
+  for (unsigned row = 0; row < 4; row++)
+    for (unsigned col = 0; col < 4; col++)
+      primitives.back().transformation[row * 4 + col] = (float)matrix(row, col);
+
+  primitives.back().material.color[0] = (float)material.color.r;
+  primitives.back().material.color[1] = (float)material.color.g;
+  primitives.back().material.color[2] = (float)material.color.b;
+
+  primitives.back().type = RT::OpenCL::Primitive::Type::PrimitiveTriangle;
+
+  primitives.back().data.triangle.p[0][0] = (float)std::get<0>(_p0);
+  primitives.back().data.triangle.p[0][1] = (float)std::get<1>(_p0);
+  primitives.back().data.triangle.p[0][2] = (float)std::get<2>(_p0);
+
+  primitives.back().data.triangle.p[1][0] = (float)std::get<0>(_p1);
+  primitives.back().data.triangle.p[1][1] = (float)std::get<1>(_p1);
+  primitives.back().data.triangle.p[1][2] = (float)std::get<2>(_p1);
+
+  primitives.back().data.triangle.p[2][0] = (float)std::get<0>(_p2);
+  primitives.back().data.triangle.p[2][1] = (float)std::get<1>(_p2);
+  primitives.back().data.triangle.p[2][2] = (float)std::get<2>(_p2);
+
+  primitives.back().data.triangle.v[0][0] = (float)_v0.x();
+  primitives.back().data.triangle.v[0][1] = (float)_v0.y();
+  primitives.back().data.triangle.v[0][2] = (float)_v0.z();
+
+  primitives.back().data.triangle.v[1][0] = (float)_v1.x();
+  primitives.back().data.triangle.v[1][1] = (float)_v1.y();
+  primitives.back().data.triangle.v[1][2] = (float)_v1.z();
+
+  primitives.back().data.triangle.n[0] = (float)_normal.x();
+  primitives.back().data.triangle.n[1] = (float)_normal.y();
+  primitives.back().data.triangle.n[2] = (float)_normal.z();
+
+  primitives.back().data.triangle.index = 0;
+
+  return primitives.size() - 1;
+}

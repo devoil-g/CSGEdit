@@ -18,6 +18,8 @@ namespace RT
     ConeCsgLeaf(double, double, bool);
     ConeCsgLeaf(double, double, double, bool);
     ~ConeCsgLeaf();
+
+    size_t		build(std::vector<RT::OpenCL::Node> &, std::vector<RT::OpenCL::Primitive> &, Math::Matrix<4, 4> const &, RT::Material const &, unsigned int = 0) const override;	// Build OpenCL data structure
   };
 };
 

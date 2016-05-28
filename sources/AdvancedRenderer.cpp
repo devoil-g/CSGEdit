@@ -166,7 +166,7 @@ RT::Color		RT::AdvancedRenderer::renderVirtualReality(RT::Ray const & ray) const
 {
   // If no offset between eyes, skip VR
   if (_scene->vr().offset == 0.f)
-    return renderDephOfField((_scene->camera() * ray).normalize());
+    return renderDephOfField(ray.normalize());
 
   RT::Ray		vr = ray;
   double		center;
@@ -200,67 +200,37 @@ RT::Color		RT::AdvancedRenderer::renderVirtualReality(RT::Ray const & ray) const
     vr.d().z() *= distortion;
   }
 
-  return renderDephOfField((_scene->camera() * vr).normalize());
+  return renderDephOfField(vr.normalize());
 }
 
 RT::Color		RT::AdvancedRenderer::renderDephOfField(RT::Ray const & ray) const
 {
   // If no deph of field, just return rendered ray
-  if (_scene->dof().quality <= 1 || _scene->dof().aperture == 0)
+  if (_scene->dof().aperture == 0)
     return renderRay(ray);
 
-  unsigned int		nb_ray = 0;
-  Math::Matrix<4, 4>	rot = Math::Matrix<4, 4>::rotation(Math::Random::rand(360.f), Math::Random::rand(360.f), Math::Random::rand(360.f));
-  RT::Ray		pt = Math::Matrix<4, 4>::translation(ray.d().x() * _scene->dof().focal, ray.d().y() * _scene->dof().focal, ray.d().z() * _scene->dof().focal) * ray;
-  RT::Color		clr;
+  // Generate random position on aperture
+  double		angle = Math::Random::rand(2.f * Math::Pi);
+  double		distance = std::sqrt(Math::Random::rand(1.f)) * _scene->dof().aperture / 2.f;
+  RT::Ray		deph;
 
-  // Generate multiples ray inside aperture to simulate deph of field
-  for (double a = Math::Random::rand(_scene->dof().aperture / _scene->dof().quality); a < _scene->dof().aperture; a += _scene->dof().aperture / _scene->dof().quality)
-    for (double b = Math::Random::rand(Math::Pi / (_scene->dof().quality * 2)) - Math::Pi / 2.f; b < Math::Pi / 2.f; b += Math::Pi / _scene->dof().quality)
-    {
-      int	nb = (int)(std::cos(b) * _scene->dof().quality * 2.f * (a / _scene->dof().aperture));
-      if (nb > 0)
-	for (double c = Math::Random::rand(Math::Pi * 2.f / nb); c < Math::Pi * 2.f; c += Math::Pi * 2.f / nb)
-	{
-	  RT::Ray	deph;
+  deph.p().x() = ray.p().x();
+  deph.p().y() = std::cos(angle) * distance + ray.p().y();
+  deph.p().z() = std::sin(angle) * distance + ray.p().z();
+  
+  deph.d() = ray.p() + ray.d() * _scene->dof().focal - deph.p();
 
-	  // Calcul point position in aperture sphere
-	  deph.p().x() = std::sin(b) * a;
-	  deph.p().y() = std::cos(c) * std::cos(b) * a;
-	  deph.p().z() = std::sin(c) * std::cos(b) * a;
-
-	  // Randomly rotate point to smooth rendered image
-	  deph.p() = rot * deph.p();
-
-	  // Calculate ray
-	  deph.p() = deph.p() + ray.p();
-	  deph.d() = pt.p() - deph.p();
-
-	  // Sum rendered colors
-	  clr += renderRay(deph.normalize());
-
-	  nb_ray++;
-	}
-    }
-
-  // Return average color
-  return clr / nb_ray;
+  return renderRay(deph.normalize());
 }
 
 RT::Color		RT::AdvancedRenderer::renderRay(RT::Ray const & ray) const
 {
-  // Render intersections list with CSG tree
-  std::list<RT::Intersection>	intersect = _scene->csg()->render(ray);
-
-  // Drop intersection behind camera
-  while (!intersect.empty() && intersect.front().distance < 0.f)
-    intersect.pop_front();
-
   RT::Color		mask = RT::Color(1.f);
-  RT::Ray		r = ray;
+  RT::Ray		r = (_scene->camera() * ray).normalize();
 
-  for (unsigned int bounces = 0; bounces < 8 && mask != RT::Color(0.f); bounces++)
+  for (unsigned int bounces = 0; bounces < RT::Config::Renderer::Advanced::MaxBounce && mask != RT::Color(0.f); bounces++)
   {
+    // Render intersections list with CSG tree
     std::list<RT::Intersection>	intersect = _scene->csg()->render(r);
 
     // Drop intersection behind camera
@@ -326,8 +296,8 @@ double			RT::AdvancedRenderer::progress()
   if (sample > _sample)
   {
     _sample = sample;
-    if (_sample <= RT::Config::Renderer::Advanced::MaxSample)
-      std::cout << "[Render] " << std::pow(2, _sample - 1) << " samples per pixel rendered." << std::endl;
+    if (_sample <= RT::Config::Renderer::Advanced::MaxSample && _sample > 1)
+      std::cout << "[Render] " << std::pow(2, _sample - 2) << " samples per pixel rendered." << std::endl;
   }
 
   double		result = (double)_ray / ((double)_scene->image().getSize().x * (double)_scene->image().getSize().y * (double)std::pow(2, _sample - 1));

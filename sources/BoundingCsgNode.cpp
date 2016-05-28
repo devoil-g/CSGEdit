@@ -26,3 +26,8 @@ void				RT::BoundingCsgNode::push(RT::AbstractCsgTree * node)
   else
     RT::AbstractCsgNode::push(node);
 }
+
+size_t				RT::BoundingCsgNode::build(std::vector<RT::OpenCL::Node> & nodes, std::vector<RT::OpenCL::Primitive> & primitives, Math::Matrix<4, 4> const & transformation, RT::Material const & material, unsigned int deph) const
+{
+  return RT::UnionCsgNode::build(nodes, primitives, transformation, material, deph);
+}

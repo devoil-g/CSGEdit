@@ -19,7 +19,8 @@ namespace RT
     AbstractCsgLeaf();
     virtual ~AbstractCsgLeaf();
 
-    std::list<RT::Intersection>	render(RT::Ray const &, unsigned int) const override;	// Render primitive according to ray
+    std::list<RT::Intersection>	render(RT::Ray const &, unsigned int) const override;															// Render primitive according to ray
+    virtual size_t		build(std::vector<RT::OpenCL::Node> &, std::vector<RT::OpenCL::Primitive> &, Math::Matrix<4, 4> const &, RT::Material const &, unsigned int = 0) const override;	// Build OpenCL data structure
   };
 };
 

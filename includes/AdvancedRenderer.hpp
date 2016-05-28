@@ -16,7 +16,8 @@ namespace RT
     {
       namespace Advanced
       {
-	unsigned int const	MaxSample(20);	// Maximum sample per pixel (2^n)
+	unsigned int const	MaxSample(16);	// Maximum sample per pixel (2^n)
+	unsigned int const	MaxBounce(8);	// Maximum of ray bounce
       };
     };
   };

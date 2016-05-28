@@ -43,6 +43,9 @@ SET(SAMPLE_SRCS
 	./sources/AbstractRenderer.cpp
 	./sources/AdvancedRenderer.cpp
 	./sources/BasicRenderer.cpp
+	./sources/OpenCLRenderer.cpp
+	./sources/OpenCLRenderer.cl
+	./sources/OpenCLStructures.cpp
 	./sources/PreviewRenderer.cpp
 	
 	./sources/Color.cpp
@@ -109,6 +112,8 @@ SET(SAMPLE_HDRS
 	./includes/AbstractRenderer.hpp
 	./includes/AdvancedRenderer.hpp
 	./includes/BasicRenderer.hpp
+	./includes/OpenCLRenderer.hpp
+	./includes/OpenCLStructures.hpp
 	./includes/PreviewRenderer.hpp
 
 	./includes/Color.hpp
@@ -137,9 +142,12 @@ FIND_PACKAGE(SFML 2 COMPONENTS graphics window system REQUIRED)
 
 FIND_PATH(CHAISCRIPT_INCLUDE_DIR chaiscript/chaiscript.hpp)
 
-INCLUDE_DIRECTORIES(${SFML_INCLUDE_DIR} ${CHAISCRIPT_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/includes/)
+FIND_PACKAGE(OpenCL REQUIRED)
+ADD_CUSTOM_COMMAND(OUTPUT OpenCL_kernel COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/sources/OpenCLRenderer.cl" $<TARGET_FILE_DIR:CSGEdit> MAIN_DEPENDENCY ./sources/OpenCLRenderer.cl)
+
+INCLUDE_DIRECTORIES(${SFML_INCLUDE_DIR} ${CHAISCRIPT_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/includes/ ${OpenCL_INCLUDE_DIRS})
 ADD_EXECUTABLE(CSGEdit ${SAMPLE_SRCS} ${SAMPLE_HDRS})
-TARGET_LINK_LIBRARIES(CSGEdit ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${CMAKE_DL_LIBS})
+TARGET_LINK_LIBRARIES(CSGEdit ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${OpenCL_LIBRARY} ${CMAKE_DL_LIBS})
 
 IF (UNIX)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Ofast -Wall -Wextra -fpermissive") # TODO: solve problems accepted by fpermissive

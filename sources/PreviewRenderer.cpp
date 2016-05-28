@@ -42,7 +42,7 @@ void				RT::PreviewRenderer::begin()
     it.join();
 
   if (active())
-    std::cout << "[Preview] Rendered in " << clock.getElapsedTime().asMilliseconds() / 1000 << "." << clock.getElapsedTime().asMicroseconds() % 1000 << "s." << std::endl;
+    std::cout << "[Preview] Completed in " << clock.getElapsedTime().asMilliseconds() / 1000 << "." << clock.getElapsedTime().asMicroseconds() % 1000 << "s." << std::endl;
 }
 
 void				RT::PreviewRenderer::preview()
