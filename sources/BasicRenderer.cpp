@@ -310,7 +310,7 @@ RT::Color		RT::BasicRenderer::renderDephOfField(RT::Ray const & ray) const
 {
   // If no deph of field, just return rendered ray
   if (_scene->dof().quality <= 1 || _scene->dof().aperture == 0)
-    return renderRay(ray);
+    return renderCamera(ray);
 
   unsigned int		nb_ray = 0;
   RT::Color		clr;
@@ -328,7 +328,7 @@ RT::Color		RT::BasicRenderer::renderDephOfField(RT::Ray const & ray) const
       deph.d() = ray.p() + ray.d() * _scene->dof().focal - deph.p();
 
       // Sum rendered colors
-      clr += renderRay(deph.normalize());
+      clr += renderCamera(deph);
 
       nb_ray++;
     }
@@ -337,15 +337,18 @@ RT::Color		RT::BasicRenderer::renderDephOfField(RT::Ray const & ray) const
   return clr / nb_ray;
 }
 
+RT::Color		RT::BasicRenderer::renderCamera(RT::Ray const & ray) const
+{
+  return renderRay((_scene->camera() * ray).normalize());
+}
+
 RT::Color		RT::BasicRenderer::renderRay(RT::Ray const & ray, unsigned int recursivite) const
 {
   if (recursivite > RT::Config::Renderer::Basic::MaxRecursivite)
     return RT::Color(0.f);
 
-  RT::Ray		r = (_scene->camera() * ray).normalize();
-
   // Render intersections list with CSG tree
-  std::list<RT::Intersection>	intersect = _scene->csg()->render(r);
+  std::list<RT::Intersection>	intersect = _scene->csg()->render(ray);
 
   // Drop intersection behind camera
   while (!intersect.empty() && intersect.front().distance < 0.f)
@@ -353,9 +356,9 @@ RT::Color		RT::BasicRenderer::renderRay(RT::Ray const & ray, unsigned int recurs
 
   // Calculate transparency, reflection and light
   if (!intersect.empty())
-    return renderReflection(r, intersect.front(), recursivite)
-    + renderTransparency(r, intersect.front(), recursivite)
-    + renderLight(r, intersect.front(), recursivite);
+    return renderReflection(ray, intersect.front(), recursivite)
+    + renderTransparency(ray, intersect.front(), recursivite)
+    + renderLight(ray, intersect.front(), recursivite);
   // If no intersection, return background color (black)
   else
     return RT::Color(0.f);
@@ -383,7 +386,7 @@ RT::Color		RT::BasicRenderer::renderReflection(RT::Ray const & ray, RT::Intersec
   if (inside == true || intersection.material.reflection.glossiness == 0.f || quality <= 1)
     return renderRay(r, recursivite + 1) * intersection.material.color * intersection.material.reflection.intensity * (1.f - intersection.material.transparency.intensity);
 
-  // Calculate rotation angles of normal
+  // Calculate rotation angles of reflected ray
   double		ry = -std::asin(r.d().z());
   double		rz = 0;
 
@@ -496,7 +499,7 @@ RT::Color		RT::BasicRenderer::renderTransparency(RT::Ray const & ray, RT::Inters
   if (inside == true || intersection.material.transparency.glossiness == 0.f || quality <= 1)
     return renderRay(r, recursivite) * intersection.material.color * (intersection.material.transparency.intensity * (1.f - reflection_coef)) + reflection_clr;
 
-  // Calculate rotation angles of normal
+  // Calculate rotation angles of refracted ray
   double		ry = -std::asin(r.d().z());
   double		rz = 0;
 

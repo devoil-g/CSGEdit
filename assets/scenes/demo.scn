@@ -13,11 +13,10 @@ def	ground_block(r, h)
 }
 
 // Lights
-//rotation([0, 70, 0]); rotation([0, 0, -20]); directional_light([255], 4.2); end(); end();
-translation([0,0,50000]); point_light([255]); end();
+rotation([0, 70, 0]); rotation([0, 0, -20]); directional_light([255], 4.2); end(); end();
 occlusion_light([255], 32);
 
-direct([255 * 0.4],[255 * 0.6],[255 * 0.2], 8.4);
+direct(0.4, 0.6, 0.2, 8.4);
 
 // Ground
 // translation([0,0,-1-8]); box(360,560,16, true); end();
@@ -113,7 +112,7 @@ translation([-42,-84 * cos(30.0 / 180.0 * pi),0]); bounding();
 	
 	color([255,255,225]); ground_block(84-2,48); end();
 	translation([0,0,74+1]);
-		direct([255],[255],[255*5],8.4); reflection(0.84, 0); sphere(26); end(); end();
+		direct(1,1,5,8.4); reflection(0.84, 0); sphere(26); end(); end();
 	end();
 end(); end();
 

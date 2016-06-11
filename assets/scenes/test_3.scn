@@ -452,7 +452,7 @@ def	stairs()
 	end();
 }
 
-direct([255],[255],[255], 8.4);
+direct(1,1,1, 8.4);
 
 intersection();
 	translation([0,0,512-128]); box(1024,1024,1024+32,true); end();

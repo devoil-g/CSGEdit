@@ -6,7 +6,7 @@ antialiasing(0,0);
 // Lights
 rotation([0, 40, 100]); directional_light([255]); end();
 
-direct([255],[255],[255], 8.4);
+direct(1,1,1, 8.4);
 	
 	difference();
 		translation([-500,0,0]); box(1400,400,400, true); end();

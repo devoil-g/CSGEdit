@@ -21,25 +21,16 @@ namespace RT
   private:
     static std::map<std::string, RT::Material>	_material;	// Material mapped by name
 
-    struct Direct
+    struct Illumination
     {
-      RT::Color		ambient = RT::Color(1.f);			// Ambient light component multiplier
-      RT::Color		diffuse = RT::Color(1.f);			// Diffuse light component multiplier
-      RT::Color		specular = RT::Color(1.f);			// Specular light component multiplier
+      double		emission = 1.f;					// Emitted/ambient light component multiplier
+      double		diffuse = 1.f;					// Diffuse light component multiplier
+      double		specular = 1.f;					// Specular light component multiplier
       double		shininess = 1.f;				// Shine coeffient of material [0.f-inf]
       unsigned int	quality = RT::Config::Material::Quality;	// Quality of light
 
-      RT::Material::Direct &	operator*=(RT::Material::Direct const &);	// Light properties multiplication
-      RT::Material::Direct	operator*(RT::Material::Direct const &) const;	// Light properties multiplication
-    };
-
-    struct Indirect
-    {
-      RT::Color		emission = RT::Color(0.f);			// Light emitted
-      unsigned int	quality = RT::Config::Material::Quality;	// Quality of light
-
-      RT::Material::Indirect &	operator*=(RT::Material::Indirect const &);		// Light properties multiplication
-      RT::Material::Indirect	operator*(RT::Material::Indirect const &) const;	// Light properties multiplication
+      RT::Material::Illumination &	operator*=(RT::Material::Illumination const &);		// Illumination properties multiplication
+      RT::Material::Illumination	operator*(RT::Material::Illumination const &) const;	// Illumination properties multiplication
     };
 
     struct Transparency
@@ -65,8 +56,8 @@ namespace RT
 
   public:
     RT::Color			color;		// Color of material
-    RT::Material::Direct	direct;		// Direct light properties
-    RT::Material::Indirect	indirect;	// Indirect light properties
+    RT::Material::Illumination	direct;		// Direct illumination properties
+    RT::Material::Illumination	indirect;	// Global illumination properties
     RT::Material::Transparency	transparency;	// Transparency properties
     RT::Material::Reflection	reflection;	// reflection properties
 

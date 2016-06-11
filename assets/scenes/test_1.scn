@@ -11,7 +11,7 @@ antialiasing(0,2);
 rotation([0, 60, 30]); directional_light([255], 4.2); end();
 occlusion_light([255], 32);
 
-direct([255 * 0.4],[255 * 0.6],[255 * 0.2], 8.4);
+direct(0.4, 0.6, 0.2, 8.4);
 
 // Socles
 color([255,255,225]);
@@ -63,9 +63,9 @@ color([225.0]);
 end();
 
 // Reflection
-direct([255],[255],[255*5],8.4); translation([-50,+50,48+1]); reflection(0.84, 0); sphere(28); end(); end(); end();
-direct([255],[255],[255*2],2.21); translation([+50,+50,68+1]); reflection(0.84, 7.2); sphere(28); end(); end(); end();
-direct([255],[255],[255*1],1); translation([+150,+50,88+1]); reflection(0.84, 19.21); sphere(28); end(); end(); end();
+direct(1, 1, 5, 8.4); translation([-50,+50,48+1]); reflection(0.84, 0); sphere(28); end(); end(); end();
+direct(1 ,1, 2, 2.21); translation([+50,+50,68+1]); reflection(0.84, 7.2); sphere(28); end(); end(); end();
+direct(1, 1, 1, 1); translation([+150,+50,88+1]); reflection(0.84, 19.21); sphere(28); end(); end(); end();
 
 // Transparence
 def transparency_background()
@@ -89,19 +89,19 @@ def transparency_background()
 
 translation([-50,-50,20]);
 	transparency_background();
-	transparency(0.92, 1.32, 0); direct([255],[255],[255*5],8.4);
+	transparency(0.92, 1.32, 0); direct(1, 1, 5, 8.4);
 		translation([0,0,32]); scale([10]); tangle(10); end(); end();
 	end(); end();
 end();
 translation([+50,-50,40]);
 	transparency_background();
-	transparency(0.92, 1.32, 2.3); direct([255],[255],[255*2],2.21);
+	transparency(0.92, 1.32, 2.3); direct(1, 1, 2, 2.21);
 		translation([0,0,32]); scale([10]); tangle(10); end(); end();
 	end(); end();
 end();
 translation([+150,-50,60]);
 	transparency_background();
-	transparency(0.92, 1.32, 5.2); direct([255],[255],[255],1);
+	transparency(0.92, 1.32, 5.2); direct(1, 1, 1, 1);
 		translation([0,0,32]); scale([10]); tangle(10); end(); end();
 	end(); end();
 end();

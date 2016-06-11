@@ -45,6 +45,7 @@ namespace RT
     RT::Color	renderAntialiasing(unsigned int, unsigned int, unsigned int) const;			// Render antialiasing
     RT::Color	renderVirtualReality(RT::Ray const &) const;						// Render virtual reality image
     RT::Color	renderDephOfField(RT::Ray const &) const;						// Render deph of field image
+    RT::Color	renderCamera(RT::Ray const &) const;							// Render camera of scene
     RT::Color	renderRay(RT::Ray const &, unsigned int = 0) const;					// Render a ray with CSG tree
     RT::Color	renderReflection(RT::Ray const &, RT::Intersection const &, unsigned int) const;	// Render reflection of ray  
     RT::Color	renderTransparency(RT::Ray const &, RT::Intersection const &, unsigned int) const;	// Render transparency

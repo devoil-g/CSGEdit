@@ -45,12 +45,12 @@ namespace RT
     void	scopeScale(std::vector<double> const &);			// Push a scale in scope
     void	scopeShear(double, double, double, double, double, double);	// Push a shear in scope
     // Scope materials
-    void	scopeMaterial(std::string const &);								// Push a material in scope
-    void	scopeColor(RT::Color const &);									// Push a color material in scope
-    void	scopeDirect(RT::Color const &, RT::Color const &, RT::Color const &, double, unsigned int);	// Push a direct light material in scope
-    void	scopeIndirect(RT::Color const &, unsigned int);							// Push an indirect light material in scope
-    void	scopeTransparency(double, double, double, unsigned int);					// Push a transparency material in scope
-    void	scopeReflection(double, double, unsigned int);							// Push a reflection material in scope
+    void	scopeMaterial(std::string const &);				// Push a material in scope
+    void	scopeColor(RT::Color const &);					// Push a color material in scope
+    void	scopeDirect(double, double, double, double, unsigned int);	// Push a direct illumination material in scope
+    void	scopeIndirect(double, double, double, double, unsigned int);	// Push a global illumination material in scope
+    void	scopeTransparency(double, double, double, unsigned int);	// Push a transparency material in scope
+    void	scopeReflection(double, double, unsigned int);			// Push a reflection material in scope
     // Scope others
     void	scopeBounding();		// Push a bounding node in scope
     void	scopeMesh();			// Push a mesh node in scope

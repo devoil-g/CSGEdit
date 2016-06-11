@@ -7,7 +7,7 @@ antialiasing(0,2);
 rotation([0, 60, 50]); directional_light([255]); end();
 occlusion_light([255], 64);
 
-direct([0.4 * 255],[0.6 * 255],[0.2 * 255], 8.4);
+direct(0.4, 0.6, 0.2, 8.4);
 	box(256,256,1, true);
 	
 	rotation([0,0,30]); translation([0,0,1]); scale([128]); translation([0,0,0.5]);

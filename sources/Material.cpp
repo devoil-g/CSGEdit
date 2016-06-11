@@ -48,35 +48,21 @@ RT::Material			RT::Material::operator*(RT::Material const & material) const
   return RT::Material(*this) *= material;
 }
 
-RT::Material::Direct &		RT::Material::Direct::operator*=(RT::Material::Direct const & direct)
+RT::Material::Illumination &	RT::Material::Illumination::operator*=(RT::Material::Illumination const & illumination)
 {
   // Multiply two direct lights
-  ambient *= direct.ambient;
-  diffuse *= direct.diffuse;
-  specular *= direct.specular;
-  shininess *= direct.shininess;
-  quality = std::min(quality, direct.quality);
+  emission *= illumination.emission;
+  diffuse *= illumination.diffuse;
+  specular *= illumination.specular;
+  shininess *= illumination.shininess;
+  quality = std::min(quality, illumination.quality);
 
   return *this;
 }
 
-RT::Material::Direct		RT::Material::Direct::operator*(RT::Material::Direct const & direct) const
+RT::Material::Illumination	RT::Material::Illumination::operator*(RT::Material::Illumination const & illumination) const
 {
-  return RT::Material::Direct(*this) *= direct;
-}
-
-RT::Material::Indirect &	RT::Material::Indirect::operator*=(RT::Material::Indirect const & indirect)
-{
-  // Multiply two indirect lights
-  emission = emission + indirect.emission - emission * indirect.emission;
-  quality = std::min(quality, indirect.quality);
-
-  return *this;
-}
-
-RT::Material::Indirect		RT::Material::Indirect::operator*(RT::Material::Indirect const & indirect) const
-{
-  return RT::Material::Indirect(*this) *= indirect;
+  return RT::Material::Illumination(*this) *= illumination;
 }
 
 RT::Material::Transparency &	RT::Material::Transparency::operator*=(RT::Material::Transparency const & transparency)

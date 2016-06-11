@@ -1,3 +1,4 @@
+#include <ctime>
 #include <iostream>
 
 #ifdef _WIN32
@@ -6,6 +7,7 @@
 #endif
 
 #include "AdvancedRenderer.hpp"
+#include "Config.hpp"
 
 RT::AdvancedRenderer::AdvancedRenderer()
   : _grid(), _scene(nullptr), _ray(0), _sample(0)
@@ -29,6 +31,10 @@ void	RT::AdvancedRenderer::load(RT::Scene * scene)
   // Reset zone grid
   _grid.clear();
   _grid.resize((_scene->image().getSize().x / RT::Config::Renderer::BlockSize + (_scene->image().getSize().x % RT::Config::Renderer::BlockSize ? 1 : 0)) * (_scene->image().getSize().y / RT::Config::Renderer::BlockSize + (_scene->image().getSize().y % RT::Config::Renderer::BlockSize ? 1 : 0)), 0);
+
+  // Reset true color image
+  _image.clear();
+  _image.resize(_scene->image().getSize().x * _scene->image().getSize().y, RT::Color(0.f));
 }
 
 void			RT::AdvancedRenderer::begin()
@@ -105,7 +111,6 @@ void			RT::AdvancedRenderer::render(unsigned int zone)
   for (unsigned int a = 0; a < RT::Config::Renderer::BlockSize && active(); a++)
     for (unsigned int b = 0; b < RT::Config::Renderer::BlockSize && active(); b++)
       if (x + a < _scene->image().getSize().x && y + b < _scene->image().getSize().y)
-      {
 	if (sample == 0)
 	{
 	  RT::Ray	r;
@@ -114,7 +119,8 @@ void			RT::AdvancedRenderer::render(unsigned int zone)
 	  r.d().y() = _scene->image().getSize().x / 2.f - (x + a) + 0.5f;
 	  r.d().z() = _scene->image().getSize().y / 2.f - (y + b) + 0.5f;
 
-	  _scene->image().setPixel(x + a, y + b, renderVirtualReality(r).sfml());
+	  _image[(y + b) * _scene->image().getSize().x + x + a] = renderVirtualReality(r);
+	  _scene->image().setPixel(x + a, y + b, _image[(y + b) * _scene->image().getSize().x + x + a].sfml());
 
 	  ray += 1;
 	}
@@ -133,11 +139,11 @@ void			RT::AdvancedRenderer::render(unsigned int zone)
 	    clr += renderVirtualReality(r);
 	  }
 
-	  _scene->image().setPixel(x + a, y + b, RT::Color((RT::Color(_scene->image().getPixel(x + a, y + b)) + clr / std::pow(2, sample - 1)) / 2.f).sfml());
+	  _image[(y + b) * _scene->image().getSize().x + x + a] = (_image[(y + b) * _scene->image().getSize().x + x + a] + clr / std::pow(2, sample - 1)) / 2.f;
+	  _scene->image().setPixel(x + a, y + b, _image[(y + b) * _scene->image().getSize().x + x + a].sfml());
 
 	  ray += (unsigned int)std::pow(2, sample - 1);
 	}
-      }
 
   // Erase zone box
   for (unsigned int a = 0; a < RT::Config::Renderer::BlockSize; a++)
@@ -152,12 +158,12 @@ void			RT::AdvancedRenderer::render(unsigned int zone)
       _scene->hud().setPixel(x + RT::Config::Renderer::BlockSize - 1, y + a, RT::Color(0.f).sfml(0.f));
   }
 
-  // Add rendered ray to counter
-  _ray += ray;
-
   // Validate changes only if not interrupted
   if (active())
+  {
     _grid[zone] = sample + 1;
+    _ray += ray;
+  }
   else
     _grid[zone] = sample;
 }
@@ -207,7 +213,7 @@ RT::Color		RT::AdvancedRenderer::renderDephOfField(RT::Ray const & ray) const
 {
   // If no deph of field, just return rendered ray
   if (_scene->dof().aperture == 0)
-    return renderRay(ray);
+    return renderCamera(ray);
 
   // Generate random position on aperture
   double		angle = Math::Random::rand(2.f * Math::Pi);
@@ -220,54 +226,241 @@ RT::Color		RT::AdvancedRenderer::renderDephOfField(RT::Ray const & ray) const
   
   deph.d() = ray.p() + ray.d() * _scene->dof().focal - deph.p();
 
-  return renderRay(deph.normalize());
+  return renderCamera(deph);
 }
 
-RT::Color		RT::AdvancedRenderer::renderRay(RT::Ray const & ray) const
+RT::Color		RT::AdvancedRenderer::renderCamera(RT::Ray const & ray) const
 {
-  RT::Color		mask = RT::Color(1.f);
-  RT::Ray		r = (_scene->camera() * ray).normalize();
+  return renderRay((_scene->camera() * ray).normalize());
+}
 
-  for (unsigned int bounces = 0; bounces < RT::Config::Renderer::Advanced::MaxBounce && mask != RT::Color(0.f); bounces++)
+RT::Color		RT::AdvancedRenderer::renderRay(RT::Ray const & ray, unsigned int bounces) const
+{
+  // Stop if maximum number of bounces reached
+  if (bounces > RT::Config::Renderer::Advanced::MaxBounce)
+    return RT::Color(0.f);
+
+  std::list<RT::Intersection>	intersect = _scene->csg()->render(ray);
+
+  // Drop intersection behind camera
+  while (!intersect.empty() && intersect.front().distance < 0.f)
+    intersect.pop_front();
+
+  // Return if no intersection
+  if (intersect.empty())
+    return RT::Color(0.f);
+
+  // Russiean roulette shoot
+  double		roulette = Math::Random::rand(1.f);
+
+  // Transparency
+  if (roulette < intersect.front().material.transparency.intensity)
+    return renderTransparency(ray, intersect.front(), bounces);
+
+  roulette = (roulette - intersect.front().material.transparency.intensity) / (1.f - intersect.front().material.transparency.intensity);
+
+  // Reflection
+  if (roulette < intersect.front().material.reflection.intensity)
+    return renderReflection(ray, intersect.front(), bounces);
+
+  roulette = (roulette - intersect.front().material.reflection.intensity) / (1.f - intersect.front().material.reflection.intensity);
+
+  // Probability of remaining component
+  double		total_dse = intersect.front().material.indirect.diffuse + intersect.front().material.indirect.specular + intersect.front().material.indirect.emission;
+
+  if (total_dse <= 0.f)
+    return RT::Color(0.f);
+
+  // Diffusion
+  if (roulette < intersect.front().material.indirect.diffuse / total_dse)
+    return renderDiffuse(ray, intersect.front(), bounces) * total_dse;
+
+  // Specular
+  if (roulette < (intersect.front().material.indirect.diffuse + intersect.front().material.indirect.specular) / total_dse)
+    return renderSpecular(ray, intersect.front(), bounces) * total_dse;
+
+  // Emission
+  return renderEmission(ray, intersect.front(), bounces) * total_dse;
+}
+
+RT::Color		RT::AdvancedRenderer::renderDiffuse(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int bounces) const
+{
+  // Reverse normal if necessary
+  RT::Ray		normal = intersection.normal;
+
+  if (RT::Ray::cos(ray.d(), intersection.normal.d()) > 0.f)
+    normal.d() *= -1.f;
+
+  // Generate a new random ray from diffusion
+  double		r1 = Math::Random::rand(2.f * Math::Pi);
+  double		r2 = Math::Random::rand(1.f);
+  double		r2s = std::sqrt(r2);
+
+  Math::Vector<4>	w = normal.normalize().d();
+  Math::Vector<4>	u = RT::Ray::cross((std::abs(w.x()) > 0.1f ? Math::Vector<4>(0.f, 1.f, 0.f, 0.f) : Math::Vector<4>(1.f, 0.f, 0.f, 0.f)), w);
+  u /= std::sqrt(std::pow(u.x(), 2) + std::pow(u.y(), 2) + std::pow(u.z(), 2));
+  Math::Vector<4>	v = RT::Ray::cross(w, u);
+  Math::Vector<4>	d = u * std::cos(r1) * r2s + v * std::sin(r1) * r2s + w * std::sqrt(1.f - r2);
+  
+  return intersection.material.color * RT::Ray::cos(d, normal.d()) * 2.f * renderRay(RT::Ray(normal.p() + normal.d() * Math::Shift, d).normalize(), bounces + 1);
+}
+
+RT::Color		RT::AdvancedRenderer::renderSpecular(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int bounces) const
+{
+  // Reverse normal if necessary
+  RT::Ray		normal = intersection.normal;
+
+  if (RT::Ray::cos(ray.d(), intersection.normal.d()) > 0.f)
+    normal.d() *= -1.f;
+
+  RT::Ray		r = RT::Ray(normal.p() + normal.d() * Math::Shift, normal.p() - ray.p() - normal.d() * 2.f * (normal.d().x() * (normal.p().x() - ray.p().x()) + normal.d().y() * (normal.p().y() - ray.p().y()) + normal.d().z() * (normal.p().z() - ray.p().z())) / (normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z())).normalize();
+
+  // Generate a new random ray from specular
+  double		r1 = Math::Random::rand(2.f * Math::Pi);
+  double		r2 = Math::Random::rand(1.f);
+  double		r2s = std::pow(r2, intersection.material.indirect.shininess / 2.f);
+
+  Math::Vector<4>	w = r.d();
+  Math::Vector<4>	u = RT::Ray::cross((std::abs(w.x()) > 0.1f ? Math::Vector<4>(0.f, 1.f, 0.f, 0.f) : Math::Vector<4>(1.f, 0.f, 0.f, 0.f)), w);
+  u /= std::sqrt(std::pow(u.x(), 2) + std::pow(u.y(), 2) + std::pow(u.z(), 2));
+  Math::Vector<4>	v = RT::Ray::cross(w, u);
+  Math::Vector<4>	d = u * std::cos(r1) * r2s + v * std::sin(r1) * r2s + w * std::sqrt(1.f - r2);
+
+  return intersection.material.color * std::pow(RT::Ray::cos(d, r.d()), intersection.material.indirect.shininess) * 2.f * renderRay(RT::Ray(r.p(), d).normalize(), bounces + 1);
+}
+
+RT::Color		RT::AdvancedRenderer::renderReflection(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int bounces) const
+{
+  // Reverse normal if necessary
+  RT::Ray		normal = intersection.normal;
+  
+  if (RT::Ray::cos(ray.d(), intersection.normal.d()) > 0.f)
+    normal.d() *= -1.f;
+  
+  // Reflected ray
+  RT::Ray		r = RT::Ray(normal.p() + normal.d() * Math::Shift, normal.p() - ray.p() - normal.d() * 2.f * (normal.d().x() * (normal.p().x() - ray.p().x()) + normal.d().y() * (normal.p().y() - ray.p().y()) + normal.d().z() * (normal.p().z() - ray.p().z())) / (normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z())).normalize();
+  
+  // Apply glossiness
+  if (intersection.material.reflection.glossiness != 0.f)
   {
-    // Render intersections list with CSG tree
-    std::list<RT::Intersection>	intersect = _scene->csg()->render(r);
+    // Calculate rotation angles of reflected ray
+    double		ry = -std::asin(r.d().z());
+    double		rz = 0;
 
-    // Drop intersection behind camera
-    while (!intersect.empty() && intersect.front().distance < 0.f)
-      intersect.pop_front();
+    if (r.d().x() != 0 || r.d().y() != 0)
+      rz = r.d().y() > 0 ?
+      +std::acos(r.d().x() / std::sqrt(r.d().x() * r.d().x() + r.d().y() * r.d().y())) :
+      -std::acos(r.d().x() / std::sqrt(r.d().x() * r.d().x() + r.d().y() * r.d().y()));
 
-    // Return if no intersection
-    if (intersect.empty())
-      return RT::Color(0.f);
+    // Rotation matrix to get ray to point of view
+    Math::Matrix<4, 4>	matrix = Math::Matrix<4, 4>::rotation(0, Math::Utils::RadToDeg(ry), Math::Utils::RadToDeg(rz));
 
-    // Return ray color if light emitter encountered
-    if (intersect.front().material.indirect.emission != RT::Color(0.f))
-      return mask * intersect.front().material.indirect.emission;
+    double		distance = Math::Random::rand(1.f);
+    double		angle = Math::Random::rand(2.f * Math::Pi);
 
-    // Generate a new random ray from diffusion
-    double		r1 = Math::Random::rand(2.f * Math::Pi);
-    double		r2 = Math::Random::rand(1.f);
-    double		r2s = std::sqrt(r2);
+    // Calculate ray according to point on the hemisphere
+    r.d().x() = 1.f / std::tan(Math::Utils::DegToRad(intersection.material.reflection.glossiness));
+    r.d().y() = distance * std::cos(angle);
+    r.d().z() = distance * std::sin(angle);
+    r.d() = matrix * r.d();
 
-    Math::Vector<4>	w = intersect.front().normal.normalize().d();
-    Math::Vector<4>	u = RT::Ray::cross((std::abs(w.x()) > 0.1f ? Math::Vector<4>(0.f, 1.f, 0.f, 0.f) : Math::Vector<4>(1.f, 0.f, 0.f, 0.f)), w);
-    u /= std::sqrt(std::pow(u.x(), 2) + std::pow(u.y(), 2) + std::pow(u.z(), 2));
-    Math::Vector<4>	v = RT::Ray::cross(w, u);
-    
-    Math::Vector<4>	d = u * std::cos(r1) * r2s + v * std::sin(r1) * r2s +  w * std::sqrt(1.f - r2);
-    d /= std::sqrt(std::pow(d.x(), 2) + std::pow(d.y(), 2) + std::pow(d.z(), 2));
-
-    r.p() = intersect.front().normal.p() + intersect.front().normal.d() * Math::Shift;
-    r.d() = d;
-
-    // Update mask
-    mask *= intersect.front().material.color;
-    mask *= RT::Ray::cos(r.d(), intersect.front().normal.d());
-    mask *= 2.f;
+    // Reflect ray if inside intersection
+    if (RT::Ray::cos(r.d(), normal.d()) < 0.f)
+      r.d() += normal.d() * -2.f * (r.d().x() * normal.d().x() + r.d().y() * normal.d().y() + r.d().z() * normal.d().z()) / (normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z());
   }
 
-  return RT::Color(0.f);
+  return intersection.material.color * renderRay(r, bounces + 1);
+}
+
+RT::Color		RT::AdvancedRenderer::renderTransparency(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int bounces) const
+{
+  // Fresnel
+  double		cosi = RT::Ray::scalar(ray.d(), intersection.normal.d());
+  double		refraction = intersection.material.transparency.refraction;
+
+  if (cosi > 0.f)
+    refraction = 1.f / refraction;
+  else
+    cosi *= -1.f;
+
+  double		reflection_coef;
+  double		sint = std::sqrt((std::max)((double)0.f, 1.f - cosi * cosi)) / refraction;
+
+  // Total internal reflection
+  if (sint >= 1.f - Math::Shift)
+    reflection_coef = 1.f;
+  else
+  {
+    double		cost = std::sqrt((std::max)((double)0.f, 1.f - sint * sint));
+    reflection_coef = (std::pow((refraction * cosi - cost) / (refraction * cosi + cost), 2) + std::pow((cosi - refraction * cost) / (cosi + refraction * cost), 2)) / 2.f;
+  }
+
+  // Russian roulette on fresnel reflection
+  if (Math::Random::rand(1.f) < reflection_coef)
+  {
+    RT::Intersection	new_intersection = intersection;
+
+    // Copy transparency properties to reflection
+    new_intersection.material.reflection.glossiness = intersection.material.transparency.glossiness;
+    
+    return renderReflection(ray, new_intersection, bounces);
+  }
+
+  // Inverse normal if necessary
+  RT::Ray		normal = intersection.normal;
+  
+  if (RT::Ray::cos(ray.d(), intersection.normal.d()) > 0.f)
+    normal.d() *= -1.f;
+  
+  // Using sphere technique to calculate refracted ray
+  std::vector<double> result = Math::solve(
+    normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z(),
+    2.f * (ray.d().x() * normal.d().x() + ray.d().y() * normal.d().y() + ray.d().z() * normal.d().z()),
+    (ray.d().x() * ray.d().x() + ray.d().y() * ray.d().y() + ray.d().z() * ray.d().z()) * (1.f - refraction * refraction)
+  );
+
+  // Force a value in case of error
+  if (result.empty())
+    result.push_back(0.f);
+
+  RT::Ray		r = RT::Ray(normal.p() - normal.d() * Math::Shift, ray.d() + normal.d() * result.front()).normalize();
+
+  if (intersection.material.transparency.glossiness > 0.f)
+  {
+    // Calculate rotation angles of refracted ray
+    double		ry = -std::asin(r.d().z());
+    double		rz = 0;
+
+    if (r.d().x() != 0 || r.d().y() != 0)
+      rz = r.d().y() > 0 ?
+      +std::acos(r.d().x() / std::sqrt(r.d().x() * r.d().x() + r.d().y() * r.d().y())) :
+      -std::acos(r.d().x() / std::sqrt(r.d().x() * r.d().x() + r.d().y() * r.d().y()));
+
+    // Rotation matrix to get ray to point of view
+    Math::Matrix<4, 4>	matrix = Math::Matrix<4, 4>::rotation(0, Math::Utils::RadToDeg(ry), Math::Utils::RadToDeg(rz));
+
+    double		distance = Math::Random::rand(1.f);
+    double		angle = Math::Random::rand(2.f * Math::Pi);
+
+    // Calculate ray according to point on the hemisphere
+    r.d().x() = 1.f / std::tan(Math::Utils::DegToRad(intersection.material.reflection.glossiness));
+    r.d().y() = distance * std::cos(angle);
+    r.d().z() = distance * std::sin(angle);
+    r.d() = matrix * r.d();
+
+    normal.d() *= -1.f;
+
+    // Reflect ray if inside intersection
+    if (RT::Ray::cos(r.d(), normal.d()) < 0.f)
+      r.d() += normal.d() * -2.f * (r.d().x() * normal.d().x() + r.d().y() * normal.d().y() + r.d().z() * normal.d().z()) / (normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z());
+  }
+
+  return intersection.material.color * renderRay(r, bounces + 1);
+}
+
+RT::Color		RT::AdvancedRenderer::renderEmission(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int bounces) const
+{
+  return intersection.material.color;
 }
 
 double			RT::AdvancedRenderer::progress()
@@ -285,22 +478,22 @@ double			RT::AdvancedRenderer::progress()
   if (finished == true)
     return 1.f;
 
-  unsigned int		sample = 0;
+  unsigned int		sample = RT::Config::Renderer::Advanced::MaxSample + 1;
 
   // Get current sample per pixel
   for (unsigned int i : _grid)
     if (i <= RT::Config::Renderer::Advanced::MaxSample + 1)
-      sample = (std::max)(sample, i);
+      sample = (std::min)(sample, i);
 
   // Display progression message
   if (sample > _sample)
   {
     _sample = sample;
-    if (_sample <= RT::Config::Renderer::Advanced::MaxSample && _sample > 1)
-      std::cout << "[Render] " << std::pow(2, _sample - 2) << " samples per pixel rendered." << std::endl;
+    _scene->image().saveToFile(RT::Config::ExecutablePath + "screenshot_" + std::to_string(std::time(nullptr)) + ".png");
+    std::cout << "[Render] " << std::pow(2, _sample - 1) << " samples per pixel rendered." << std::endl;
   }
 
-  double		result = (double)_ray / ((double)_scene->image().getSize().x * (double)_scene->image().getSize().y * (double)std::pow(2, _sample - 1));
+  double		result = (double)_ray / ((double)_scene->image().getSize().x * (double)_scene->image().getSize().y * (double)std::pow(2, _sample));
 
   if (result == 1.f)
     return 0.999f;
