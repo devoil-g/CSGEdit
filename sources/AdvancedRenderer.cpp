@@ -234,10 +234,14 @@ RT::Color		RT::AdvancedRenderer::renderCamera(RT::Ray const & ray) const
   return renderRay((_scene->camera() * ray).normalize());
 }
 
-RT::Color		RT::AdvancedRenderer::renderRay(RT::Ray const & ray, unsigned int bounces) const
+RT::Color		RT::AdvancedRenderer::renderRay(RT::Ray const & ray, RT::Color mask, unsigned int bounces) const
 {
   // Stop if maximum number of bounces reached
-  if (bounces > RT::Config::Renderer::Advanced::MaxBounce)
+  if (bounces > RT::Config::Renderer::Advanced::MaxBounces)
+    return RT::Color(0.f);
+
+  // Stop if below minimum mask value
+  if (mask.r < RT::Config::Renderer::Advanced::MinMask.r && mask.g < RT::Config::Renderer::Advanced::MinMask.g && mask.b < RT::Config::Renderer::Advanced::MinMask.b)
     return RT::Color(0.f);
 
   std::list<RT::Intersection>	intersect = _scene->csg()->render(ray);
@@ -255,13 +259,13 @@ RT::Color		RT::AdvancedRenderer::renderRay(RT::Ray const & ray, unsigned int bou
 
   // Transparency
   if (roulette < intersect.front().material.transparency.intensity)
-    return renderTransparency(ray, intersect.front(), bounces);
+    return renderTransparency(ray, intersect.front(), mask, bounces);
 
   roulette = (roulette - intersect.front().material.transparency.intensity) / (1.f - intersect.front().material.transparency.intensity);
 
   // Reflection
   if (roulette < intersect.front().material.reflection.intensity)
-    return renderReflection(ray, intersect.front(), bounces);
+    return renderReflection(ray, intersect.front(), mask, bounces);
 
   roulette = (roulette - intersect.front().material.reflection.intensity) / (1.f - intersect.front().material.reflection.intensity);
 
@@ -273,17 +277,17 @@ RT::Color		RT::AdvancedRenderer::renderRay(RT::Ray const & ray, unsigned int bou
 
   // Diffusion
   if (roulette < intersect.front().material.indirect.diffuse / total_dse)
-    return renderDiffuse(ray, intersect.front(), bounces) * total_dse;
+    return renderDiffuse(ray, intersect.front(), mask * total_dse, bounces);
 
   // Specular
   if (roulette < (intersect.front().material.indirect.diffuse + intersect.front().material.indirect.specular) / total_dse)
-    return renderSpecular(ray, intersect.front(), bounces) * total_dse;
+    return renderSpecular(ray, intersect.front(), mask * total_dse, bounces);
 
   // Emission
-  return renderEmission(ray, intersect.front(), bounces) * total_dse;
+  return renderEmission(ray, intersect.front(), mask * total_dse, bounces);
 }
 
-RT::Color		RT::AdvancedRenderer::renderDiffuse(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int bounces) const
+RT::Color		RT::AdvancedRenderer::renderDiffuse(RT::Ray const & ray, RT::Intersection const & intersection, RT::Color mask, unsigned int bounces) const
 {
   // Reverse normal if necessary
   RT::Ray		normal = intersection.normal;
@@ -302,10 +306,10 @@ RT::Color		RT::AdvancedRenderer::renderDiffuse(RT::Ray const & ray, RT::Intersec
   Math::Vector<4>	v = RT::Ray::cross(w, u);
   Math::Vector<4>	d = u * std::cos(r1) * r2s + v * std::sin(r1) * r2s + w * std::sqrt(1.f - r2);
   
-  return intersection.material.color * RT::Ray::cos(d, normal.d()) * 2.f * renderRay(RT::Ray(normal.p() + normal.d() * Math::Shift, d).normalize(), bounces + 1);
+  return renderRay(RT::Ray(normal.p() + normal.d() * Math::Shift, d).normalize(), mask * intersection.material.color * RT::Ray::cos(w, d) * 2.f, bounces + 1);
 }
 
-RT::Color		RT::AdvancedRenderer::renderSpecular(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int bounces) const
+RT::Color		RT::AdvancedRenderer::renderSpecular(RT::Ray const & ray, RT::Intersection const & intersection, RT::Color mask, unsigned int bounces) const
 {
   // Reverse normal if necessary
   RT::Ray		normal = intersection.normal;
@@ -326,10 +330,14 @@ RT::Color		RT::AdvancedRenderer::renderSpecular(RT::Ray const & ray, RT::Interse
   Math::Vector<4>	v = RT::Ray::cross(w, u);
   Math::Vector<4>	d = u * std::cos(r1) * r2s + v * std::sin(r1) * r2s + w * std::sqrt(1.f - r2);
 
-  return intersection.material.color * std::pow(RT::Ray::cos(d, r.d()), intersection.material.indirect.shininess) * 2.f * renderRay(RT::Ray(r.p(), d).normalize(), bounces + 1);
+  // Cancel if ray is under object surface
+  if (RT::Ray::cos(normal.d(), d) < 0.f)
+    return RT::Color(0.f);
+
+  return renderRay(RT::Ray(r.p(), d).normalize(), mask * intersection.material.color * std::pow(RT::Ray::cos(w, d), intersection.material.indirect.shininess) * 2.f, bounces + 1);
 }
 
-RT::Color		RT::AdvancedRenderer::renderReflection(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int bounces) const
+RT::Color		RT::AdvancedRenderer::renderReflection(RT::Ray const & ray, RT::Intersection const & intersection, RT::Color mask, unsigned int bounces) const
 {
   // Reverse normal if necessary
   RT::Ray		normal = intersection.normal;
@@ -369,10 +377,10 @@ RT::Color		RT::AdvancedRenderer::renderReflection(RT::Ray const & ray, RT::Inter
       r.d() += normal.d() * -2.f * (r.d().x() * normal.d().x() + r.d().y() * normal.d().y() + r.d().z() * normal.d().z()) / (normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z());
   }
 
-  return intersection.material.color * renderRay(r, bounces + 1);
+  return renderRay(r, mask * intersection.material.color, bounces + 1);
 }
 
-RT::Color		RT::AdvancedRenderer::renderTransparency(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int bounces) const
+RT::Color		RT::AdvancedRenderer::renderTransparency(RT::Ray const & ray, RT::Intersection const & intersection, RT::Color mask, unsigned int bounces) const
 {
   // Fresnel
   double		cosi = RT::Ray::scalar(ray.d(), intersection.normal.d());
@@ -403,7 +411,7 @@ RT::Color		RT::AdvancedRenderer::renderTransparency(RT::Ray const & ray, RT::Int
     // Copy transparency properties to reflection
     new_intersection.material.reflection.glossiness = intersection.material.transparency.glossiness;
     
-    return renderReflection(ray, new_intersection, bounces);
+    return renderReflection(ray, new_intersection, mask, bounces);
   }
 
   // Inverse normal if necessary
@@ -455,12 +463,12 @@ RT::Color		RT::AdvancedRenderer::renderTransparency(RT::Ray const & ray, RT::Int
       r.d() += normal.d() * -2.f * (r.d().x() * normal.d().x() + r.d().y() * normal.d().y() + r.d().z() * normal.d().z()) / (normal.d().x() * normal.d().x() + normal.d().y() * normal.d().y() + normal.d().z() * normal.d().z());
   }
 
-  return intersection.material.color * renderRay(r, bounces + 1);
+  return renderRay(r, mask * intersection.material.color, bounces + 1);
 }
 
-RT::Color		RT::AdvancedRenderer::renderEmission(RT::Ray const & ray, RT::Intersection const & intersection, unsigned int bounces) const
+RT::Color		RT::AdvancedRenderer::renderEmission(RT::Ray const & ray, RT::Intersection const & intersection, RT::Color mask, unsigned int bounces) const
 {
-  return intersection.material.color;
+  return mask * intersection.material.color;
 }
 
 double			RT::AdvancedRenderer::progress()

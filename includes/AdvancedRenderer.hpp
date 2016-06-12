@@ -16,8 +16,9 @@ namespace RT
     {
       namespace Advanced
       {
-	unsigned int const	MaxSample(16);	// Maximum sample per pixel (2^n)
-	unsigned int const	MaxBounce(8);	// Maximum of ray bounce
+	unsigned int const	MaxSample(16);		// Maximum sample per pixel (2^n)
+	unsigned int const	MaxBounces(16);		// Maximum of ray bounce
+	RT::Color const		MinMask(1.f / 255.f);	// Minimum color mask
       };
     };
   };
@@ -31,18 +32,18 @@ namespace RT
     unsigned long		_ray;		// Number of sample rendered
     unsigned long		_sample;	// Current level of sampling
 
-    void	begin() override;									// Method managing rendering threads
-    void	render();										// Rendering thread main method
-    void	render(unsigned int);									// Render a zone
-    RT::Color	renderVirtualReality(RT::Ray const &) const;						// Render virtual reality image
-    RT::Color	renderDephOfField(RT::Ray const &) const;						// Render deph of field image
-    RT::Color	renderCamera(RT::Ray const &) const;							// Render scene camera
-    RT::Color	renderRay(RT::Ray const &, unsigned int = 0) const;					// Render a ray with CSG tree    
-    RT::Color	renderDiffuse(RT::Ray const &, RT::Intersection const &, unsigned int) const;		// Render diffuse bounces
-    RT::Color	renderSpecular(RT::Ray const &, RT::Intersection const &, unsigned int) const;		// Render specular bounces
-    RT::Color	renderReflection(RT::Ray const &, RT::Intersection const &, unsigned int) const;	// Render reflection bounces
-    RT::Color	renderTransparency(RT::Ray const &, RT::Intersection const &, unsigned int) const;	// Render transparency bounces
-    RT::Color	renderEmission(RT::Ray const &, RT::Intersection const &, unsigned int) const;		// Render emitted light
+    void	begin() override;										// Method managing rendering threads
+    void	render();											// Rendering thread main method
+    void	render(unsigned int);										// Render a zone
+    RT::Color	renderVirtualReality(RT::Ray const &) const;							// Render virtual reality image
+    RT::Color	renderDephOfField(RT::Ray const &) const;							// Render deph of field image
+    RT::Color	renderCamera(RT::Ray const &) const;								// Render scene camera
+    RT::Color	renderRay(RT::Ray const &, RT::Color = RT::Color(1.f), unsigned int = 0) const;			// Render a ray with CSG tree    
+    RT::Color	renderDiffuse(RT::Ray const &, RT::Intersection const &, RT::Color, unsigned int) const;	// Render diffuse bounces
+    RT::Color	renderSpecular(RT::Ray const &, RT::Intersection const &, RT::Color, unsigned int) const;	// Render specular bounces
+    RT::Color	renderReflection(RT::Ray const &, RT::Intersection const &, RT::Color, unsigned int) const;	// Render reflection bounces
+    RT::Color	renderTransparency(RT::Ray const &, RT::Intersection const &, RT::Color, unsigned int) const;	// Render transparency bounces
+    RT::Color	renderEmission(RT::Ray const &, RT::Intersection const &, RT::Color, unsigned int) const;	// Render emitted light
 
   public:
     AdvancedRenderer();

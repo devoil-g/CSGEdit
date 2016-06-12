@@ -8,7 +8,7 @@ translation([0,0,208]); point_light([255]); end();
 occlusion_light([255], 64);
 
 direct(0.2, 0.8, 0.4);
-	indirect(0, 1, 0);
+	indirect(0, 0.9, 0.1, 1);
 		translation([+256,0,0]); color([192,192,192]); box(8,512,512, true); end(); end();
 		translation([-1024,0,0]); box(8,512,512, true); end();
 
@@ -17,8 +17,10 @@ direct(0.2, 0.8, 0.4);
 
 		translation([0,0,-224]); color([192,192,192]); box(4096,512,8, true); end(); end();
 		translation([0,0,+224]); color([192,192,192]); box(4096,512,8, true); end(); end();
+		
+		translation([-192,203,0]); color([192,192,192]); box(192,96,8, true); end(); end();
 
-		translation([-28,-124,-185]); rotation([0,0,10]); box(192,192,64, true); end(); end();
+		translation([-28,-124,-185]); rotation([0,0,10]); color([224,224,224]); box(192,192,64, true); end(); end(); end();
 
 		bounding();
 			translation([+256,0,0]); box(28,512,512, true); end();
@@ -35,15 +37,18 @@ direct(0.2, 0.8, 0.4);
 	
 	indirect(0, 1, 0);
 		transparency(0.92, 1.35); translation([-28,-124,-81]); sphere(72); end(); end();
+		
+		transparency(0.92, 1.35); translation([-128,203,28]); scale([10]); rotation([0,0,-30]); tangle(10); end(); end(); end(); end();
+		color([224,224,160]); translation([-256,203,2]); scale([0.5]); rotation([0,0,-20]); mesh("../models/bunny.stl"); end(); end(); end(); end();
 	end();
 	
-	indirect(0, 0.5, 0.7, 4.2);
+	indirect(0, 0.4, 0.6, 1.64);
 		color([128,192,128]);
 			translation([+104,+104,-106]); sphere(112); end();	
 		end();
 	end();
 	
 	indirect(1, 0, 0);
-		translation([-64,0,+224]); color([416]); cylinder(160,16, true); end(); end();
+		translation([-64,0,+224]); color([320]); cylinder(160,16, true); end(); end();
 	end();
 end();
