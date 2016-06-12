@@ -254,7 +254,7 @@ RT::Color		RT::AdvancedRenderer::renderRay(RT::Ray const & ray, RT::Color mask, 
   if (intersect.empty())
     return RT::Color(0.f);
 
-  // Russiean roulette shoot
+  // Russian roulette shoot
   double		roulette = Math::Random::rand(1.f);
 
   // Transparency
@@ -285,6 +285,11 @@ RT::Color		RT::AdvancedRenderer::renderRay(RT::Ray const & ray, RT::Color mask, 
 
   // Emission
   return renderEmission(ray, intersect.front(), mask * total_dse, bounces);
+}
+
+RT::Color		RT::AdvancedRenderer::renderEmission(RT::Ray const & ray, RT::Intersection const & intersection, RT::Color mask, unsigned int bounces) const
+{
+  return mask * intersection.material.color;
 }
 
 RT::Color		RT::AdvancedRenderer::renderDiffuse(RT::Ray const & ray, RT::Intersection const & intersection, RT::Color mask, unsigned int bounces) const
@@ -464,11 +469,6 @@ RT::Color		RT::AdvancedRenderer::renderTransparency(RT::Ray const & ray, RT::Int
   }
 
   return renderRay(r, mask * intersection.material.color, bounces + 1);
-}
-
-RT::Color		RT::AdvancedRenderer::renderEmission(RT::Ray const & ray, RT::Intersection const & intersection, RT::Color mask, unsigned int bounces) const
-{
-  return mask * intersection.material.color;
 }
 
 double			RT::AdvancedRenderer::progress()

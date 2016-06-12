@@ -39,12 +39,12 @@ namespace RT
     RT::Color	renderDephOfField(RT::Ray const &) const;							// Render deph of field image
     RT::Color	renderCamera(RT::Ray const &) const;								// Render scene camera
     RT::Color	renderRay(RT::Ray const &, RT::Color = RT::Color(1.f), unsigned int = 0) const;			// Render a ray with CSG tree    
+    RT::Color	renderEmission(RT::Ray const &, RT::Intersection const &, RT::Color, unsigned int) const;	// Render emitted light
     RT::Color	renderDiffuse(RT::Ray const &, RT::Intersection const &, RT::Color, unsigned int) const;	// Render diffuse bounces
     RT::Color	renderSpecular(RT::Ray const &, RT::Intersection const &, RT::Color, unsigned int) const;	// Render specular bounces
     RT::Color	renderReflection(RT::Ray const &, RT::Intersection const &, RT::Color, unsigned int) const;	// Render reflection bounces
     RT::Color	renderTransparency(RT::Ray const &, RT::Intersection const &, RT::Color, unsigned int) const;	// Render transparency bounces
-    RT::Color	renderEmission(RT::Ray const &, RT::Intersection const &, RT::Color, unsigned int) const;	// Render emitted light
-
+    
   public:
     AdvancedRenderer();
     ~AdvancedRenderer();

@@ -1,0 +1,4 @@
+APPLICATION_ICON16	ICON	"..\\assets\\icons\\icon16.ico"
+APPLICATION_ICON32	ICON	"..\\assets\\icons\\icon32.ico"
+APPLICATION_ICON64	ICON	"..\\assets\\icons\\icon64.ico"
+APPLICATION_ICON128	ICON	"..\\assets\\icons\\icon128.ico"
