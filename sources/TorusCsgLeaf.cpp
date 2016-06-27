@@ -45,26 +45,3 @@ Math::Vector<4>		RT::TorusCsgLeaf::normal(Math::Vector<4> const & pt) const
       return Math::Vector<4>(pt.x() * (1.f + c), pt.y() * (1.f + c), pt.z(), 0.f);
   }
 }
-
-size_t			RT::TorusCsgLeaf::build(std::vector<RT::OpenCL::Node> & nodes, std::vector<RT::OpenCL::Primitive> & primitives, Math::Matrix<4, 4> const & transformation, RT::Material const & material, unsigned int deph) const
-{
-  Math::Matrix<4, 4>	matrix = Math::Matrix<4, 4>::identite();
-
-  // Apply center to ray 
-  if (_r == 0.f)
-    matrix = Math::Matrix<4, 4>::scale(_r);
-  else
-    matrix = Math::Matrix<4, 4>::scale(_h);
-
-  size_t		node = RT::AbstractCsgLeaf::build(nodes, primitives, transformation * matrix, material, deph);
-
-  if (_r == 0.f)
-    primitives.back().type = RT::OpenCL::Primitive::Type::PrimitiveSphere;
-  else
-  {
-    primitives.back().type = RT::OpenCL::Primitive::Type::PrimitiveTorus;
-    primitives.back().data.torus.r = (float)(_h / _r);
-  }
-
-  return node;
-}

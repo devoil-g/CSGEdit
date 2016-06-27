@@ -17,8 +17,3 @@ std::list<RT::Intersection>	RT::MaterialCsgNode::render(RT::Ray const & ray, uns
 
   return result;
 }
-
-size_t				RT::MaterialCsgNode::build(std::vector<RT::OpenCL::Node> & nodes, std::vector<RT::OpenCL::Primitive> & primitives, Math::Matrix<4, 4> const & transformation, RT::Material const & material, unsigned int deph) const
-{
-  return RT::UnionCsgNode::build(nodes, primitives, transformation, material * _material, deph);
-}

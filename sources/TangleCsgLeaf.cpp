@@ -23,13 +23,3 @@ Math::Vector<4>		RT::TangleCsgLeaf::normal(Math::Vector<4> const & pt) const
 {
   return pt * pt * pt * 4.f - pt * 10.f;
 }
-
-size_t			RT::TangleCsgLeaf::build(std::vector<RT::OpenCL::Node> & nodes, std::vector<RT::OpenCL::Primitive> & primitives, Math::Matrix<4, 4> const & transformation, RT::Material const & material, unsigned int deph) const
-{
-  size_t		node = RT::AbstractCsgLeaf::build(nodes, primitives, transformation, material, deph);
-
-  primitives.back().type = RT::OpenCL::Primitive::Type::PrimitiveTangle;
-  primitives.back().data.tangle.c = (float)_c;
-  
-  return node;
-}

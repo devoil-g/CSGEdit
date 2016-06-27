@@ -4,7 +4,6 @@
 #include <string>
 
 #include "AbstractState.hpp"
-#include "Matrix.hpp"
 #include "PreviewRenderer.hpp"
 #include "Scene.hpp"
 
@@ -16,8 +15,7 @@ namespace RT
     RT::PreviewRenderer	_preview;	// Renderer for preview
     RT::Scene *		_scene;		// Current scene
     std::string		_file;		// Current file
-    Math::Matrix<4, 4>	_camera;	// Camera applied to current scene
-
+    
   public:
     ControlState(std::string const &);
     ~ControlState();

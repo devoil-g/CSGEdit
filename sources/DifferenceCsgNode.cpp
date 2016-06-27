@@ -44,32 +44,3 @@ std::list<RT::Intersection>	RT::DifferenceCsgNode::render(RT::Ray const & ray, u
 
   return result;
 }
-
-size_t				RT::DifferenceCsgNode::build(std::vector<RT::OpenCL::Node> & nodes, std::vector<RT::OpenCL::Primitive> & primitives, Math::Matrix<4, 4> const & transformation, RT::Material const & material, unsigned int deph) const
-{
-  if (children().size() == 1)
-    return children().front()->build(nodes, primitives, transformation, material, deph);
-
-  nodes.push_back(RT::OpenCL::Node());
-  nodes.back().type = RT::OpenCL::Node::Type::TypeDifference;
-  nodes.back().data.csg.left = (int)children().front()->build(nodes, primitives, transformation, material, deph);
-
-  size_t			first_node = nodes.size() - 1;
-  size_t			current_node = nodes.size() - 1;
-
-  for (std::list<RT::AbstractCsgTree *>::const_iterator it = std::next(children().begin()); it != children().end(); it++)
-    if (std::next(it) != children().end())
-    {
-      size_t			id = (*it)->build(nodes, primitives, transformation, material, deph);
-
-      nodes.push_back(RT::OpenCL::Node());
-      nodes.back().type = RT::OpenCL::Node::Type::TypeUnion;
-      nodes.back().data.csg.left = (int)id;
-
-      current_node = nodes.size() - 1;
-    }
-    else
-      nodes[current_node].data.csg.right = (int)(*it)->build(nodes, primitives, transformation, material, deph);
-
-  return first_node;
-}

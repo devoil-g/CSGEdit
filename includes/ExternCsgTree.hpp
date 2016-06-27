@@ -22,8 +22,7 @@ namespace RT
     ExternCsgTree(RT::AbstractCsgTree const * const *);
     ~ExternCsgTree();
 
-    std::list<RT::Intersection>	render(RT::Ray const &, unsigned int) const override;															// Render a list of intersection from the sub-tree according to ray
-    size_t			build(std::vector<RT::OpenCL::Node> &, std::vector<RT::OpenCL::Primitive> &, Math::Matrix<4, 4> const &, RT::Material const &, unsigned int = 0) const override;	// Build OpenCL data structure
+    std::list<RT::Intersection>	render(RT::Ray const &, unsigned int) const override;	// Render a list of intersection from the sub-tree according to ray
   };
 };
 

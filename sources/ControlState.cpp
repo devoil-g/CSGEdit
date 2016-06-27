@@ -1,17 +1,15 @@
-#include <stdexcept>
 #include <iostream>
 
 #include "AdvancedRenderer.hpp"
 #include "BasicRenderer.hpp"
 #include "ControlState.hpp"
-#include "OpenCLRenderer.hpp"
 #include "RenderState.hpp"
 #include "SceneLibrary.hpp"
 #include "StateMachine.hpp"
 #include "Window.hpp"
 
 RT::ControlState::ControlState(std::string const & file)
-  : _preview(), _scene(nullptr), _file(file), _camera()
+  : _preview(), _scene(nullptr), _file(file)
 {
   RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Indeterminate);
 
@@ -19,8 +17,7 @@ RT::ControlState::ControlState(std::string const & file)
   std::cout << "[" << RT::Config::Window::Title << "] Opening file '" << _file << "'." << std::endl;
   RT::SceneLibrary::Instance().clear();
   _scene = RT::SceneLibrary::Instance().get(file);
-  _camera = _scene->camera();
-
+  
   // Start preview rendering
   _preview.load(_scene);
   _preview.start();
@@ -47,14 +44,8 @@ bool	RT::ControlState::update(sf::Time)
     // Stop rendering
     _preview.stop();
 
-    // Get current camera
-    Math::Matrix<4, 4>	camera = _scene->camera();
-
     // Update scene
     RT::SceneLibrary::Instance().update();
-
-    // Set previous camera position
-    _scene->camera() = camera;
 
     // Start preview rendering
     _preview.load(_scene);
@@ -66,13 +57,13 @@ bool	RT::ControlState::update(sf::Time)
   }
 
   // Reset camera
-  if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::C) && _scene->camera() != _camera)
+  if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::C) && _scene->camera() != _scene->original())
   {
     // Stop rendering
     _preview.stop();
 
     // Reset camera position
-    _scene->camera() = _camera;
+    _scene->camera() = _scene->original();
 
     // Start preview rendering
     _preview.load(_scene);
@@ -92,9 +83,6 @@ bool	RT::ControlState::update(sf::Time)
     // Reload scene
     RT::SceneLibrary::Instance().clear();
     _scene = RT::SceneLibrary::Instance().get(_file);
-
-    // Get camera position
-    _camera = _scene->camera();
 
     // Start preview rendering
     _preview.load(_scene);
@@ -194,12 +182,9 @@ bool	RT::ControlState::update(sf::Time)
 
       RT::Window::Instance().setTaskbar(RT::Window::WindowFlag::Indeterminate);
 
-      // Restore previous scene default camera
-      _scene->camera() = _camera;
-
       // Load new scene
+      _preview.stop();
       _scene = RT::SceneLibrary::Instance().get(_file);
-      _camera = _scene->camera();
       _preview.load(_scene);
       _preview.start();
 
@@ -221,18 +206,6 @@ bool	RT::ControlState::update(sf::Time)
   {
     _preview.stop();
     RT::StateMachine::Instance().push(new RT::RenderState(new RT::AdvancedRenderer(), _scene));
-    return false;
-  }
-
-  // Launch OpenCL render state
-  if (RT::Window::Instance().keyPressed(sf::Keyboard::Key::RShift))
-  {
-    _preview.stop();
-
-    // Initialize OpenCL
-    try { RT::StateMachine::Instance().push(new RT::RenderState(new RT::OpenCLRenderer(), _scene)); }
-    catch (std::exception) {}
-
     return false;
   }
 

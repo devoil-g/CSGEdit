@@ -5,7 +5,7 @@
 
 namespace RT
 {
-  class AbstractLightLeaf : public AbstractLightTree
+  class AbstractLightLeaf : public RT::AbstractLightTree
   {
   public:
     AbstractLightLeaf();

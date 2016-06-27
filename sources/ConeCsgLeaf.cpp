@@ -80,20 +80,3 @@ Math::Vector<4>		RT::ConeCsgLeaf::normal(Math::Vector<4> const & pt) const
   else
     return Math::Vector<4>(0.f, 0.f, p.z() <= Math::Shift ? -1.f : +1.f, 0.f);
 }
-
-size_t			RT::ConeCsgLeaf::build(std::vector<RT::OpenCL::Node> & nodes, std::vector<RT::OpenCL::Primitive> & primitives, Math::Matrix<4, 4> const & transformation, RT::Material const & material, unsigned int deph) const
-{
-  Math::Matrix<4, 4>	matrix = Math::Matrix<4, 4>::scale(1.f, 1.f, _h);
-
-  // Apply center to ray 
-  if (_center == true)
-    matrix = Math::Matrix<4, 4>::translation(0.f, 0.f, -_h / 2.f) * matrix;
-  
-  size_t		node = RT::AbstractCsgLeaf::build(nodes, primitives, transformation * matrix, material, deph);
-
-  primitives.back().type = RT::OpenCL::Primitive::Type::PrimitiveCone;
-  primitives.back().data.cone.r1 = (float)_r1;
-  primitives.back().data.cone.r2 = (float)_r2;
-
-  return node;
-}

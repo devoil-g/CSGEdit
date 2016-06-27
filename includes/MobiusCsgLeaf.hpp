@@ -17,8 +17,6 @@ namespace RT
   public:
     MobiusCsgLeaf(double, double, double);
     ~MobiusCsgLeaf();
-
-    size_t		build(std::vector<RT::OpenCL::Node> &, std::vector<RT::OpenCL::Primitive> &, Math::Matrix<4, 4> const &, RT::Material const &, unsigned int = 0) const override;	// Build OpenCL data structure
   };
 };
 

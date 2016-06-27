@@ -22,8 +22,6 @@ namespace RT
     TriangleCsgLeaf(std::tuple<double, double, double> const &, std::tuple<double, double, double> const &, std::tuple<double, double, double> const &);
     ~TriangleCsgLeaf();
 
-    size_t						build(std::vector<RT::OpenCL::Node> &, std::vector<RT::OpenCL::Primitive> &, Math::Matrix<4, 4> const &, RT::Material const &, unsigned int = 0) const override;	// Build OpenCL data structure
-
     std::vector<std::tuple<double, double, double>>	points() const;		// Return vector of 3 points coordinates
   };
 };

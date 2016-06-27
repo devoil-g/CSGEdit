@@ -105,18 +105,3 @@ Math::Vector<4>		RT::BoxCsgLeaf::normal(Math::Vector<4> const & pt) const
   else
     return Math::Vector<4>(0.f, 0.f, +1.f, 0.f);
 }
-
-size_t			RT::BoxCsgLeaf::build(std::vector<RT::OpenCL::Node> & nodes, std::vector<RT::OpenCL::Primitive> & primitives, Math::Matrix<4, 4> const & transformation, RT::Material const & material, unsigned int deph) const
-{
-  Math::Matrix<4, 4>	matrix = Math::Matrix<4, 4>::scale(_x, _y, _z);
-
-  // Apply center to ray 
-  if (_center == true)
-    matrix = Math::Matrix<4, 4>::translation(-_x / 2.f, -_y / 2.f, -_z / 2.f) * matrix;
-
-  size_t		node = RT::AbstractCsgLeaf::build(nodes, primitives, transformation * matrix, material, deph);
-
-  primitives.back().type = RT::OpenCL::Primitive::Type::PrimitiveBox;
-
-  return node;
-}

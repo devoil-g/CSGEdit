@@ -36,24 +36,3 @@ std::list<RT::Intersection>	RT::AbstractCsgLeaf::render(RT::Ray const & ray, uns
 
   return result;
 }
-
-size_t				RT::AbstractCsgLeaf::build(std::vector<RT::OpenCL::Node> & nodes, std::vector<RT::OpenCL::Primitive> & primitives, Math::Matrix<4, 4> const & transformation, RT::Material const & material, unsigned int) const
-{
-  nodes.push_back(RT::OpenCL::Node());
-  primitives.push_back(RT::OpenCL::Primitive());
-
-  nodes.back().type = RT::OpenCL::Node::Type::TypePrimitive;
-  nodes.back().data.primitive.index = (int)primitives.size() - 1;
-
-  Math::Matrix<4, 4>		matrix = transformation.inverse();
-
-  for (unsigned row = 0; row < 4; row++)
-    for (unsigned col = 0; col < 4; col++)
-      primitives.back().transformation[row * 4 + col] = (float)matrix(row, col);
-
-  primitives.back().material.color[0] = (float)material.color.r;
-  primitives.back().material.color[1] = (float)material.color.g;
-  primitives.back().material.color[2] = (float)material.color.b;
-
-  return nodes.size() - 1;
-}

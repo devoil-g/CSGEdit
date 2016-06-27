@@ -45,12 +45,20 @@ void				RT::SceneLibrary::load(std::string const & file)
   // Update file time
   _library[file].first = time(file);
 
-  // Save preview/rendered image for soft transition
+  // Save preview/rendered image and camera for soft transition
   sf::Image			save = _library[file].second.image();
-  
+  Math::Matrix<4, 4>		camera = _library[file].second.camera();
+  Math::Matrix<4, 4>		original = _library[file].second.original();
+
   // Load file
   _library[file].second.clear();
   _library[file].second = RT::Parser::load(file);
+
+  // Restore camera
+  if (camera != Math::Matrix<4, 4>::identite())
+    _library[file].second.camera() = camera;
+  if (original != _library[file].second.original())
+    _library[file].second.camera() = _library[file].second.original();
 
   // Scale saved image to new scene image
   for (unsigned int x = 0; x < _library[file].second.image().getSize().x; x++)

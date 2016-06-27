@@ -576,7 +576,10 @@ void	RT::Parser::settingCamera(std::vector<double> const & t, std::vector<double
 
   // Set camera only if in main file
   if (_files.size() == 1)
+  {
     _scene.camera() = Math::Matrix<4, 4>::translation(t[0], t[1], t[2]) * Math::Matrix<4, 4>::rotation(r[0], r[1], r[2]) * Math::Matrix<4, 4>::scale(s[0], s[1], s[2]);
+    _scene.original() = _scene.camera();
+  }
 }
 
 void	RT::Parser::settingResolution(unsigned int width, unsigned int height)
