@@ -1,0 +1,6 @@
+bunny.stl:  http://www.thingiverse.com/thing:466857
+deer.stl:   http://www.thingiverse.com/thing:145237
+man.stl:    http://www.thingiverse.com/thing:185455
+mask.stl:   http://www.thingiverse.com/thing:174808
+tardis.stl: http://www.thingiverse.com/thing:33756
+teapot.stl: http://www.thingiverse.com/thing:460243
