@@ -125,13 +125,13 @@ intersection();
 		// Under
 		translation([24,-300,0]);
 			for (var x = 0; x < 3; ++x) {
-				translation([x*84+32,0,0]); box(8,600,32); end();
-				translation([0,x*128+160,0]); box(300,8,32); end();
+				translation([x*84+32,0,0]); box(8,600,36); end();
+				translation([0,x*128+160,0]); box(300,8,36); end();
 			}
 		end();
 		
 		// First floor
-		translation([24,-300,32]); box(300,600,12); end();
+		translation([24,-300,36]); box(300,600,12); end();
 		translation([24,-36,44]);
 			difference();
 				box(300,8,144);

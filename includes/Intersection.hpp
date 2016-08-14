@@ -9,8 +9,8 @@ namespace RT
   class Intersection
   {
   public:
-    Intersection(RT::Ray const & n, double d) : normal(n), distance(d), material() {};
-    ~Intersection() {};
+    inline Intersection(RT::Ray const & n, double d) : normal(n), distance(d), material() {};
+    inline ~Intersection() {};
 
     RT::Ray		normal;		// Normal with intersected object
     double		distance;	// Distance of intersection
