@@ -1,0 +1,138 @@
+// Camera set-up
+camera([-256, 0, 0], [0, 0, 0], [1,1,1]);
+resolution(960, 960);
+antialiasing(0,2);
+thread(4);
+
+def screwdriver_top()
+{
+	bounding();
+		cylinder(10, 256);
+		
+		difference();
+			cylinder(10, 256);
+			translation([-12, 0, 250]); rotation([0, +10, 0]); box(20,20,100, true); end(); end();
+			translation([+12, 0, 250]); rotation([0, -10, 0]); box(20,20,100, true); end(); end();
+		end();
+	end();
+}
+
+def screwdriver_grip_top()
+{
+	bounding();
+		cylinder(36, 42);
+		
+		difference();
+			union();
+				translation([0, 0, 40]); cone(30, 26, 2); end();
+				translation([0, 0, 36]); cone(34, 30, 4); end();
+				translation([0, 0, 32]); cone(36, 34, 4); end();
+				translation([0, 0, 16]); cone(36, 36, 16); end();
+				translation([0, 0, 12]); cone(34, 36, 4); end();
+				translation([0, 0, 8]); cone(30, 34, 4); end();
+				translation([0, 0, 0]); cone(26, 30, 8); end();
+			end();
+			union();
+				translation([0, 0, 40]); cone(10, 14, 4); end();
+				for (var i = 0; i < 8; ++i) {
+					rotation([0, 0, i * 360 / 8]); translation([36, 0, 8]); cylinder(4, 32); end(); end();
+					rotation([0, 0, (i + 0.5) * 360 / 8]); translation([19, 0, 44]); sphere(4); end(); end();
+				}
+				difference();
+					translation([0, 0, 22]); cylinder(37, 4); end();
+					union();
+						translation([0, 0, 22]); cone(36, 35, 1); end();
+						translation([0, 0, 23]); cone(35, 35, 2); end();
+						translation([0, 0, 25]); cone(35, 36, 1); end();
+					end();
+				end();
+			end();
+		end();
+	end();
+}
+
+def screwdriver_grip()
+{
+	bounding();
+		cylinder(26, 184);
+		
+		translation([0, 0, 181]); cone(24, 26, 3); end();
+		translation([0, 0, 173]); cone(26, 24, 3); end();
+		translation([0, 0, 172]); cylinder(26, 1); end();
+		translation([0, 0, 0]); cylinder(24, 184); end();
+		translation([0, 0, 12]); cylinder(26, 1); end();
+		for (var i = 0; i < 36; ++i) {
+			rotation([0, 0, i * 360 / 36]); translation([24, 0, 12]); scale([2,1.21,1]); cylinder(1, 160); end(); end(); end();
+		}
+		
+		translation([0, 0, 13]); cone(26, 24, 2); end();
+		translation([0, 0, 170]); cone(24, 26, 2); end();
+		
+		translation([0, 0, 9]); cone(24, 26, 3); end();
+	end();
+}
+
+def screwdriver_grip_bottom()
+{
+	bounding();
+		translation([0,0,-2.6]); cylinder(32, 37.6); end();
+
+		difference();
+			translation([0, 0, -2]); cone(24, 28, 2); end();
+			translation([0, 0, -2]); cone(12, 8, 2); end();
+			for (var i = 0; i < 6; ++i) {
+				rotation([0, 0, i * 360 / 6]); translation([18, 0, -5]); sphere(4.2); end(); end();
+			}
+		end();
+		translation([0, 0, 0]); cone(28, 30, 2); end();
+		translation([0, 0, 2]); cone(30, 32, 4); end();
+		difference();
+			translation([0, 0, 3.8]); sphere(6.4); end();
+			translation([0, 0, -2.8]); box(8.4,1,5, true); end();
+			translation([0, 0, -2.8]); box(1,8.4,5, true); end();
+			translation([0, 0, -2.6]); cone(1.5, sqrt(2)/2, 2); end();
+		end();
+		
+		translation([0, 0, 32]); cone(26, 24, 3); end();
+		translation([0, 0, 20]); cone(30, 29, 4); end();
+		
+		difference();
+			translation([0, 0, 24]); cone(29, 26, 8); end();
+			for (var i = 0; i < 16; ++i) {
+				rotation([0, 0, i * 360 / 16]); translation([27, 0, 28]); rotation([0, -20, 0]); box(2, 8, 6, true); end(); end(); end();
+			}
+		end();
+		translation([0, 0, 18]); cone(30, 30, 2); end();
+		translation([0, 0, 16]); cone(28, 30, 2); end();
+		
+		difference();
+			translation([0, 0, 12]); cylinder(28, 4); end();
+			for (var i = 0; i < 24; ++i) {
+				rotation([0, 0, i * 360 / 24]); translation([28, 0, 14]); box(4, 6, 2, true); end(); end();
+			}
+		end();
+		
+		translation([0, 0, 8]); cone(32, 28, 4); end();
+		translation([0, 0, 6]); cone(32, 32, 2); end();
+	end();
+}
+
+def screwdriver()
+{
+	bounding();
+		translation([0,0,-2.6]); cylinder(36, 514.6); end();
+		
+		translation([0, 0, 256]); screwdriver_top(); end();
+		translation([0, 0, 216]); screwdriver_grip_top(); end();
+		translation([0, 0, 32]); screwdriver_grip(); end();
+		translation([0, 0, 0]); screwdriver_grip_bottom(); end();
+	end();
+}
+
+// Lights
+rotation([0, 60, 30]); directional_light([255], 4.2); end();
+occlusion_light([255], 32);
+
+direct(0.4, 0.6, 0.2, 8.4);
+	rotation([0,0,130]); rotation([15,15,15]); scale([0.42]); translation([0,0,-256]); screwdriver(); end(); end(); end(); end();
+end();

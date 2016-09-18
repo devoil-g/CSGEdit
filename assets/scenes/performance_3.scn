@@ -1,0 +1,32 @@
+// Camera set-up
+camera([-256, 0, 192], [0, 10, 0], [3.2,1,1]);
+resolution(960, 960);
+antialiasing(0,3);
+thread(4);
+
+def	ground_block(r, h)
+{
+	translation([0,0,h / 2.0]); intersection();
+		box(r, r*1.2, h, true);
+		rotation([0,0,60]); box(r, r*1.2, h, true); end();
+		rotation([0,0,120]); box(r, r*1.2, h, true); end();
+	end(); end();
+}
+
+// Lights
+rotation([0, 70, 0]); rotation([0, 0, -20]); directional_light([255], 4.2); end(); end();
+occlusion_light([255], 32);
+
+direct(0.4, 0.6, 0.2, 8.4);
+
+// House
+translation([+84,0,0]); bounding();
+	cylinder(42 / cos(30.0 / 180.0 * pi), 512);
+	
+	color([255,255,225]); ground_block(84-2,96); end();
+	translation([0,0,96+1]); rotation([0,0,-60]); scale([0.15]);
+		import("house.scn");
+	end(); end(); end();
+end(); end();
+
+end();
